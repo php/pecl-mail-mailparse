@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 4                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2003 The PHP Group                                |
+   | Copyright (c) 1997-2004 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 2.02 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -680,9 +680,11 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 	if (do_decode && part->content_transfer_encoding) {
 		from = mbfl_name2no_encoding(part->content_transfer_encoding);
 		if (from == mbfl_no_encoding_invalid) {
-			zend_error(E_WARNING, "%s(): I don't know how to decode %s transfer encoding!",
-					get_active_function_name(TSRMLS_C),
-					part->content_transfer_encoding);
+			if (strcasecmp("binary", part->content_transfer_encoding) != 0) {
+				zend_error(E_WARNING, "%s(): mbstring doesn't know how to decode %s transfer encoding!",
+						get_active_function_name(TSRMLS_C),
+						part->content_transfer_encoding);
+			}
 			from = mbfl_no_encoding_8bit;
 		}
 	}
