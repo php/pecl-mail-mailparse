@@ -455,7 +455,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 	}
 
 	/* skip spurious commas */
-	while (start_tok < toks->ntokens && toks->tokens[start_tok].token == ',')
+	while (start_tok < toks->ntokens && (toks->tokens[start_tok].token == ','
+			|| toks->tokens[start_tok].token == ';'))
 		start_tok++;
 
 	/* look ahead: if we find a '<' before we find an '@', we are dealing with
