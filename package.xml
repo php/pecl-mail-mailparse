@@ -18,9 +18,12 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.0b</version>
-  <date>2004-03-07</date>
+  <version>2.1</version>
+  <date>2005-01-01</date>
   <notes>
+Avoid possible unterminated loops when parsing malformed email addresses.
+Fix a crash bug when not using the OO API.
+  
 Add hack to provide "binary" transfer encoding, which is not supported
 by mbstring.
 
