@@ -1362,8 +1362,6 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	int key_len, pref_len;
 
 	pref_len = strlen(attrprefix);
-	
-	add_assoc_string(return_value, valuelabel, attr->value, 1);
 
 	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(attr->attributes), &pos);
 	while (SUCCESS == zend_hash_get_current_data_ex(Z_ARRVAL_P(attr->attributes), (void**)&val, &pos)) {
@@ -1379,6 +1377,16 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 		
 		zend_hash_move_forward_ex(Z_ARRVAL_P(attr->attributes), &pos);
 	}
+
+	/* do this last so that a bogus set of headers like this:
+	 * Content-Type: multipart/related;
+	 *    boundary="----=_NextPart_00_0017_01C091F4.1B5EF6B0";
+	 *    type="text/html"
+	 * 
+	 * doesn't overwrite content-type with the type="text/html"
+	 * value.
+	 * */
+	add_assoc_string(return_value, valuelabel, attr->value, 1);
 }
 
 static void add_header_reference_to_zval(char *headerkey, zval *return_value, zval *headers TSRMLS_DC)
