@@ -10,5 +10,9 @@ if test "$PHP_MAILPARSE" != "no"; then
 	  AC_MSG_WARN(Activating mbstring)
 	  enable_mbstring=yes
   fi
-  PHP_NEW_EXTENSION(mailparse, 	mailparse.c rfc2045.c 	rfc2045acchk.c rfc2045acprep.c 	rfc2045appendurl.c rfc2045cdecode.c rfc2045decode.c 	rfc2045find.c 	rfc822.c rfc822_getaddr.c 	rfc822_getaddrs.c, $ext_shared)
+  PHP_NEW_EXTENSION(mailparse, 	mailparse.c php_mailparse_mime.c php_mailparse_rfc822.c, $ext_shared)
+
+  PHP_ADD_MAKEFILE_FRAGMENT
+
 fi
+

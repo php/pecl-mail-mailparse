@@ -1,15 +1,12 @@
 mailparse library for PHP 4
 ===========================
 
-This library is build upon the librfc822 and librfc2045 libraries that
-originated from the maildrop component of the courier mail server.
-The copyright for most of the work belongs to Double Precision Inc.,
-although distribution of the library is carried out under the terms of the
-GPL.
+Mailparse is an extension for parsing and working with email messages.
+It can deal with rfc822 and rfc2045 (MIME) compliant messages.
 
 Example for PHP:
 =============
-
+<?php
 $file = "/path/to/rfc822/compliant/message";
 
 $mime = mailparse_rfc2045_parse_file($file);
@@ -19,7 +16,7 @@ foreach($ostruct as $st)	{
 	$struct[$st] = mailparse_rfc2045_getinfo($section);
 }
 var_dump($struct);
-
+?>
 array mailparse_rfc822_parse_addresses(string addresses)
 	parses an rfc822 compliant recipient list, such as that found in To: From:
 	headers.  Returns a indexed array of assoc. arrays for each recipient:
@@ -77,3 +74,4 @@ TODO:
 	simple structure information and filenames/variables.
 	
 vim:tw=78
+

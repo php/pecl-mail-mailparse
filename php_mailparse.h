@@ -60,8 +60,13 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding);
 PHP_FUNCTION(mailparse_stream_encode);
 PHP_FUNCTION(mailparse_uudecode_all);
 
-#include "rfc2045.h"
-#include "mailparse_rfc822.h"
+PHP_FUNCTION(mailparse_test);
+
+PHPAPI int php_mailparse_le_mime_part(void);
+
+#include "ext/mbstring/mbfilter.h"
+#include "php_mailparse_rfc822.h"
+#include "php_mailparse_mime.h"
 
 #define MAILPARSE_BUFSIZ		4096
 ZEND_BEGIN_MODULE_GLOBALS(mailparse)
