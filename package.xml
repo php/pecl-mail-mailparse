@@ -76,7 +76,7 @@ inline in a single mime part.
   </filelist>
   <deps>
    <dep type="ext" rel="has">mbstring</dep>
-   <dep type="php" rel="ge">4.3.0</dep>
+   <dep type="php" rel="ge" version="4.3.0" />
   </deps>
  </release>
 </package>
