@@ -1,4 +1,9 @@
 <?php
+
+if (!extension_loaded("mailparse")) {
+	dl("mailparse.so");
+}
+
 /*
  * This is a simple email viewer.
  * make sure that $filename points to a file containing an email message and
@@ -13,6 +18,9 @@ else
 
 /* parse the message and return a mime message resource */
 $mime = mailparse_msg_parse_file($filename);
+
+debug_zval_dump($mime);
+
 /* return an array of message parts - this contsists of the names of the parts
  * only */
 $struct = mailparse_msg_get_structure($mime);

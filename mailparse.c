@@ -168,7 +168,7 @@ PHP_MSHUTDOWN_FUNCTION(mailparse)
 	return SUCCESS;
 }
 
-/* ------------- MimeMessage methods */
+/* {{{ ------------- MimeMessage methods */
 
 static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
 {
@@ -647,7 +647,7 @@ cleanup:
 
 }
 
-/* --- END ---------- MimeMessage methods */
+/* --- END ---------- MimeMessage methods }}} */
 
 PHP_MINFO_FUNCTION(mailparse)
 {
@@ -1063,8 +1063,6 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 
 	part = php_mimepart_alloc();
 	php_mimepart_to_zval(return_value, part);
-
-	RETVAL_TRUE;
 
 	while(!php_stream_eof(stream))	{
 		int got = php_stream_read(stream, filebuf, MAILPARSE_BUFSIZ);
