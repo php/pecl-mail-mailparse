@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE package SYSTEM "../../../php4/pear/package.dtd">
+<package>
+  <name>mailparse</name>
+  <summary>Email message management</summary>
+  <maintainers>
+    <maintainer>
+      <user>wez</user>
+      <name>Wez Furlong</name>
+      <email>wez@php.net</email>
+      <role>lead</role>
+    </maintainer>
+  </maintainers>
+  <description>
+    Mailparse is an extension for parsing and working with email messages.
+    It can deal with rfc822 and rfc2045 (MIME) compliant messages.
+  </description>
+  <license>PHP</license>
+  <release>
+    <state>beta</state>
+    <version>0.9</version>
+    <date>2002-06-07</date>
+    <notes>
+      Initial release
+    </notes>
+    <filelist>
+      <file role="src" name="config.m4"/>
+      <file role="src" name="mailparse.c"/>
+      <file role="src" name="Makefile.frag"/>
+      <file role="src" name="php_mailparse.h"/>
+      <file role="src" name="php_mailparse_mime.c"/>
+      <file role="src" name="php_mailparse_mime.h"/>
+      <file role="src" name="php_mailparse_rfc822.c"/>
+      <file role="src" name="php_mailparse_rfc822.h"/>
+      <file role="src" name="php_mailparse_rfc822.re"/>
+      <file role="doc" name="CREDITS"/>
+      <file role="doc" name="README"/>
+      <file role="doc" name="try.php"/>
+      <file role="test" name="tests/001.phpt"/>
+      <file role="test" name="tests/002.phpt"/>
+      <file role="test" name="tests/003.phpt"/>
+      <file role="test" name="tests/004.phpt"/>
+      <file role="test" name="tests/005.phpt"/>
+      <file role="test" name="tests/006.phpt"/>
+      <file role="test" name="tests/007.phpt"/>
+    </filelist>
+  </release>
+</package>
