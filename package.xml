@@ -18,7 +18,7 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.0</version>
+  <version>2.0b</version>
   <date>2004-03-07</date>
   <notes>
 Add hack to provide "binary" transfer encoding, which is not supported
