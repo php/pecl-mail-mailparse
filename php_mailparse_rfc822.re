@@ -118,7 +118,8 @@ printf("ground: start=%p limit=%p cursor=%p: [%d] %s\n", start, YYLIMIT, YYCURSO
 							ADD_ATOM_TOKEN();
 							goto state_ground;
 						}
-	"<" 				{ 	DBG_STATE("LANGLE"); if (in_bracket) {
+	"<" 				{ 	DBG_STATE("LANGLE");
+							if (in_bracket) {
 								REPORT_ERR("already in < bracket");
 								goto state_ground;
 							}
@@ -126,10 +127,12 @@ printf("ground: start=%p limit=%p cursor=%p: [%d] %s\n", start, YYLIMIT, YYCURSO
 							ADD_ATOM_TOKEN();
 							goto state_ground;
 						}
-	">"					{	DBG_STATE("RANGLE"); if (!in_bracket) {
+	">"					{	DBG_STATE("RANGLE");
+							if (!in_bracket) {
 								REPORT_ERR("not in < bracket");
 								goto state_ground;
 							}
+							in_bracket = 0;
 							ADD_ATOM_TOKEN();
 							goto state_ground;
 						}
@@ -229,6 +232,8 @@ PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first
 		
 		if (flags & PHP_RFC822_RECOMBINE_IGNORE_COMMENTS && tok_equiv == '(')
 			continue;
+		if (flags & PHP_RFC822_RECOMBINE_COMMENTS_ONLY && tok_equiv != '(' && !(toks->tokens[i].token == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES))
+			continue;
 	
 		this_is_atom = php_rfc822_token_is_atom(toks->tokens[i].token);
 		if (this_is_atom && last_was_atom && flags & PHP_RFC822_RECOMBINE_SPACE_ATOMS)
@@ -245,12 +250,21 @@ PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first
 	ret = emalloc(len);
 	
 	for (i = first_token, len = 0; i < upper; i++, last_was_atom = this_is_atom) {
+		const char *tokvalue;
+		int toklen;
+		
+		
 		tok_equiv = toks->tokens[i].token;
 		if (tok_equiv == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES)
 			tok_equiv = '"';
 
 		if (flags & PHP_RFC822_RECOMBINE_IGNORE_COMMENTS && tok_equiv == '(')
 			continue;
+		if (flags & PHP_RFC822_RECOMBINE_COMMENTS_ONLY && tok_equiv != '(' && !(toks->tokens[i].token == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES))
+			continue;
+
+		tokvalue = toks->tokens[i].value;
+		toklen = toks->tokens[i].valuelen;
 		
 		this_is_atom = php_rfc822_token_is_atom(toks->tokens[i].token);
 		if (this_is_atom && last_was_atom && flags & PHP_RFC822_RECOMBINE_SPACE_ATOMS) {
@@ -260,8 +274,14 @@ PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first
 		if (flags & PHP_RFC822_RECOMBINE_INCLUDE_QUOTES && tok_equiv == '"')
 			ret[len++] = '"';
 
-		memcpy(ret + len, toks->tokens[i].value, toks->tokens[i].valuelen);
-		len += toks->tokens[i].valuelen;
+		if (toks->tokens[i].token == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES) {
+			/* don't include ( and ) in the output string */
+			tokvalue++;
+			toklen -= 2;
+		}
+
+		memcpy(ret + len, tokvalue, toklen);
+		len += toklen;
 
 		if (flags & PHP_RFC822_RECOMBINE_INCLUDE_QUOTES && tok_equiv == '"')
 			ret[len++] = '"';
@@ -279,6 +299,7 @@ static void parse_address_tokens(php_rfc822_tokenized_t *toks,
 	php_rfc822_addresses_t *addrs, int *naddrs)
 {
 	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start, group_lbl_end;
+	int a_start, a_count; /* position and count for address part of a name */
 	smart_str group_addrs = { 0, };
 	char *address_value;
 	
@@ -319,8 +340,32 @@ mailbox:	/* addr-spec / phrase route-addr */
 
 	/* the stuff from start_tok to i - 1 is the display name part */
 	if (addrs && !in_group && i - start_tok > 0) {
-		addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
-			PHP_RFC822_RECOMBINE_SPACE_ATOMS);
+		int j, has_comments = 0, has_strings = 0;
+		switch(toks->tokens[i].token) {
+			case ';': case ',': case '<':
+				addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
+						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
+				break;
+			default:
+				/* it's only the display name if there are quoted strings or comments in there */
+				for (j = start_tok; j < i; j++) {
+					if (toks->tokens[j].token == '(')
+						has_comments = 1;
+					if (toks->tokens[j].token == '"')
+						has_strings = 1;
+				}
+				if (has_comments && !has_strings) {
+					addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok,
+						i - start_tok, PHP_RFC822_RECOMBINE_SPACE_ATOMS|
+						PHP_RFC822_RECOMBINE_COMMENTS_ONLY|PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES);
+				} else if (has_strings) {
+				addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
+						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
+
+				}
+				
+		}
+		
 	}
 
 	if (i < toks->ntokens && toks->tokens[i].token == '<') {
@@ -332,7 +377,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 			;
 
 		if (addrs) {
-			int a_start = i, a_count = j-i;
+			a_start = i;
+			a_count = j-i;
 			/* if an address is enclosed in <>, leave them out of the the
 			 * address value that we return */
 			if (toks->tokens[a_start].token == '<') {
@@ -349,7 +395,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 	} else {
 		/* RFC822: addr-spec = local-part "@" domain */
 		if (addrs) {
-			int a_start = start_tok, a_count = i - start_tok;
+			a_start = start_tok;
+			a_count = i - start_tok;
 			/* if an address is enclosed in <>, leave them out of the the
 			 * address value that we return */
 			if (toks->tokens[a_start].token == '<') {
@@ -373,6 +420,10 @@ mailbox:	/* addr-spec / phrase route-addr */
 			efree(address_value);
 		} else {
 			addrs->addrs[iaddr].address = address_value;
+		}
+		/* if no display name has been given, use the address */
+		if (addrs->addrs[iaddr].name == NULL) {
+			addrs->addrs[iaddr].name = estrdup(address_value);
 		}
 		address_value = NULL;
 	}

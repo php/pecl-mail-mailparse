@@ -59,6 +59,7 @@ PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs);
 #define PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES	4
 #define PHP_RFC822_RECOMBINE_SPACE_ATOMS		8
 #define PHP_RFC822_RECOMBINE_INCLUDE_QUOTES		16
+#define PHP_RFC822_RECOMBINE_COMMENTS_ONLY		32
 PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags);
 
 void php_rfc822_print_tokens(php_rfc822_tokenized_t *toks);
