@@ -76,6 +76,7 @@ struct _php_mimepart {
 
 		smart_str workbuf;
 		smart_str headerbuf;
+		php_mimepart *lastpart;
 	} parsedata;
 
 };
@@ -83,6 +84,7 @@ struct _php_mimepart {
 PHPAPI php_mimepart *php_mimepart_alloc(void);
 PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC);
 PHPAPI int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
+PHPAPI void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *end, off_t *start_body, int *nlines, int *nbodylines);
 
 PHPAPI void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC);
 PHPAPI void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC);

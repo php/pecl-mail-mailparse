@@ -68,7 +68,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 			break;
 
 	attr->value = php_rfc822_recombine_tokens(toks, 2, first_semi - 2,
-			PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
+			PHP_RFC822_RECOMBINE_STRTOLOWER | PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 
 	if (first_semi < toks->ntokens)
 		first_semi++;
@@ -106,8 +106,8 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 				/* count those tokens; we expect "token = token" (3 tokens); if there are
 				 * more than that, then something is quite possibly wrong - Netscape Bug! */
-				if (toks->tokens[next_semi].token != ';'
-						&& next_semi <= toks->ntokens
+				if (next_semi <= toks->ntokens
+						&& toks->tokens[next_semi].token != ';'
 						&& next_semi - first_semi - comments_before_semi > 3) {
 					next_semi = i + 1;
 					netscape_bug = 1;
@@ -117,7 +117,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 				value = php_rfc822_recombine_tokens(toks, i, next_semi - i,
 						PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
-				
+			
 				add_assoc_string(attr->attributes, name, value, 0);
 				efree(name);
 			}
@@ -319,14 +319,19 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 	php_mimepart *child = php_mimepart_alloc();
 	int ret;
 
+	parentpart->parsedata.lastpart = child;
 	child->parent = parentpart;
 	
 	child->source.kind = parentpart->source.kind;
-	REPLACE_ZVAL_VALUE(&child->source.zval, parentpart->source.zval, 1);
+	*child->source.zval = *parentpart->source.zval;
+	zval_copy_ctor(child->source.zval);
+
+//		REPLACE_ZVAL_VALUE(&child->source.zval, parentpart->source.zval, 1);
 	
 	ret = zend_hash_next_index_insert(&parentpart->children, (void*)&child, sizeof(php_mimepart *), NULL);
 	child->startpos = child->endpos = child->bodystart = child->bodyend = startpos;
 
+	
 	if (inherit) {
 		if (parentpart->content_transfer_encoding)
 			child->content_transfer_encoding = estrdup(parentpart->content_transfer_encoding);
@@ -337,6 +342,24 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 	return child;
 }
 
+PHPAPI void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *end, off_t *start_body, int *nlines, int *nbodylines)
+{
+	*start = part->startpos;
+	*end = part->endpos;
+	*nlines = part->nlines;
+	*nbodylines = part->nbodylines;
+	*start_body = part->bodystart;
+
+	/* Adjust for newlines in mime parts */
+	if (part->parent) {
+		*end = part->bodyend;
+		if (*nlines)
+			--*nlines;
+		if (*nbodylines)
+			--*nbodylines;
+	}
+}
+
 static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 {
 	php_mimepart *workpart;
@@ -345,7 +368,7 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 
 	/* sanity check */
 	if (zend_hash_num_elements(&part->children) > MAXPARTS) {
-		zend_error(E_WARNING, "%s(): MIME message too complex", get_active_function_name(TSRMLS_C));
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MIME message too complex");
 		return FAILURE;
 	}
 
@@ -360,25 +383,19 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 
 	/* Discover which part we were last working on */
 	workpart = part;
-	while (zend_hash_num_elements(&workpart->children) > 0) {
-		php_mimepart *lastpart, **tmppart;
-		HashPosition pos;
-		int bound_len;
 
-		zend_hash_internal_pointer_end_ex(&workpart->children, &pos);
-		zend_hash_get_current_data_ex(&workpart->children, (void**)&tmppart, &pos);
-		lastpart = *tmppart;
-		
+	while (workpart->parsedata.lastpart) {
+		int bound_len;
+		php_mimepart *lastpart = workpart->parsedata.lastpart;
+
 		if (lastpart->parsedata.completed) {
-			php_mimepart_update_positions(workpart, workpart->endpos + linelen, workpart->endpos + linelen, 1);
+			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + origcount, 1);
 			return SUCCESS;
 		}
-		
 		if (workpart->boundary == NULL || workpart->parsedata.in_header) {
 			workpart = lastpart;
 			continue;
 		}
-
 		bound_len = strlen(workpart->boundary);
 
 		/* Look for a boundary */
@@ -388,12 +405,12 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 			/* is it the final boundary ? */
 			if (linelen >= 4 + bound_len && strncmp(c+2+bound_len, "--", 2) == 0) {
 				lastpart->parsedata.completed = 1;
-				php_mimepart_update_positions(workpart, workpart->endpos + linelen, workpart->endpos + linelen, 1);
+				php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + origcount, 1);
 				return SUCCESS;
 			}
 
 			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
-			php_mimepart_update_positions(workpart, workpart->endpos + linelen, workpart->endpos + linelen, 1);
+			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
 			newpart->mime_version = estrdup(workpart->mime_version);
 			newpart->parsedata.in_header = 1;
 			return SUCCESS;
@@ -402,14 +419,17 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 	}
 
 	if (!workpart->parsedata.in_header) {
-		size_t update_len = origcount;
-		
-		/* update the body/part end positions */
-		if (workpart->parent && CONTENT_TYPE_ISL(workpart->parent, "multipart/", 10) == 0)
-			update_len = linelen;
-
-		if (!workpart->parsedata.completed)
-			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + update_len, 1);
+		if (!workpart->parsedata.completed && !workpart->parsedata.lastpart) {
+			/* update the body/part end positions.
+			 * For multipart messages, the final newline belongs to the boundary.
+			 * Otherwise it belongs to the body
+			 * */
+			if (workpart->parent && CONTENT_TYPE_ISL(workpart->parent, "multipart/", 10)) {
+				php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
+			} else {
+				php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + origcount, 1);
+			}
+		}
 	} else {
 
 		if (linelen > 0) {
@@ -449,7 +469,6 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 				workpart->boundary = NULL;
 				workpart->content_type = php_mimeheader_alloc("text/plain");
 			}
-
 			/* if there is no content type, default to text/plain, but use multipart/digest when in
 			 * a multipart/rfc822 message */
 			if (IS_MIME_1(workpart) && workpart->content_type == NULL) {
@@ -502,9 +521,7 @@ PHPAPI int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsiz
 		if (len <= bufsize && buf[len] == '\n') {
 			++len;
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);
-			if (FAILURE == php_mimepart_process_line(part TSRMLS_CC))
-				return FAILURE;
-			
+			php_mimepart_process_line(part TSRMLS_CC);
 			part->parsedata.workbuf.len = 0;
 		} else {
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);

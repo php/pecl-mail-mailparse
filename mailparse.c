@@ -1398,6 +1398,8 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS_DC)
 {
 	zval *headers, **tmpval;
+	off_t startpos, endpos, bodystart;
+	int nlines, nbodylines;
 
 	array_init(return_value);
 	
@@ -1409,12 +1411,14 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 
 	add_assoc_zval(return_value, "headers", headers);
 
-	add_assoc_long(return_value, "starting-pos",		part->startpos);
-	add_assoc_long(return_value, "starting-pos-body",	part->bodystart);
-	add_assoc_long(return_value, "ending-pos",			part->endpos);
+	php_mimepart_get_offsets(part, &startpos, &endpos, &bodystart, &nlines, &nbodylines);
+	
+	add_assoc_long(return_value, "starting-pos",		startpos);
+	add_assoc_long(return_value, "starting-pos-body",	bodystart);
+	add_assoc_long(return_value, "ending-pos",			endpos);
 	add_assoc_long(return_value, "ending-pos-body",		part->bodyend);
-	add_assoc_long(return_value, "line-count",			part->nlines);
-	add_assoc_long(return_value, "body-line-count",		part->nbodylines);
+	add_assoc_long(return_value, "line-count",			nlines);
+	add_assoc_long(return_value, "body-line-count",		nbodylines);
 
 	if (part->charset)
 		add_assoc_string(return_value, "charset", part->charset, 1);
@@ -1439,6 +1443,9 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 		add_assoc_string(return_value, "content-base", part->content_base, 1);
 	else
 		add_assoc_string(return_value, "content-base", "/", 1);
+
+	if (part->boundary)
+		add_assoc_string(return_value, "content-boundary", part->boundary, 1);
 
 	/* extract the address part of the content-id only */
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), "content-id", sizeof("content-id"), (void**)&tmpval)) {
