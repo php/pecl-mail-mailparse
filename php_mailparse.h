@@ -76,8 +76,13 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue);
 PHP_FUNCTION(mailparse_mimemessage_remove);
 PHP_FUNCTION(mailparse_mimemessage_add_child);
 
+/* PHP 4.3.4  moved the mbfilter header around */
+#if PHP_MAJOR_VERSION == 4 && ((PHP_MINOR_VERSION < 3) || (PHP_MINOR_VERSION == 3 && PHP_RELEASE_VERSION < 4))
+# include "ext/mbstring/mbfilter.h"
+#else
+# include "ext/mbstring/libmbfl/mbfl/mbfilter.h"
+#endif
 
-#include "ext/mbstring/mbfilter.h"
 #include "php_mailparse_rfc822.h"
 #include "php_mailparse_mime.h"
 

@@ -34,8 +34,6 @@
 #error The mailparse extension requires the mbstring extension!
 #endif
 
-#include "ext/mbstring/mbfilter.h"
-
 #define MAILPARSE_DECODE_NONE		0		/* include headers and leave section untouched */
 #define MAILPARSE_DECODE_8BIT		1		/* decode body into 8-bit */
 #define MAILPARSE_DECODE_NOHEADERS	2		/* don't include the headers */
