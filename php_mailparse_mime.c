@@ -525,13 +525,13 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC)
 {
 	size_t len;
-		
+	
 	while(bufsize > 0) {
 		/* look for EOL */
 		for (len = 0; len < bufsize; len++)
 			if (buf[len] == '\n')
 				break;
-		if (len <= bufsize && buf[len] == '\n') {
+		if (len < bufsize && buf[len] == '\n') {
 			++len;
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);
 			php_mimepart_process_line(part TSRMLS_CC);
