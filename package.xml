@@ -26,6 +26,7 @@ Fix potential build problem.
 mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
 
 Improved uu-decoder to be more robust when dealing with strange line endings.
+Fix silly bug introduced by that fix...
 
 Fixed some memory leaks and problems when multiple uue attachments appear
 inline in a single mime part.
