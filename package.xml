@@ -71,6 +71,7 @@ inline in a single mime part.
    <file role="test" name="tests/testdata/qp.txt"/>
    <file role="test" name="tests/testdata/uue.exp"/>
    <file role="test" name="tests/testdata/uue.txt"/>
+   <file role="test" name="tests/testdata/oeuue"/>
    <file role="test" name="tests/001.phpt"/>
    <file role="test" name="tests/002.phpt"/>
    <file role="test" name="tests/003.phpt"/>
