@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<package packagerversion="1.4.0a1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <name>mailparse</name>
+ <channel>pear.php.net</channel>
+ <summary>Email message manipulation</summary>
+ <description>Mailparse is an extension for parsing and working with email messages.
+It can deal with rfc822 and rfc2045 (MIME) compliant messages.
+ </description>
+ <lead>
+  <name>Wez Furlong</name>
+  <user>wez</user>
+  <email>wez@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2005-02-28</date>
+ <time>01:10:17</time>
+ <version>
+  <release>2.1.1</release>
+  <api>2.1.1</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP</license>
+ <notes>Fix off-by-one that caused a crash when parsing broken messages.
+
+---
+Avoid possible unterminated loops when parsing malformed email addresses.
+Fix a crash bug when not using the OO API.
+  
+Add hack to provide &quot;binary&quot; transfer encoding, which is not supported
+by mbstring.
+
+Go &quot;stable&quot; at long last; the procedural interface is stable, but not the
+OO API.  (Despite the version number jump, no nee features have been added)
+
+---
+
+Fix build problem with PHP 4.3.4 - mbstring extension was rearranged.
+
+Fix potential build problem.
+
+mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
+
+Improved uu-decoder to be more robust when dealing with strange line endings.
+Fix silly bug introduced by that fix...
+
+Fixed some memory leaks and problems when multiple uue attachments appear
+inline in a single mime part.
+  
+ </notes>
+ <contents>
+  <dir name="/">
+   <dir name="tests">
+    <dir name="testdata">
+     <file name="mime.exp" role="test" />
+     <file name="mime.txt" role="test" />
+     <file name="oeuue" role="test" />
+     <file name="phpcvs1.exp" role="test" />
+     <file name="phpcvs1.txt" role="test" />
+     <file name="qp.exp" role="test" />
+     <file name="qp.txt" role="test" />
+     <file name="uue.exp" role="test" />
+     <file name="uue.txt" role="test" />
+    </dir> <!-- //tests/testdata -->
+    <file name="001.phpt" role="test" />
+    <file name="002.phpt" role="test" />
+    <file name="003.phpt" role="test" />
+    <file name="004.phpt" role="test" />
+    <file name="005.phpt" role="test" />
+    <file name="006.phpt" role="test" />
+    <file name="007.phpt" role="test" />
+    <file name="008.phpt" role="test" />
+    <file name="009.phpt" role="test" />
+    <file name="parse_test_messages.phpt" role="test" />
+   </dir> <!-- //tests -->
+   <file name="config.m4" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="mailparse.c" role="src" />
+   <file name="Makefile.frag" role="src" />
+   <file name="php_mailparse.h" role="src" />
+   <file name="php_mailparse_mime.c" role="src" />
+   <file name="php_mailparse_mime.h" role="src" />
+   <file name="php_mailparse_rfc822.c" role="src" />
+   <file name="php_mailparse_rfc822.h" role="src" />
+   <file name="php_mailparse_rfc822.re" role="src" />
+   <file name="README" role="doc" />
+   <file name="try.php" role="doc" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.3.0</min>
+    <max>6.0.0</max>
+   </php>
+   <pearinstaller>
+    <min>1.4.0a1</min>
+   </pearinstaller>
+   <extension>
+    <name>mbstring</name>
+   </extension>
+  </required>
+ </dependencies>
+ <providesextension>mailparse</providesextension>
+ <extsrcrelease />
+</package>

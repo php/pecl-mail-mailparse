@@ -31,7 +31,7 @@ Add hack to provide "binary" transfer encoding, which is not supported
 by mbstring.
 
 Go "stable" at long last; the procedural interface is stable, but not the
-OO API.  (Despite the version number jump, no need features have been added)
+OO API.  (Despite the version number jump, no nee features have been added)
 
 ---
 
