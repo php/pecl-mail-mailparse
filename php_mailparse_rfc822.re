@@ -415,7 +415,8 @@ PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs)
 		STR_FREE(addrs->addrs[i].name);
 		STR_FREE(addrs->addrs[i].address);
 	}
-	efree(addrs->addrs);
+	if (addrs->addrs)
+		efree(addrs->addrs);
 	efree(addrs);
 }
 void php_rfc822_print_addresses(php_rfc822_addresses_t *addrs)

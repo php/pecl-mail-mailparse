@@ -266,8 +266,8 @@ PHP_FUNCTION(mailparse_rfc822_parse_addresses)
 {
 	char *addresses;
 	long addresses_len;
-	php_rfc822_tokenized_t *toks;
-	php_rfc822_addresses_t *addrs;
+	php_rfc822_tokenized_t *toks = NULL;
+	php_rfc822_addresses_t *addrs = NULL;
 	int i;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &addresses, &addresses_len) == FAILURE) {
@@ -706,6 +706,7 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 	} else if (isfile) {
 		convert_to_string_ex(&filename);
 		srcstream = php_stream_open_wrapper(Z_STRVAL_P(filename), "rb", ENFORCE_SAFE_MODE|REPORT_ERRORS, NULL);
+		close_src_stream = 1;
 	} else {
 		/* filename is the actual data */
 		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(filename), Z_STRLEN_P(filename));
@@ -861,7 +862,7 @@ PHP_FUNCTION(mailparse_msg_get_part_data)
 		add_attr_header_to_zval("content-type", "content-", return_value, part->content_type TSRMLS_CC);
 
 	if (part->content_disposition)
-		add_sttr_header_to_zval("content-disposition", "disposition-", return_value, part->content_disposition TSRMLS_CC);
+		add_attr_header_to_zval("content-disposition", "disposition-", return_value, part->content_disposition TSRMLS_CC);
 
 	if (part->content_location)
 		add_assoc_string(return_value, "content-location", part->content_location, 1);

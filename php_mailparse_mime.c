@@ -558,14 +558,13 @@ PHPAPI php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char 
 	return find.foundpart;
 }
 
-static int filter_into_work_buffer(int c, void *dat)
+static int filter_into_work_buffer(int c, void *dat TSRMLS_DC)
 {
 	php_mimepart *part = dat;
 
 	smart_str_appendc(&part->parsedata.workbuf, c);
 
 	if (part->parsedata.workbuf.len >= 4096) {
-		TSRMLS_FETCH();
 		
 		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len TSRMLS_CC);
 		part->parsedata.workbuf.len = 0;
@@ -601,6 +600,7 @@ PHPAPI void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_
 					filter_into_work_buffer,
 					NULL,
 					part
+					TSRMLS_CC
 					);
 		}
 	}
@@ -610,10 +610,10 @@ PHPAPI void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_
 PHPAPI void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC)
 {
 	if (part->extract_filter) {
-		mbfl_convert_filter_flush(part->extract_filter);
-		mbfl_convert_filter_delete(part->extract_filter);
+		mbfl_convert_filter_flush(part->extract_filter TSRMLS_CC);
+		mbfl_convert_filter_delete(part->extract_filter TSRMLS_CC);
 	}
-	if (part->extract_func && part->parsedata.workbuf.len >= 4096) {
+	if (part->extract_func && part->parsedata.workbuf.len > 0) {
 		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len TSRMLS_CC);
 		part->parsedata.workbuf.len = 0;
 	}
@@ -626,7 +626,7 @@ PHPAPI int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t
 
 		if (part->extract_filter) {
 			for (i = 0; i < bufsize; i++) {
-				if (mbfl_convert_filter_feed(buf[i], part->extract_filter) < 0) {
+				if (mbfl_convert_filter_feed(buf[i], part->extract_filter TSRMLS_CC) < 0) {
 					zend_error(E_WARNING, "%s() - filter conversion failed. Input message is probably incorrectly encoded\n",
 							get_active_function_name(TSRMLS_C));
 					return -1;
