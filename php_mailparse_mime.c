@@ -53,7 +53,7 @@ static struct php_mimeheader_with_attributes * php_mimeheader_alloc(char *value)
 static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_rfc822_tokenized_t *toks)
 {
 	struct php_mimeheader_with_attributes *attr;
-	int i, first_semi, next_semi;
+	int i, first_semi, next_semi, comments_before_semi, netscape_bug = 0;
 	
 	attr = ecalloc(1, sizeof(struct php_mimeheader_with_attributes));
 
@@ -67,16 +67,28 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 		if (toks->tokens[first_semi].token == ';')
 			break;
 
-	attr->value = php_rfc822_recombine_tokens(toks, 2, first_semi - 2, PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
+	attr->value = php_rfc822_recombine_tokens(toks, 2, first_semi - 2,
+			PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 
 	if (first_semi < toks->ntokens)
 		first_semi++;
 
+	/* Netscape Bug: Messenger sometimes omits the semi when wrapping the
+     * the header.
+	 * That means we have to be even more clever than the spec says that
+	 * we need to :-/
+	 * */
+
 	while (first_semi < toks->ntokens) {
 		/* find the next ; */
-		for (next_semi = first_semi; next_semi < toks->ntokens; next_semi++)
+		comments_before_semi = 0;
+		for (next_semi = first_semi; next_semi < toks->ntokens; next_semi++) {
 			if (toks->tokens[next_semi].token == ';')
 				break;
+			if (toks->tokens[next_semi].token == '(')
+				comments_before_semi++;
+		}
+		
 	
 		i = first_semi;
 		if (i < next_semi)	{
@@ -92,19 +104,29 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 				/* Here, next_semi --> "name" and i --> "=", so skip "=" sign */
 				i++;
 
+				/* count those tokens; we expect "token = token" (3 tokens); if there are
+				 * more than that, then something is quite possibly wrong - Netscape Bug! */
+				if (toks->tokens[next_semi].token != ';'
+						&& next_semi <= toks->ntokens
+						&& next_semi - first_semi - comments_before_semi > 3) {
+					next_semi = i + 1;
+					netscape_bug = 1;
+				}
+
 				name = php_rfc822_recombine_tokens(toks, first_semi, 1,
 						PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 				value = php_rfc822_recombine_tokens(toks, i, next_semi - i,
-						PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
+						PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 				
 				add_assoc_string(attr->attributes, name, value, 0);
 				efree(name);
 			}
 		}
-		if (next_semi < toks->ntokens)
+		if (next_semi < toks->ntokens && !netscape_bug)
 			next_semi++;
 
 		first_semi = next_semi;
+		netscape_bug = 0;
 	}
 	return attr;
 }
