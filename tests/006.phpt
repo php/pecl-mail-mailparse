@@ -1,11 +1,14 @@
 --TEST--
 Check extract_part_file
 --SKIPIF--
-<?php if (!extension_loaded("mailparse")) print "skip"; ?>
+<?php 
+/* vim600: sw=4 ts=4 fdm=marker syn=php
+*/
+if (!extension_loaded("mailparse")) print "skip"; ?>
 --POST--
 --GET--
 --FILE--
-<?php 
+<?php
 $text = <<<EOD
 To: fred@bloggs.com
 Mime-Version: 1.0
