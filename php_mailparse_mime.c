@@ -358,7 +358,7 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 				return SUCCESS;
 			}
 
-			newpart = alloc_new_child_part(workpart, workpart->endpos + linelen, 1);
+			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
 			php_mimepart_update_positions(workpart, workpart->endpos + linelen, workpart->endpos + linelen, 1);
 			newpart->mime_version = estrdup(workpart->mime_version);
 			newpart->parsedata.in_header = 1;
