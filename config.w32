@@ -13,10 +13,7 @@ if (PHP_MAILPARSE != "no") {
 		MFO.WriteLine(configure_module_dirname + "\\php_mailparse_rfc822.c: " + configure_module_dirname + "\\php_mailparse_rfc822.re");
 		MFO.WriteLine("\t$(RE2C) -b " + configure_module_dirname + "\\php_mailparse_rfc822.re > " + configure_module_dirname + "\\php_mailparse_rfc822.c");
 
-		if (PHP_MBSTRING_SHARED) {
-			ADD_FLAG("LDFLAGS_MAILPARSE", "/libpath:$(BUILD_DIR)");
-			ADD_FLAG("LIBS_MAILPARSE", "php_mbstring.lib");
-		}
+		ADD_EXTENSION_DEP('mailparse', 'mbstring');
 	}
 }
 
