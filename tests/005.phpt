@@ -12,7 +12,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 $text = <<<EOD
 To: fred@bloggs.com
 
-blah blah blah From blah $ " & £ blah blah blah blah blah 
+blah blah blah From blah $ " & £ blah blah blah blah blah
 From the first of the month, things will be different!
 blah blah blah From blah
 Frome is a town in Somerset.

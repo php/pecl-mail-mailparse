@@ -71,7 +71,7 @@ struct _php_mimepart {
 };
 
 PHPAPI php_mimepart *php_mimepart_alloc(void);
-PHPAPI void php_mimepart_free(php_mimepart *part);
+PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC);
 PHPAPI int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
 
 PHPAPI void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC);

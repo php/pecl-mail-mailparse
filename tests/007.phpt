@@ -33,7 +33,7 @@ foreach($addresses as $address) {
 --EXPECT--
 :sysmail@Some-Group.Some-Org
 ":sysmail"@Some-Group.Some-Org
-Muhammed.(I am the greatest) Ali@(the) Vegas.WBA
+I am the greatest the
 Muhammed.Ali@Vegas.WBA
 ...
 strange

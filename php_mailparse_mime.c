@@ -111,7 +111,8 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 static void php_mimepart_free_child(php_mimepart **part)
 {
-	php_mimepart_free(*part);
+	TSRMLS_FETCH();
+	php_mimepart_free(*part TSRMLS_CC);
 }
 
 PHPAPI php_mimepart *php_mimepart_alloc(void)
@@ -133,7 +134,7 @@ PHPAPI php_mimepart *php_mimepart_alloc(void)
 }
 
 
-PHPAPI void php_mimepart_free(php_mimepart *part)
+PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 {
 	if (part->rsrc_id) {
 		long tmp = part->rsrc_id;

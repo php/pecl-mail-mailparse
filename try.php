@@ -6,7 +6,10 @@
  * You will be able to choose a part to view.
  * */
 
-$filename = "yourmessage.txt";
+if ($argv[1])
+	$filename = $argv[1];
+else
+	$filename = "yourmessage.txt";
 
 /* parse the message and return a mime message resource */
 $mime = mailparse_msg_parse_file($filename);
@@ -23,6 +26,7 @@ foreach($struct as $st)	{
 	$section = mailparse_msg_get_part($mime, $st);
 	/* get content-type, encoding and header information for that section */
 	$info = mailparse_msg_get_part_data($section);
+	print_r($info);
 	echo "\n";
 	echo "<td>" . $info["content-type"] . "</td>\n";
 	echo "<td>" . $info["content-disposition"] . "</td>\n";

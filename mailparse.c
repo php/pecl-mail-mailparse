@@ -84,7 +84,7 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 	php_mimepart *part = rsrc->ptr;
 
 	if (part->parent == NULL)
-		php_mimepart_free(part);
+		php_mimepart_free(part TSRMLS_CC);
 }
 	
 PHP_INI_BEGIN()
@@ -353,16 +353,14 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 /* {{{ proto boolean mailparse_stream_encode(resource sourcefp, resource destfp, string encoding)
    Streams data from source file pointer, apply encoding and write to destfp */
 
-static int mailparse_stream_output(int c, void *stream)
+static int mailparse_stream_output(int c, void *stream TSRMLS_DC)
 {
 	char buf = c;
-	TSRMLS_FETCH();
 
 	return php_stream_write((php_stream*)stream, &buf, 1);
 }
-static int mailparse_stream_flush(void *stream)
+static int mailparse_stream_flush(void *stream TSRMLS_DC)
 {
-	TSRMLS_FETCH();
 	return php_stream_flush((php_stream*)stream);
 }
 
@@ -416,6 +414,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 			mailparse_stream_output,
 			mailparse_stream_flush,
 			deststream
+			TSRMLS_CC
 			);
 
 	if (enc == mbfl_no_encoding_qprint) {
@@ -430,7 +429,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				len = strlen(buf);
 				
 				if (strncmp(buf, "From ", 5) == 0) {
-					mbfl_convert_filter_flush(conv);
+					mbfl_convert_filter_flush(conv TSRMLS_CC);
 					php_stream_write(deststream, "=46rom ", 7);
 					i = 5;
 				} else {
@@ -438,7 +437,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				}
 				
 				for (; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv);
+					mbfl_convert_filter_feed(buf[i], conv TSRMLS_CC);
 			}
 		}
 
@@ -449,13 +448,13 @@ PHP_FUNCTION(mailparse_stream_encode)
 			{
 				int i;
 				for (i=0; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv);
+					mbfl_convert_filter_feed(buf[i], conv TSRMLS_CC);
 			}
 		}
 	}
 
-	mbfl_convert_filter_flush(conv);
-	mbfl_convert_filter_delete(conv);
+	mbfl_convert_filter_flush(conv TSRMLS_CC);
+	mbfl_convert_filter_delete(conv TSRMLS_CC);
 	efree(buf);
 }
 /* }}} */
@@ -475,7 +474,7 @@ PHP_FUNCTION(mailparse_msg_parse)
 
 	mailparse_fetch_mimepart_resource(part, &arg);
 
-	php_mimepart_parse(part, data, data_len);
+	php_mimepart_parse(part, data, data_len TSRMLS_CC);
 }
 /* }}} */
 
@@ -507,7 +506,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 	while(!php_stream_eof(stream))	{
 		int got = php_stream_read(stream, filebuf, MAILPARSE_BUFSIZ);
 		if (got > 0)	{
-			php_mimepart_parse(part, filebuf, got);
+			php_mimepart_parse(part, filebuf, got TSRMLS_CC);
 		}
 	}
 	php_stream_close(stream);
@@ -883,9 +882,9 @@ PHP_FUNCTION(mailparse_msg_get_part_data)
 		php_rfc822_tokenize_free(toks);	
 	}
 	
-	add_header_reference_to_zval("content-description", return_value, headers);
-	add_header_reference_to_zval("content-language", return_value, headers);
-	add_header_reference_to_zval("content-md5", return_value, headers);
+	add_header_reference_to_zval("content-description", return_value, headers TSRMLS_CC);
+	add_header_reference_to_zval("content-language", return_value, headers TSRMLS_CC);
+	add_header_reference_to_zval("content-md5", return_value, headers TSRMLS_CC);
 		
 }
 /* }}} */
