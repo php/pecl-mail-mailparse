@@ -18,11 +18,14 @@
   <license>PHP</license>
   <release>
     <state>beta</state>
-    <version>0.9.1</version>
-    <date>2002-06-07</date>
+    <version>0.9.2</version>
+    <date>2003-04-19</date>
     <notes>
       Bugfixes:
        - mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
+	   - Improved uu-decoder to be more robust when dealing with strange line endings.
+	   - Fixed some memory leaks and problems when multiple uue attachments appear
+	     inline in a single mime part.
     </notes>
     <filelist>
       <file role="src" name="config.m4"/>
@@ -33,7 +36,6 @@
       <file role="src" name="php_mailparse_mime.h"/>
       <file role="src" name="php_mailparse_rfc822.c"/>
       <file role="src" name="php_mailparse_rfc822.h"/>
-      <file role="src" name="php_mailparse_rfc822.re"/>
       <file role="doc" name="CREDITS"/>
       <file role="doc" name="README"/>
       <file role="doc" name="try.php"/>

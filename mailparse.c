@@ -629,12 +629,14 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 			if (curr_pos > end) {
 				/* we somehow overran the message boundary; the message itself is
 				 * probably bogus, so lets cancel this item */
-				FREE_ZVAL(item);
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "uue attachment overran part boundary; this should not happen, message is probably malformed");
+				zval_ptr_dtor(&item);
 				break;
 			}
 			
 			add_assoc_long(item, "end-pos", curr_pos);
 			add_next_index_zval(return_value, item);
+			nparts++;
 
 		} else {
 			if (php_stream_tell(instream) >= end)
@@ -672,15 +674,22 @@ PHP_RSHUTDOWN_FUNCTION(mailparse)
 }
 
 #define UUDEC(c)	(char)(((c)-' ')&077)
-#define UU_NEXT(v)	v = php_stream_getc(instream); if (v == EOF) break; v = UUDEC(v)
+#define UU_NEXT(v)	if (line[x] == '\0' || isspace(line[x])) break; v = line[x++]; v = UUDEC(v)
 static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream TSRMLS_DC)
 {
-	int A, B, C, D, n, nl;
+	int x, A, B, C, D, n;
 	size_t file_size = 0;
+	char line[80];
+
 
 	if (outstream) {
 		/* write to outstream */
 		while(!php_stream_eof(instream))	{
+			if (!php_stream_gets(instream, line, sizeof(line))) {
+				break;
+			}
+			x = 0;
+	
 			UU_NEXT(n);
 
 			while(n != 0)	{
@@ -704,41 +713,40 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 					php_stream_putc(outstream, (C << 6) | D);
 				}
 			}
-			/* skip newline */
-			nl = php_stream_getc(instream);
-			if (nl == '\r')
-				php_stream_getc(instream);
 		}
 	} else {
 		/* skip (and measure) the data, but discard it.
 		 * This is separated from the version above to speed it up by a few cycles */
 		
 		while(!php_stream_eof(instream))	{
-			UU_NEXT(n);
 
-			while(n != 0)	{
+			if (!php_stream_gets(instream, line, sizeof(line))) {
+				break;
+			}
+			x = 0;
+			
+			UU_NEXT(n);
+			
+			while(line[x] && n != 0) {
 				UU_NEXT(A);
 				UU_NEXT(B);
 				UU_NEXT(C);
 				UU_NEXT(D);
-
-				if (n-- > 0) 
+			
+				if (n-- > 0) {
 					file_size++;
+				}
 
-				if (n-- > 0) 
+				if (n-- > 0) {
 					file_size++;
+				}
 
-				if (n-- > 0) 
+				if (n-- > 0) { 
 					file_size++;
+				}
 			}
-			/* skip newline */
-			nl = php_stream_getc(instream);
-			if (nl == '\r')
-				php_stream_getc(instream);
-
 		}
 	}
-
 	return file_size;
 }
 
@@ -748,7 +756,6 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 PHP_FUNCTION(mailparse_uudecode_all)
 {
 	zval *file, *item;
-	int type;
 	char *buffer = NULL;
 	char *outpath = NULL;
 	int nparts = 0;

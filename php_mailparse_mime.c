@@ -192,7 +192,9 @@ PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 	smart_str_free(&part->parsedata.headerbuf);
 	
 	FREE_ZVAL(part->source.zval);
-	FREE_ZVAL(part->headerhash);
+
+	zval_ptr_dtor(&part->headerhash);
+
 	efree(part);
 }
 

@@ -4,10 +4,10 @@ Parse messages in testdata dir
 <?php 
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
-if (!extension_loaded("mailparse")) print "skip"; ?>
+if (!extension_loaded("mailparse") || !extension_loaded("zlib")) print "skip"; ?>
 --FILE--
 <?php
-error_reporting(~E_NOTICE);
+error_reporting(E_ALL ^ E_NOTICE);
 
 $define_expect = isset($argv[1]) && $argv[1] == "define_expect";
 $force_test = isset($argv[1]) && !$define_expect ? $argv[1] : null;
@@ -221,7 +221,7 @@ foreach ($messages as $name => $msgdata) {
 	ob_end_clean();
 }
 
-echo "All messages parsed OK!";
+echo "All messages parsed OK!\n";
 ?>
 --EXPECT--
 All messages parsed OK!
