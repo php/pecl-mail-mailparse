@@ -4,11 +4,13 @@ Check quoted-printable encoding generates S/MIME safe content
 <?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
+if (!extension_loaded("mailparse")) @dl("mailparse.so");
 if (!extension_loaded("mailparse")) print "skip"; ?>
 --POST--
 --GET--
 --FILE--
 <?php 
+if (!extension_loaded("mailparse")) @dl("mailparse.so");
 $text = <<<EOD
 To: fred@bloggs.com
 

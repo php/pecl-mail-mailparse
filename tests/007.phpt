@@ -4,11 +4,13 @@ Check RFC822 Conformance
 <?php 
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
+if (!extension_loaded("mailparse")) @dl("mailparse.so");
 if (!extension_loaded("mailparse")) print "skip"; ?>
 --POST--
 --GET--
 --FILE--
 <?php
+if (!extension_loaded("mailparse")) @dl("mailparse.so");
 $addresses = array(
 	"\":sysmail\"@ Some-Group. Some-Org, Muhammed.(I am the greatest) Ali @(the)Vegas.WBA",
 	"\"strange\":\":sysmail\"@ Some-Group. Some-Org, Muhammed.(I am the greatest) Ali @(the)Vegas.WBA;"
