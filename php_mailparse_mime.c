@@ -499,7 +499,7 @@ PHPAPI int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsiz
 		for (len = 0; len < bufsize; len++)
 			if (buf[len] == '\n')
 				break;
-		if (len < bufsize && buf[len] == '\n') {
+		if (len <= bufsize && buf[len] == '\n') {
 			++len;
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);
 			if (FAILURE == php_mimepart_process_line(part TSRMLS_CC))

@@ -38,26 +38,26 @@ $result = mailparse_msg_extract_part_file($mime, $fp, null);
 echo "-->\n";
 echo $result;
 
-echo "Extract to open file\n";
+echo "\nExtract to open file\n";
 $fpdest = tmpfile();
 mailparse_msg_extract_part_file($mime, $fp, $fpdest);
-echo "rewinding\n";
+echo "\nrewinding\n";
 rewind($fpdest);
 fpassthru($fpdest);
 
-echo "Extract via user function\n";
+echo "\nExtract via user function\n";
 $cbdata = "";
-function callback($data) {
+function callbackfunc($data) {
 	$GLOBALS["cbdata"] .= $data;
 }
-mailparse_msg_extract_part_file($mime, $fp, "callback");
+mailparse_msg_extract_part_file($mime, $fp, "callbackfunc");
 echo "callback data is:\n";
-echo $cbdata;
+var_dump($cbdata);
 
-echo "Extract whole part to output\n";
+echo "\nExtract whole part to output\n";
 mailparse_msg_extract_whole_part_file($mime, $fp);
 
-echo "Extract part from string to output\n";
+echo "\nExtract part from string to output\n";
 mailparse_msg_extract_part($mime, $text);
 fclose($fpdest);
 fclose($fp);
@@ -71,14 +71,19 @@ Extract and return as string
 -->
 hello, this is some text hello.
 blah blah blah.
+
 Extract to open file
+
 rewinding
 hello, this is some text hello.
 blah blah blah.
+
 Extract via user function
 callback data is:
-hello, this is some text hello.
+string(48) "hello, this is some text hello.
 blah blah blah.
+"
+
 Extract whole part to output
 To: fred@bloggs.com
 Mime-Version: 1.0
@@ -87,7 +92,7 @@ Subject: A simple MIME message
 
 hello, this is some text hello.
 blah blah blah.
+
 Extract part from string to output
 hello, this is some text hello.
 blah blah blah.
-
