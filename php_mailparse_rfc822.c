@@ -563,7 +563,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 		goto address;
 	}
 	/* still dealing with a group. If we find a ";", that's the end of the group */
-	if (start_tok < toks->ntokens && toks->tokens[start_tok].token == ';') {
+	if ((start_tok < toks->ntokens && toks->tokens[start_tok].token == ';') || start_tok == toks->ntokens) {
 		/* end of group */
 
 		if (addrs) {
