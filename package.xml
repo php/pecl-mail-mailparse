@@ -1,73 +1,82 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "../../../php4/pear/package.dtd">
+<!DOCTYPE package SYSTEM "../pear/package.dtd">
 <package>
-  <name>mailparse</name>
-  <summary>Email message manipulation</summary>
-  <maintainers>
-    <maintainer>
-      <user>wez</user>
-      <name>Wez Furlong</name>
-      <email>wez@php.net</email>
-      <role>lead</role>
-    </maintainer>
-  </maintainers>
-  <description>
-    Mailparse is an extension for parsing and working with email messages.
-    It can deal with rfc822 and rfc2045 (MIME) compliant messages.
-  </description>
-  <license>PHP</license>
-  <release>
-    <state>beta</state>
-    <version>0.9.2</version>
-    <date>2003-06-19</date>
-    <notes>
-      Bugfixes:
-       - mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
-	   - Improved uu-decoder to be more robust when dealing with strange line endings.
-	   - Fixed some memory leaks and problems when multiple uue attachments appear
-	     inline in a single mime part.
-    </notes>
-    <filelist>
-      <file role="src" name="config.m4"/>
-      <file role="src" name="mailparse.c"/>
-      <file role="src" name="Makefile.frag"/>
-      <file role="src" name="php_mailparse.h"/>
-      <file role="src" name="php_mailparse_mime.c"/>
-      <file role="src" name="php_mailparse_mime.h"/>
-      <file role="src" name="php_mailparse_rfc822.c"/>
-      <file role="src" name="php_mailparse_rfc822.h"/>
-      <file role="doc" name="CREDITS"/>
-      <file role="doc" name="README"/>
-      <file role="doc" name="try.php"/>
-      <file role="test" name="tests/testdata/mime.exp"/>
-      <file role="test" name="tests/testdata/mime.txt"/>
+ <name>mailparse</name>
+ <summary>Email message manipulation</summary>
+ <maintainers>
+  <maintainer>
+   <user>wez</user>
+   <name>Wez Furlong</name>
+   <email>wez@php.net</email>
+   <role>lead</role>
+  </maintainer>
+ </maintainers>
+ <description>
+  Mailparse is an extension for parsing and working with email messages.
+  It can deal with rfc822 and rfc2045 (MIME) compliant messages.
+ </description>
+ <license>PHP</license>
+ <release>
+  <state>beta</state>
+  <version>0.9.3</version>
+  <date>2003-06-24</date>
+  <notes>
+Fix potential build problem.
 
-    <!-- 
-      Omit this test from the package; it is very large.
+mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
 
-      <file role="test" name="tests/testdata/multimedia-demo.exp"/>
-      <file role="test" name="tests/testdata/multimedia-demo.txt.gz"/>
-	  
-    -->
-    
-      <file role="test" name="tests/testdata/phpcvs1.exp"/>
-      <file role="test" name="tests/testdata/phpcvs1.txt"/>
-      <file role="test" name="tests/testdata/qp.exp"/>
-      <file role="test" name="tests/testdata/qp.txt"/>
-      <file role="test" name="tests/testdata/uue.exp"/>
-      <file role="test" name="tests/testdata/uue.txt"/>
-      <file role="test" name="tests/001.phpt"/>
-      <file role="test" name="tests/002.phpt"/>
-      <file role="test" name="tests/003.phpt"/>
-      <file role="test" name="tests/004.phpt"/>
-      <file role="test" name="tests/005.phpt"/>
-      <file role="test" name="tests/006.phpt"/>
-      <file role="test" name="tests/007.phpt"/>
-      <file role="test" name="tests/008.phpt"/>
-      <file role="test" name="tests/parse_test_messages.phpt"/>
-    </filelist>
-    <deps>
-      <dep type="ext" rel="has">mbstring</dep>
-    </deps>
-  </release>
+Improved uu-decoder to be more robust when dealing with strange line endings.
+
+Fixed some memory leaks and problems when multiple uue attachments appear
+inline in a single mime part.
+  </notes>
+  <filelist>
+   <file role="src" name="config.m4"/>
+   <file role="src" name="mailparse.c"/>
+   <file role="src" name="Makefile.frag"/>
+   <file role="src" name="php_mailparse.h"/>
+   <file role="src" name="php_mailparse_mime.c"/>
+   <file role="src" name="php_mailparse_mime.h"/>
+   <file role="src" name="php_mailparse_rfc822.re"/>
+   <file role="src" name="php_mailparse_rfc822.c"/>
+   <file role="src" name="php_mailparse_rfc822.h"/>
+   <file role="doc" name="CREDITS"/>
+   <file role="doc" name="README"/>
+   <file role="doc" name="try.php"/>
+   <file role="test" name="tests/testdata/mime.exp"/>
+   <file role="test" name="tests/testdata/mime.txt"/>
+
+ <!-- 
+   Omit this test from the package; it is very large.
+
+   <file role="test" name="tests/testdata/multimedia-demo.exp"/>
+   <file role="test" name="tests/testdata/multimedia-demo.txt.gz"/>
+
+ -->
+ 
+   <file role="test" name="tests/testdata/phpcvs1.exp"/>
+   <file role="test" name="tests/testdata/phpcvs1.txt"/>
+   <file role="test" name="tests/testdata/qp.exp"/>
+   <file role="test" name="tests/testdata/qp.txt"/>
+   <file role="test" name="tests/testdata/uue.exp"/>
+   <file role="test" name="tests/testdata/uue.txt"/>
+   <file role="test" name="tests/001.phpt"/>
+   <file role="test" name="tests/002.phpt"/>
+   <file role="test" name="tests/003.phpt"/>
+   <file role="test" name="tests/004.phpt"/>
+   <file role="test" name="tests/005.phpt"/>
+   <file role="test" name="tests/006.phpt"/>
+   <file role="test" name="tests/007.phpt"/>
+   <file role="test" name="tests/008.phpt"/>
+   <file role="test" name="tests/009.phpt"/>
+   <file role="test" name="tests/parse_test_messages.phpt"/>
+  </filelist>
+  <deps>
+   <dep type="ext" rel="has">mbstring</dep>
+   <dep type="php" rel="ge">4.3.0</dep>
+  </deps>
+ </release>
 </package>
+<!--
+vim:et:ts=1:sw=1
+-->
