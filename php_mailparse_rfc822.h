@@ -48,11 +48,11 @@ struct _php_rfc822_addresses {
 	int naddrs;
 };
 
-PHPAPI php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC);
-PHPAPI void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks);
+PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC);
+PHP_MAILPARSE_API void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks);
 
-PHPAPI php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokenized_t *toks);
-PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs);
+PHP_MAILPARSE_API php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokenized_t *toks);
+PHP_MAILPARSE_API void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs);
 
 #define PHP_RFC822_RECOMBINE_IGNORE_COMMENTS	1
 #define PHP_RFC822_RECOMBINE_STRTOLOWER			2
@@ -60,7 +60,7 @@ PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs);
 #define PHP_RFC822_RECOMBINE_SPACE_ATOMS		8
 #define PHP_RFC822_RECOMBINE_INCLUDE_QUOTES		16
 #define PHP_RFC822_RECOMBINE_COMMENTS_ONLY		32
-PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags);
+PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags);
 
 void php_rfc822_print_tokens(php_rfc822_tokenized_t *toks);
 

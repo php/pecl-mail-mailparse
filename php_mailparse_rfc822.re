@@ -18,7 +18,9 @@
 /* $Id$ */
 
 #include "php.h"
+#include "php_mailparse.h"
 #include "php_mailparse_rfc822.h"
+#include "ext/standard/php_string.h"
 #include "ext/standard/php_smart_str.h"
 /*!re2c
 CHAR = [\000-\177];
@@ -65,7 +67,7 @@ other = any\allspecials;
    counted, allowing the caller to allocate enough room */
 static void tokenize(const char *header, php_rfc822_token_t *tokens, int *ntokens, int report_errors TSRMLS_DC)
 {
-	register const char *p, *q, *r, *start;
+	register const char *p, *q, *start;
 	int in_bracket = 0;
 
 /* NB: parser assumes that the header has two bytes of NUL terminator */
@@ -187,10 +189,12 @@ stop:
 #if DEBUG_RFC822_SCANNER
 	printf("STOPing parser ntokens=%d YYCURSOR=%p YYLIMIT=%p start=%p cursor=[%d] %s start=%s\n", *ntokens,
 		YYCURSOR, YYLIMIT, start, *YYCURSOR, YYCURSOR, start);
+#else
+	;
 #endif
 }
 
-PHPAPI php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC)
+PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC)
 {
 	php_rfc822_tokenized_t *toks = ecalloc(1, sizeof(php_rfc822_tokenized_t));
 	int len = strlen(header);
@@ -206,7 +210,7 @@ PHPAPI php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header,
 	return toks;
 }
 
-PHPAPI void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks)
+PHP_MAILPARSE_API void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks)
 {
 	if (toks->tokens)
 		efree(toks->tokens);
@@ -214,7 +218,7 @@ PHPAPI void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks)
 	efree(toks);
 }
 
-PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags)
+PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags)
 {
 	char *ret = NULL;
 	int i, upper, last_was_atom = 0, this_is_atom = 0, tok_equiv;
@@ -462,7 +466,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 	goto mailbox;
 }
 
-PHPAPI php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokenized_t *toks)
+PHP_MAILPARSE_API php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokenized_t *toks)
 {
 	php_rfc822_addresses_t *addrs = ecalloc(1, sizeof(php_rfc822_addresses_t));
 
@@ -473,7 +477,7 @@ PHPAPI php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokeni
 	return addrs;
 }
 
-PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs)
+PHP_MAILPARSE_API void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs)
 {
 	int i;
 	for (i = 0; i < addrs->naddrs; i++) {

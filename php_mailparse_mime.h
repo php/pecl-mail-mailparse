@@ -29,7 +29,7 @@ struct php_mimeheader_with_attributes {
 	zval *attributes;
 };
 
-PHPAPI char *php_mimepart_attribute_get(struct php_mimeheader_with_attributes *attr, char *attrname);
+PHP_MAILPARSE_API char *php_mimepart_attribute_get(struct php_mimeheader_with_attributes *attr, char *attrname);
 
 typedef int (*php_mimepart_extract_func_t)(php_mimepart *part, void *context, const char *buf, size_t n TSRMLS_DC);
 
@@ -81,14 +81,14 @@ struct _php_mimepart {
 
 };
 
-PHPAPI php_mimepart *php_mimepart_alloc(void);
-PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC);
-PHPAPI int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
-PHPAPI void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *end, off_t *start_body, int *nlines, int *nbodylines);
+PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(void);
+PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC);
+PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *end, off_t *start_body, int *nlines, int *nbodylines);
 
-PHPAPI void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC);
-PHPAPI void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC);
-PHPAPI int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC);
+PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
 
 #define php_mimepart_to_zval(zval, part)	ZVAL_RESOURCE(zval, part->rsrc_id)
 
@@ -100,13 +100,13 @@ struct _php_mimepart_enumerator {
 typedef int (*mimepart_enumerator_func)(php_mimepart *part, php_mimepart_enumerator *enumerator, void *ptr TSRMLS_DC);
 typedef int (*mimepart_child_enumerator_func)(php_mimepart *parentpart, php_mimepart *child, int childindex, void *ptr TSRMLS_DC);
 
-PHPAPI void php_mimepart_enum_parts(php_mimepart *part, mimepart_enumerator_func callback, void *ptr TSRMLS_DC);
-PHPAPI void php_mimepart_enum_child_parts(php_mimepart *part, mimepart_child_enumerator_func callback, void *ptr TSRMLS_DC);
-PHPAPI php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name TSRMLS_DC);
-PHPAPI php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_enum_parts(php_mimepart *part, mimepart_enumerator_func callback, void *ptr TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepart_child_enumerator_func callback, void *ptr TSRMLS_DC);
+PHP_MAILPARSE_API php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name TSRMLS_DC);
+PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position TSRMLS_DC);
 
-PHPAPI void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS_DC);
-PHPAPI void php_mimepart_add_child(php_mimepart *part, php_mimepart *child TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS_DC);
+PHP_MAILPARSE_API void php_mimepart_add_child(php_mimepart *part, php_mimepart *child TSRMLS_DC);
 
 #endif
 

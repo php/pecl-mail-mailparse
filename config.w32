@@ -1,0 +1,22 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("mailparse", "MAILPARSE support", "no");
+
+if (PHP_MAILPARSE != "no") {
+
+	if (PHP_MBSTRING == "no") {
+		WARNING("mailparse requires mbstring");
+	} else {
+		EXTENSION('mailparse', 'mailparse.c php_mailparse_mime.c php_mailparse_rfc822.c');
+		AC_DEFINE('HAVE_MAILPARSE', 1);
+		MFO.WriteLine(configure_module_dirname + "\\php_mailparse_rfc822.c: " + configure_module_dirname + "\\php_mailparse_rfc822.re");
+		MFO.WriteLine("\t$(RE2C) -b " + configure_module_dirname + "\\php_mailparse_rfc822.re > " + configure_module_dirname + "\\php_mailparse_rfc822.c");
+
+		if (PHP_MBSTRING_SHARED) {
+			ADD_FLAG("LDFLAGS_MAILPARSE", "/libpath:$(BUILD_DIR)");
+			ADD_FLAG("LIBS_MAILPARSE", "php_mbstring.lib");
+		}
+	}
+}
+

@@ -62,7 +62,7 @@ PHP_FUNCTION(mailparse_uudecode_all);
 
 PHP_FUNCTION(mailparse_test);
 
-PHPAPI int php_mailparse_le_mime_part(void);
+PHP_MAILPARSE_API int php_mailparse_le_mime_part(void);
 
 /* mimemessage object */
 PHP_FUNCTION(mailparse_mimemessage);
@@ -79,8 +79,16 @@ PHP_FUNCTION(mailparse_mimemessage_add_child);
 /* PHP 4.3.4  moved the mbfilter header around */
 #if PHP_MAJOR_VERSION == 4 && ((PHP_MINOR_VERSION < 3) || (PHP_MINOR_VERSION == 3 && PHP_RELEASE_VERSION < 4))
 # include "ext/mbstring/mbfilter.h"
+# define MAILPARSE_MBSTRING_TSRMLS_CC	TSRMLS_CC
+# define MAILPARSE_MBSTRING_TSRMLS_DC	TSRMLS_DC
+# define MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD()	/* sanity */
 #else
 # include "ext/mbstring/libmbfl/mbfl/mbfilter.h"
+/* ugh, even worse, they changed the signature of the API and made it
+ * really slow for threaded PHP builds */
+# define MAILPARSE_MBSTRING_TSRMLS_CC	/* pain */
+# define MAILPARSE_MBSTRING_TSRMLS_DC	/* pain */
+# define MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD()	TSRMLS_FETCH()
 #endif
 
 #include "php_mailparse_rfc822.h"

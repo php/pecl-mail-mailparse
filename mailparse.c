@@ -131,7 +131,7 @@ PHP_INI_END()
 
 #define mailparse_fetch_mimepart_resource(rfcvar, zvalarg)	ZEND_FETCH_RESOURCE(rfcvar, php_mimepart *, zvalarg, -1, mailparse_msg_name, le_mime_part)
 
-PHPAPI int php_mailparse_le_mime_part(void)
+PHP_MAILPARSE_API int php_mailparse_le_mime_part(void)
 {
 	return le_mime_part;
 }
@@ -342,7 +342,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 	part = mimemsg_get_object(getThis() TSRMLS_CC);
 
 	if (part && part->parent) {
-		mailparse_mimemessage_export(part->parent, return_value);
+		mailparse_mimemessage_export(part->parent, return_value TSRMLS_CC);
 	} else {
 		RETURN_NULL();
 	}
@@ -371,7 +371,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_child)
 		RETURN_NULL();
 	}
 
-	mailparse_mimemessage_export(foundpart, return_value);
+	mailparse_mimemessage_export(foundpart, return_value TSRMLS_CC);
 }
 
 static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETERS)
@@ -923,14 +923,16 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 /* {{{ proto boolean mailparse_stream_encode(resource sourcefp, resource destfp, string encoding)
    Streams data from source file pointer, apply encoding and write to destfp */
 
-static int mailparse_stream_output(int c, void *stream TSRMLS_DC)
+static int mailparse_stream_output(int c, void *stream MAILPARSE_MBSTRING_TSRMLS_DC)
 {
 	char buf = c;
+	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 
 	return php_stream_write((php_stream*)stream, &buf, 1);
 }
-static int mailparse_stream_flush(void *stream TSRMLS_DC)
+static int mailparse_stream_flush(void *stream MAILPARSE_MBSTRING_TSRMLS_DC)
 {
+	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 	return php_stream_flush((php_stream*)stream);
 }
 
@@ -976,7 +978,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 			mailparse_stream_output,
 			mailparse_stream_flush,
 			deststream
-			TSRMLS_CC
+			MAILPARSE_MBSTRING_TSRMLS_CC
 			);
 
 	if (enc == mbfl_no_encoding_qprint) {
@@ -986,12 +988,12 @@ PHP_FUNCTION(mailparse_stream_encode)
 		 * in front of it and invalidate the content/signature */
 		while(!php_stream_eof(srcstream))	{
 			if (NULL != php_stream_gets(srcstream, buf, bufsize)) {
-				int i;
+				size_t i;
 				
 				len = strlen(buf);
 				
 				if (strncmp(buf, "From ", 5) == 0) {
-					mbfl_convert_filter_flush(conv TSRMLS_CC);
+					mbfl_convert_filter_flush(conv MAILPARSE_MBSTRING_TSRMLS_CC);
 					php_stream_write(deststream, "=46rom ", 7);
 					i = 5;
 				} else {
@@ -999,7 +1001,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				}
 				
 				for (; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv TSRMLS_CC);
+					mbfl_convert_filter_feed(buf[i], conv MAILPARSE_MBSTRING_TSRMLS_CC);
 			}
 		}
 
@@ -1008,15 +1010,15 @@ PHP_FUNCTION(mailparse_stream_encode)
 			len = php_stream_read(srcstream, buf, bufsize);
 			if (len > 0)
 			{
-				int i;
+				size_t i;
 				for (i=0; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv TSRMLS_CC);
+					mbfl_convert_filter_feed(buf[i], conv MAILPARSE_MBSTRING_TSRMLS_CC);
 			}
 		}
 	}
 
-	mbfl_convert_filter_flush(conv TSRMLS_CC);
-	mbfl_convert_filter_delete(conv TSRMLS_CC);
+	mbfl_convert_filter_flush(conv MAILPARSE_MBSTRING_TSRMLS_CC);
+	mbfl_convert_filter_delete(conv MAILPARSE_MBSTRING_TSRMLS_CC);
 	efree(buf);
 }
 /* }}} */
