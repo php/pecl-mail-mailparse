@@ -10,8 +10,10 @@ if (PHP_MAILPARSE != "no") {
 	} else {
 		EXTENSION('mailparse', 'mailparse.c php_mailparse_mime.c php_mailparse_rfc822.c');
 		AC_DEFINE('HAVE_MAILPARSE', 1);
-		MFO.WriteLine(configure_module_dirname + "\\php_mailparse_rfc822.c: " + configure_module_dirname + "\\php_mailparse_rfc822.re");
-		MFO.WriteLine("\t$(RE2C) -b " + configure_module_dirname + "\\php_mailparse_rfc822.re > " + configure_module_dirname + "\\php_mailparse_rfc822.c");
+
+		
+//		MFO.WriteLine(configure_module_dirname + "\\php_mailparse_rfc822.c: " + configure_module_dirname + "\\php_mailparse_rfc822.re");
+//		MFO.WriteLine("\t$(RE2C) -b " + configure_module_dirname + "\\php_mailparse_rfc822.re > " + configure_module_dirname + "\\php_mailparse_rfc822.c");
 
 		ADD_EXTENSION_DEP('mailparse', 'mbstring');
 	}
