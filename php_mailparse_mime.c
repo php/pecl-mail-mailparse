@@ -413,6 +413,7 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 				if (part->content_disposition)
 					php_mimeheader_free(part->content_disposition);
 				workpart->boundary = NULL;
+				workpart->content_type = php_mimeheader_alloc("text/plain");
 			}
 
 			/* if there is no content type, default to text/plain, but use multipart/digest when in
