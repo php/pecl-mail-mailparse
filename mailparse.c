@@ -119,8 +119,10 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 {
 	php_mimepart *part = rsrc->ptr;
 
-	if (part->parent == NULL)
+	if (part->parent == NULL && part->rsrc_id) {
+		part->rsrc_id = 0;
 		php_mimepart_free(part TSRMLS_CC);
+	}
 }
 	
 PHP_INI_BEGIN()
@@ -1091,7 +1093,7 @@ PHP_FUNCTION(mailparse_msg_free)
 	}
 
 	mailparse_fetch_mimepart_resource(part, &arg);
-	zend_list_delete(Z_LVAL_P(arg));
+	/* zend_list_delete(Z_LVAL_P(arg)); */
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1510,7 +1512,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	foundpart = php_mimepart_find_by_name(part, mimesection TSRMLS_CC);
 
 	if (!foundpart)	{
-		php_error(E_WARNING, "%s(): cannot find section %s in message", get_active_function_name(TSRMLS_C), mimesection);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "cannot find section %s in message", mimesection);
 		RETURN_FALSE;
 	}
 	zend_list_addref(foundpart->rsrc_id);

@@ -183,17 +183,16 @@ PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 		php_mimeheader_free(part->content_type);
 		part->content_type = NULL;
 	}
-	if (part->content_disposition)
+	if (part->content_disposition) {
 		php_mimeheader_free(part->content_disposition);
+		part->content_disposition = NULL;
+	}
 	
 	smart_str_free(&part->parsedata.workbuf);
 	smart_str_free(&part->parsedata.headerbuf);
 	
-	zval_dtor(part->headerhash);
-	zval_dtor(part->source.zval);
-	
-	efree(part->source.zval);
-	efree(part->headerhash);
+	FREE_ZVAL(part->source.zval);
+	FREE_ZVAL(part->headerhash);
 	efree(part);
 }
 

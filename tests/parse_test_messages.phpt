@@ -10,7 +10,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 error_reporting(~E_NOTICE);
 
 $define_expect = isset($argv[1]) && $argv[1] == "define_expect";
-
+$force_test = isset($argv[1]) && !$define_expect ? $argv[1] : null;
 $testdir = dirname(__FILE__) . "/testdata";
 
 $dir = opendir($testdir) or die("unable to open test dir!");
@@ -33,9 +33,8 @@ while (($f = readdir($dir)) !== false) {
 	}
 }
 
-if (false) {
-	$messages = array("multimedia-demo" => array("testfile" => "multimedia-demo.txt.gz",
-		"expectfile" => "multimedia-demo.exp"));
+if ($force_test !== null) {
+	$messages = array($force_test => $messages[$force_test]);
 }
 
 if (function_exists("version_compare") && version_compare(phpversion(), "4.3", "ge")) {
@@ -161,15 +160,21 @@ foreach ($messages as $name => $msgdata) {
 	$expectname = $testdir . "/" . $msgdata["expectfile"];
 
 	$use_wrapper = substr($testname, -3) == ".gz" ? $wrapper : "";
+	$use_wrapper = $wrapper;
 	$fp = fopen("$use_wrapper$testname", "rb") or die("failed to open the file!");
 
 	$mime = mailparse_msg_create();
+	$size = 0;
 	while (!feof($fp)) {
 		$data = fread($fp, 1024);
-		if ($data !== false)
+		//var_dump($data);
+		if ($data !== false) {
 			mailparse_msg_parse($mime, $data);
+			$size += strlen($data);
+		}
 	}
 	fclose($fp);
+	//var_dump($size);
 
 	$struct = mailparse_msg_get_structure($mime);
 
@@ -180,6 +185,8 @@ foreach ($messages as $name => $msgdata) {
 		$indent = str_repeat("  ", $depth * 2);
 		$subpart = mailparse_msg_get_part($mime, $partname);
 		if (!$subpart) {
+			var_dump($partname);
+			echo "\n";
 			var_dump($struct);
 			break;
 		}
