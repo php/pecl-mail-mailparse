@@ -1,13 +1,101 @@
 mailparse library for PHP 4
 ===========================
+$Id$
 
 Mailparse is an extension for parsing and working with email messages.
 It can deal with rfc822 and rfc2045 (MIME) compliant messages.
+Mailparse is stream based, which means that it does not keep in-memory
+copies of the files it processes - so it is very resource efficient
+when dealing with large messages.
 
-Example for PHP:
+OO Syntax:
 =============
 <?php
 $file = "/path/to/rfc822/compliant/message";
+// parse the message in $file.
+// The file MUST remain in existence until you are finished using
+// the object, as mailparse does not cache the file in memory.
+// You can also use two alternative syntaxes:
+// 
+// Read the message from a variable:
+//   $msg =& new MimeMessage("var", $message);
+//
+// Read the message from a stream (from fopen).
+// The stream MUST be seekable, or things will not work correctly.
+// Also, you MUST NOT fclose the stream until you have finished
+// using the message object (or any child objects it returns).
+//   $msg =& new MimeMessage("stream", $fp);
+//
+$msg =& new MimeMessage("file", $file);
+
+// Process the message.
+display_part_info("message", $msg);
+
+// Little function to display things
+function display_part_info($caption, &$msgpart)
+{
+	echo "Message part: $caption\n";
+	
+	// The data member corresponds to the information
+	// available from the mailparse_msg_get_part_data function.
+	// You can access a particular header like this:
+	//   $subject = $msgpart->data["headers"]["subject"];
+	var_dump($msgpart->data);
+
+	echo "The headers are:\n";
+	// Display the headers (in raw format) to the browser output.
+	// You can also use:
+	//   $msgpart->extract_headers(MAILPARSE_EXTRACT_STREAM, $fp);
+	//     to write the headers to the supplied stream at it's current
+	//     position.
+	//
+	//   $var = $msgpart->extract_headers(MAILPARSE_EXTRACT_RETURN);
+	//     to return the headers in a variable.
+	$msgpart->extract_headers(MAILPARSE_EXTRACT_OUTPUT);
+
+	// Display the body if this part is intended to be displayed:
+	$n = $msgpart->get_child_count();
+
+	if ($n == 0) {
+		// Return the body as a string (the MAILPARSE_EXTRACT parameter
+		// acts just as it does in extract_headers method.
+		$body = $msgpart->extract_body(MAILPARSE_EXTRACT_RETURN);
+		echo htmlentities($body);
+		
+		// This function tells you about any uuencoded attachments
+		// that are present in this part.
+		$uue = $msgpart->enum_uue();
+		if ($uue !== false) {
+			var_dump($uue);
+			foreach($uue as $index => $data) {
+				// $data => array("filename" => "original filename",
+				//                "filesize" => "size of extracted file",
+				//               );
+
+				printf("UUE[%d] %s (%d bytes)\n",
+					$index, $data["filename"],
+					$data["filesize"]);
+
+				// Display the extracted part to the output.
+				$msgpart->extract_uue($index, MAILPARSE_EXTRACT_OUTPUT);
+
+			}
+		}
+
+	} else {
+		// Recurse and show children of that part
+		for ($i = 0; $i < $n; $i++) {
+			$part =& $msgpart->get_child($i);
+			display_part_info("$caption child $i", $part);
+		}
+	}
+}
+
+?>
+
+////////////// The rest of this document may be out of date!
+// Take a look at the mailparse section of the online manual
+// for more hints about this stuff.
 
 $mime = mailparse_rfc2045_parse_file($file);
 $ostruct = mailparse_rfc2045_getstructure($mime);
@@ -74,4 +162,4 @@ TODO:
 	simple structure information and filenames/variables.
 	
 vim:tw=78
-
+vim600:syn=php:tw=78
