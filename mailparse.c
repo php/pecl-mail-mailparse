@@ -674,13 +674,12 @@ PHP_RSHUTDOWN_FUNCTION(mailparse)
 }
 
 #define UUDEC(c)	(char)(((c)-' ')&077)
-#define UU_NEXT(v)	if (line[x] == '\0' || isspace(line[x])) break; v = line[x++]; v = UUDEC(v)
+#define UU_NEXT(v)	if (line[x] == '\0' || line[x] == '\r' || line[x] == '\n') break; v = line[x++]; v = UUDEC(v)
 static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream TSRMLS_DC)
 {
 	int x, A, B, C, D, n;
 	size_t file_size = 0;
-	char line[80];
-
+	unsigned char line[128];
 
 	if (outstream) {
 		/* write to outstream */
