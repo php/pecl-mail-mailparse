@@ -339,7 +339,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 	}
 
 	/* skip spurious commas */
-	while (start_tok < toks->ntokens && toks->tokens[start_tok].token == ',')
+	while (start_tok < toks->ntokens && (toks->tokens[start_tok].token == ','
+			|| toks->tokens[start_tok].token == ';'))
 		start_tok++;
 
 	/* look ahead: if we find a '<' before we find an '@', we are dealing with
@@ -370,6 +371,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS | PHP_RFC822_RECOMBINE_COMMENTS_ONLY
 						| PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES
 						);
+B
 				} else if (has_strings) {
 					addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
