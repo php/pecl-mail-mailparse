@@ -216,7 +216,7 @@ PHPAPI void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks)
 
 PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first_token, int n_tokens, int flags)
 {
-	char *ret;
+	char *ret = NULL;
 	int i, upper, last_was_atom = 0, this_is_atom = 0, tok_equiv;
 	size_t len = 1; /* for the NUL terminator */
 	
@@ -252,7 +252,6 @@ PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first
 	for (i = first_token, len = 0; i < upper; i++, last_was_atom = this_is_atom) {
 		const char *tokvalue;
 		int toklen;
-		
 		
 		tok_equiv = toks->tokens[i].token;
 		if (tok_equiv == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES)
@@ -301,7 +300,7 @@ static void parse_address_tokens(php_rfc822_tokenized_t *toks,
 	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start, group_lbl_end;
 	int a_start, a_count; /* position and count for address part of a name */
 	smart_str group_addrs = { 0, };
-	char *address_value;
+	char *address_value = NULL;
 	
 address:	/* mailbox / group */
 
@@ -356,10 +355,12 @@ mailbox:	/* addr-spec / phrase route-addr */
 				}
 				if (has_comments && !has_strings) {
 					addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok,
-						i - start_tok, PHP_RFC822_RECOMBINE_SPACE_ATOMS|
-						PHP_RFC822_RECOMBINE_COMMENTS_ONLY|PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES);
+						i - start_tok,
+						PHP_RFC822_RECOMBINE_SPACE_ATOMS | PHP_RFC822_RECOMBINE_COMMENTS_ONLY
+						| PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES
+						);
 				} else if (has_strings) {
-				addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
+					addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
 
 				}
@@ -413,6 +414,12 @@ mailbox:	/* addr-spec / phrase route-addr */
 	}
 
 	if (addrs && address_value) {
+
+		/* if no display name has been given, use the address */
+		if (addrs->addrs[iaddr].name == NULL) {
+			addrs->addrs[iaddr].name = estrdup(address_value);
+		}
+
 		if (in_group) {
 			if (group_addrs.len)
 				smart_str_appendl(&group_addrs, ",", 1);
@@ -420,10 +427,6 @@ mailbox:	/* addr-spec / phrase route-addr */
 			efree(address_value);
 		} else {
 			addrs->addrs[iaddr].address = address_value;
-		}
-		/* if no display name has been given, use the address */
-		if (addrs->addrs[iaddr].name == NULL) {
-			addrs->addrs[iaddr].name = estrdup(address_value);
 		}
 		address_value = NULL;
 	}
@@ -442,6 +445,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 			addrs->addrs[iaddr].address = estrdup(group_addrs.c);
 			group_addrs.len = 0;
 
+			STR_FREE(addrs->addrs[iaddr].name);
 			addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, group_lbl_start,
 					group_lbl_end - group_lbl_start,
 					PHP_RFC822_RECOMBINE_SPACE_ATOMS);
@@ -473,6 +477,7 @@ PHPAPI void php_rfc822_free_addresses(php_rfc822_addresses_t *addrs)
 {
 	int i;
 	for (i = 0; i < addrs->naddrs; i++) {
+		if (addrs->addrs[i].name)
 		STR_FREE(addrs->addrs[i].name);
 		STR_FREE(addrs->addrs[i].address);
 	}
