@@ -17,10 +17,18 @@
  </description>
  <license>PHP</license>
  <release>
-  <state>beta</state>
-  <version>0.9.4</version>
-  <date>2003-11-08</date>
+  <state>stable</state>
+  <version>2.0</version>
+  <date>2004-03-07</date>
   <notes>
+Add hack to provide "binary" transfer encoding, which is not supported
+by mailparse.
+
+Go "stable" at long last; the procedural interface is stable, but not the
+OO API.  (Despite the version number jump, no need features have been added)
+
+---
+
 Fix build problem with PHP 4.3.4 - mbstring extension was rearranged.
 
 Fix potential build problem.
