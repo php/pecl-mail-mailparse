@@ -278,14 +278,10 @@ PHPAPI char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks, int first
 static void parse_address_tokens(php_rfc822_tokenized_t *toks,
 	php_rfc822_addresses_t *addrs, int *naddrs)
 {
-	int start_tok, iaddr, i, in_group, group_lbl_start, group_lbl_end;
+	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start, group_lbl_end;
 	smart_str group_addrs = { 0, };
 	char *address_value;
 	
-	start_tok = 0;
-	in_group = 0;
-	iaddr = 0;
-
 address:	/* mailbox / group */
 
 	if (start_tok >= toks->ntokens) {
@@ -311,7 +307,6 @@ address:	/* mailbox / group */
 	}
 
 mailbox:	/* addr-spec / phrase route-addr */
-
 	/* skip spurious commas */
 	while (start_tok < toks->ntokens && toks->tokens[start_tok].token == ',')
 		start_tok++;
@@ -333,7 +328,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 		/* RFC822: route-addr = "<" [route] addr-spec ">" */
 		/* look for the closing '>' and recombine as the address part */
 		
-		for (j = i; j < toks->ntokens && toks->tokens[i].token != '>'; j++)
+		for (j = i; j < toks->ntokens && toks->tokens[j].token != '>'; j++)
 			;
 
 		if (addrs) {
@@ -342,7 +337,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 			 * address value that we return */
 			if (toks->tokens[a_start].token == '<') {
 				a_start++;
-				a_count -= 2;
+				a_count--;
 			}
 			address_value = php_rfc822_recombine_tokens(toks, a_start, a_count,
 								PHP_RFC822_RECOMBINE_SPACE_ATOMS|
@@ -359,7 +354,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 			 * address value that we return */
 			if (toks->tokens[a_start].token == '<') {
 				a_start++;
-				a_count -= 2;
+				a_count--;
 			}
 
 			address_value = php_rfc822_recombine_tokens(toks, a_start, a_count,
