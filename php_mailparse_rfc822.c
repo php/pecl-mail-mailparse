@@ -447,6 +447,13 @@ address:	/* mailbox / group */
 	}
 
 mailbox:	/* addr-spec / phrase route-addr */
+	if (start_tok >= toks->ntokens) {
+		/* the end */
+		*naddrs = iaddr;
+		smart_str_free(&group_addrs);
+		return;
+	}
+
 	/* skip spurious commas */
 	while (start_tok < toks->ntokens && toks->tokens[start_tok].token == ',')
 		start_tok++;
