@@ -16,12 +16,17 @@ if ($argv[1])
 else
 	$filename = "yourmessage.txt";
 
+if ($argv[2])
+	$showpart = $argv[2];
+else
+	$showpart = $_REQUEST['showpart'];
+
 /* parse the message and return a mime message resource */
 $mime = mailparse_msg_parse_file($filename);
 
 debug_zval_dump($mime);
 
-/* return an array of message parts - this contsists of the names of the parts
+/* return an array of message parts - this consists of the names of the parts
  * only */
 $struct = mailparse_msg_get_structure($mime);
 

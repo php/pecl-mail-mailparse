@@ -653,6 +653,7 @@ PHP_MINFO_FUNCTION(mailparse)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "mailparse support", "enabled");
+	php_info_print_table_row(2, "Extension Version", mailparse_module_entry.version);
 	php_info_print_table_row(2, "Revision", "$Revision$");
 	php_info_print_table_end();
 
