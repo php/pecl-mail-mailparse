@@ -33,11 +33,20 @@ PHPAPI char *php_mimepart_attribute_get(struct php_mimeheader_with_attributes *a
 
 typedef int (*php_mimepart_extract_func_t)(php_mimepart *part, void *context, const char *buf, size_t n TSRMLS_DC);
 
+/* this is used to remember the source of a mime part.
+ * It is used mainly for writeable mime parts. */
+struct php_mimepart_source {
+	enum { mpNONE, mpSTRING, mpSTREAM } kind;
+	zval *zval;
+};
+
 struct _php_mimepart {
 	php_mimepart *parent;
 	long rsrc_id;		/* for auto-cleanup */
 	int part_index;		/* sequence number of this part */
 	HashTable children;	/* child parts */
+
+	struct php_mimepart_source source;
 	
 	off_t startpos, endpos;		/* offsets of this part in the message */
 	off_t bodystart, bodyend;	/* offsets of the body content of this part */
@@ -68,6 +77,7 @@ struct _php_mimepart {
 		smart_str workbuf;
 		smart_str headerbuf;
 	} parsedata;
+
 };
 
 PHPAPI php_mimepart *php_mimepart_alloc(void);
@@ -86,9 +96,15 @@ struct _php_mimepart_enumerator {
 	int id;
 };
 typedef int (*mimepart_enumerator_func)(php_mimepart *part, php_mimepart_enumerator *enumerator, void *ptr TSRMLS_DC);
+typedef int (*mimepart_child_enumerator_func)(php_mimepart *parentpart, php_mimepart *child, int childindex, void *ptr TSRMLS_DC);
 
 PHPAPI void php_mimepart_enum_parts(php_mimepart *part, mimepart_enumerator_func callback, void *ptr TSRMLS_DC);
+PHPAPI void php_mimepart_enum_child_parts(php_mimepart *part, mimepart_child_enumerator_func callback, void *ptr TSRMLS_DC);
 PHPAPI php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name TSRMLS_DC);
+PHPAPI php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position TSRMLS_DC);
+
+PHPAPI void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS_DC);
+PHPAPI void php_mimepart_add_child(php_mimepart *part, php_mimepart *child TSRMLS_DC);
 
 #endif
 

@@ -64,6 +64,19 @@ PHP_FUNCTION(mailparse_test);
 
 PHPAPI int php_mailparse_le_mime_part(void);
 
+/* mimemessage object */
+PHP_FUNCTION(mailparse_mimemessage);
+PHP_FUNCTION(mailparse_mimemessage_get_parent);
+PHP_FUNCTION(mailparse_mimemessage_get_child);
+PHP_FUNCTION(mailparse_mimemessage_get_child_count);
+PHP_FUNCTION(mailparse_mimemessage_extract_headers);
+PHP_FUNCTION(mailparse_mimemessage_extract_body);
+PHP_FUNCTION(mailparse_mimemessage_enum_uue);
+PHP_FUNCTION(mailparse_mimemessage_extract_uue);
+PHP_FUNCTION(mailparse_mimemessage_remove);
+PHP_FUNCTION(mailparse_mimemessage_add_child);
+
+
 #include "ext/mbstring/mbfilter.h"
 #include "php_mailparse_rfc822.h"
 #include "php_mailparse_mime.h"
