@@ -333,14 +333,13 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 	child->parent = parentpart;
 	
 	child->source.kind = parentpart->source.kind;
-	*child->source.zval = *parentpart->source.zval;
-	zval_copy_ctor(child->source.zval);
+	if (parentpart->source.kind != mpNONE) {
+		*child->source.zval = *parentpart->source.zval;
+		zval_copy_ctor(child->source.zval);
+	}
 
-//		REPLACE_ZVAL_VALUE(&child->source.zval, parentpart->source.zval, 1);
-	
 	ret = zend_hash_next_index_insert(&parentpart->children, (void*)&child, sizeof(php_mimepart *), NULL);
 	child->startpos = child->endpos = child->bodystart = child->bodyend = startpos;
-
 	
 	if (inherit) {
 		if (parentpart->content_transfer_encoding)

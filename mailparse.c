@@ -1395,16 +1395,10 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	zval *newhdr;
 
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), headerkey, strlen(headerkey)+1, (void**)&headerval)) {
-#if 1
 		MAKE_STD_ZVAL(newhdr);
 		*newhdr = **headerval;
-		INIT_PZVAL(newhdr);
 		zval_copy_ctor(newhdr);
-		zend_hash_update(Z_ARRVAL_P(return_value), headerkey, strlen(headerkey)+1, (void**)&newhdr, sizeof(zval *), NULL);
-#else
-		ZVAL_ADDREF(*headerval);
-		zend_hash_update(Z_ARRVAL_P(return_value), headerkey, strlen(headerkey)+1, (void**)headerval, sizeof(zval *), NULL);
-#endif
+		add_assoc_zval(return_value, headerkey, newhdr);
 	}
 }
 
@@ -1419,7 +1413,6 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	/* get headers for this section */
 	MAKE_STD_ZVAL(headers);
 	*headers = *part->headerhash;
-	INIT_PZVAL(headers);
 	zval_copy_ctor(headers);
 
 	add_assoc_zval(return_value, "headers", headers);
