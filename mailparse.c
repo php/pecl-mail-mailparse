@@ -1364,10 +1364,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 
 		zend_hash_get_current_key_ex(Z_ARRVAL_P(attr->attributes), &key, &key_len, NULL, 0, &pos);
 
-		newkey = emalloc(key_len + pref_len + 1);
-		strcpy(newkey, attrprefix);
-		strcat(newkey, key);
-
+		spprintf(&newkey, 0, "%s%s", attrprefix, key);
 		add_assoc_string(return_value, newkey, Z_STRVAL_PP(val), 1);
 		efree(newkey);
 		
@@ -1388,10 +1385,19 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 static void add_header_reference_to_zval(char *headerkey, zval *return_value, zval *headers TSRMLS_DC)
 {
 	zval **headerval;
+	zval *newhdr;
 
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), headerkey, strlen(headerkey)+1, (void**)&headerval)) {
+#if 1
+		MAKE_STD_ZVAL(newhdr);
+		*newhdr = **headerval;
+		INIT_PZVAL(newhdr);
+		zval_copy_ctor(newhdr);
+		zend_hash_update(Z_ARRVAL_P(return_value), headerkey, strlen(headerkey)+1, (void**)&newhdr, sizeof(zval *), NULL);
+#else
 		ZVAL_ADDREF(*headerval);
 		zend_hash_update(Z_ARRVAL_P(return_value), headerkey, strlen(headerkey)+1, (void**)headerval, sizeof(zval *), NULL);
+#endif
 	}
 }
 
@@ -1423,7 +1429,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	if (part->charset)
 		add_assoc_string(return_value, "charset", part->charset, 1);
 	else
-		add_assoc_string(return_value, "charset", "us-ascii", 1);
+		add_assoc_string(return_value, "charset", MAILPARSEG(def_charset), 1);
 	
 	if (part->content_transfer_encoding)
 		add_assoc_string(return_value, "transfer-encoding", part->content_transfer_encoding, 1);
@@ -1432,6 +1438,8 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	
 	if (part->content_type)
 		add_attr_header_to_zval("content-type", "content-", return_value, part->content_type TSRMLS_CC);
+	else
+		add_assoc_string(return_value, "content-type", "text/plain; (error)", 1);
 
 	if (part->content_disposition)
 		add_attr_header_to_zval("content-disposition", "disposition-", return_value, part->content_disposition TSRMLS_CC);

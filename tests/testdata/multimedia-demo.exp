@@ -1,0 +1,617 @@
+Message: multimedia-demo
+
+Part 1
+body-line-count => int(25863)
+charset => string(8) "us-ascii"
+content-base => string(1) "/"
+content-boundary => string(11) "owatagusiam"
+content-type => string(15) "multipart/mixed"
+ending-pos => int(1819395)
+line-count => int(25876)
+starting-pos => int(0)
+starting-pos-body => int(390)
+transfer-encoding => string(4) "8bit"
+
+    Part 1.1
+    body-line-count => int(3)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(11) "Explanation"
+    content-type => string(10) "text/plain"
+    ending-pos => int(650)
+    line-count => int(6)
+    starting-pos => int(404)
+    starting-pos-body => int(463)
+    transfer-encoding => string(4) "8bit"
+
+    Part 1.2
+    body-line-count => int(106)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(14) "Rich Text demo"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(5532)
+    line-count => int(109)
+    starting-pos => int(665)
+    starting-pos-body => int(731)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.2.1
+        body-line-count => int(83)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(55) "Interpart_Boundary_AdJn:mu0M2YtJKaFh9AdJn:mu0M2YtJKaFk="
+        content-type => string(21) "multipart/alternative"
+        ending-pos => int(5532)
+        line-count => int(106)
+        starting-pos => int(731)
+        starting-pos-body => int(1913)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.2.1.1
+            body-line-count => int(16)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-type => string(10) "text/plain"
+            ending-pos => int(3249)
+            line-count => int(17)
+            starting-pos => int(2497)
+            starting-pos-body => int(2498)
+            transfer-encoding => string(4) "8bit"
+
+            Part 1.2.1.2
+            body-line-count => int(19)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-boundary => string(57) "Alternative_Boundary_8dJn:mu0M2Yt5KaFZ8AdJn:mu0M2Yt1KaFdA"
+            content-type => string(15) "multipart/mixed"
+            ending-pos => int(4482)
+            line-count => int(22)
+            starting-pos => int(3308)
+            starting-pos-body => int(3411)
+            transfer-encoding => string(4) "8bit"
+
+                Part 1.2.1.2.1
+                body-line-count => int(13)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-type => string(13) "text/richtext"
+                ending-pos => int(4418)
+                line-count => int(16)
+                starting-pos => int(3471)
+                starting-pos-body => int(3544)
+                transfer-encoding => string(16) "quoted-printable"
+
+            Part 1.2.1.3
+            body-line-count => int(27)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-type => string(24) "application/andrew-inset"
+            ending-pos => int(5470)
+            line-count => int(29)
+            starting-pos => int(4540)
+            starting-pos-body => int(4580)
+            transfer-encoding => string(4) "8bit"
+
+    Part 1.3
+    body-line-count => int(7605)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(15) "Voice Mail demo"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(560279)
+    line-count => int(7608)
+    starting-pos => int(5546)
+    starting-pos-body => int(5613)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.3.1
+        body-line-count => int(7586)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-description => string(7) "Hi Mark"
+        content-type => string(11) "audio/basic"
+        ending-pos => int(560279)
+        line-count => int(7605)
+        starting-pos => int(5613)
+        starting-pos-body => int(6556)
+        transfer-encoding => string(6) "base64"
+
+    Part 1.4
+    body-line-count => int(465)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(11) "Flint phone"
+    content-type => string(11) "audio/basic"
+    ending-pos => int(596156)
+    line-count => int(469)
+    starting-pos => int(560293)
+    starting-pos-body => int(560387)
+    transfer-encoding => string(6) "base64"
+
+    Part 1.5
+    body-line-count => int(23)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(11) "MTR's photo"
+    content-type => string(9) "image/pbm"
+    ending-pos => int(598054)
+    line-count => int(27)
+    starting-pos => int(596171)
+    starting-pos-body => int(596263)
+    transfer-encoding => string(6) "base64"
+
+    Part 1.6
+    body-line-count => int(4565)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(15) "Star Trek Party"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(776452)
+    line-count => int(4568)
+    starting-pos => int(598069)
+    starting-pos-body => int(598136)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.6.1
+        body-line-count => int(4532)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(14) "Outermost_Trek"
+        content-type => string(15) "multipart/mixed"
+        ending-pos => int(776452)
+        line-count => int(4565)
+        starting-pos => int(598136)
+        starting-pos-body => int(599956)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.6.1.1
+            body-line-count => int(451)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-boundary => string(28) "Where_No_One_Has_Gone_Before"
+            content-type => string(15) "multipart/mixed"
+            ending-pos => int(631998)
+            line-count => int(453)
+            starting-pos => int(599973)
+            starting-pos-body => int(600042)
+            transfer-encoding => string(4) "8bit"
+
+                Part 1.6.1.1.1
+                body-line-count => int(16)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-type => string(10) "text/plain"
+                ending-pos => int(600789)
+                line-count => int(17)
+                starting-pos => int(600073)
+                starting-pos-body => int(600074)
+                transfer-encoding => string(4) "8bit"
+
+                Part 1.6.1.1.2
+                body-line-count => int(426)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-description => string(14) "He's dead, Jim"
+                content-type => string(11) "audio/x-sun"
+                ending-pos => int(631964)
+                line-count => int(430)
+                starting-pos => int(600821)
+                starting-pos-body => int(600918)
+                transfer-encoding => string(6) "base64"
+
+            Part 1.6.1.2
+            body-line-count => int(3418)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-boundary => string(28) "Where_No_Man_Has_Gone_Before"
+            content-type => string(15) "multipart/mixed"
+            ending-pos => int(729141)
+            line-count => int(3420)
+            starting-pos => int(632015)
+            starting-pos-body => int(632084)
+            transfer-encoding => string(4) "8bit"
+
+                Part 1.6.1.2.1
+                body-line-count => int(352)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-description => string(16) "Kirk/Spock/McCoy"
+                content-type => string(9) "image/gif"
+                ending-pos => int(657860)
+                line-count => int(356)
+                starting-pos => int(632115)
+                starting-pos-body => int(632212)
+                transfer-encoding => string(6) "base64"
+
+                Part 1.6.1.2.2
+                body-line-count => int(253)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-description => string(25) "Star Trek Next Generation"
+                content-type => string(9) "image/gif"
+                ending-pos => int(676411)
+                line-count => int(257)
+                starting-pos => int(657892)
+                starting-pos-body => int(657998)
+                transfer-encoding => string(6) "base64"
+
+                Part 1.6.1.2.3
+                body-line-count => int(2436)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-type => string(17) "application/x-be2"
+                content-version => string(2) "12"
+                ending-pos => int(720176)
+                line-count => int(2438)
+                starting-pos => int(676443)
+                starting-pos-body => int(676487)
+                transfer-encoding => string(4) "8bit"
+
+                Part 1.6.1.2.4
+                body-line-count => int(357)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-type => string(22) "application/atomicmail"
+                content-version => string(4) "1.12"
+                ending-pos => int(729107)
+                line-count => int(359)
+                starting-pos => int(720208)
+                starting-pos-body => int(720261)
+                transfer-encoding => string(4) "8bit"
+
+            Part 1.6.1.3
+            body-line-count => int(647)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(14) "Distress calls"
+            content-type => string(11) "audio/x-sun"
+            ending-pos => int(776430)
+            line-count => int(651)
+            starting-pos => int(729158)
+            starting-pos-body => int(729255)
+            transfer-encoding => string(6) "base64"
+
+    Part 1.7
+    body-line-count => int(483)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(14) "Digitizer test"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(862163)
+    line-count => int(486)
+    starting-pos => int(776466)
+    starting-pos-body => int(776532)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.7.1
+        body-line-count => int(457)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(24) "mail.sleepy.sau.144.8891"
+        content-type => string(15) "multipart/mixed"
+        ending-pos => int(862163)
+        line-count => int(483)
+        starting-pos => int(776532)
+        starting-pos-body => int(777838)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.7.1.1
+            body-line-count => int(0)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-type => string(10) "text/plain"
+            ending-pos => int(777887)
+            line-count => int(1)
+            starting-pos => int(777865)
+            starting-pos-body => int(777866)
+            transfer-encoding => string(4) "8bit"
+
+            Part 1.7.1.2
+            body-line-count => int(433)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(12) "Bellcore mug"
+            content-type => string(9) "image/pgm"
+            ending-pos => int(861843)
+            line-count => int(439)
+            starting-pos => int(777915)
+            starting-pos-body => int(778102)
+            transfer-encoding => string(6) "base64"
+
+            Part 1.7.1.3
+            body-line-count => int(8)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-type => string(10) "text/plain"
+            ending-pos => int(862131)
+            line-count => int(9)
+            starting-pos => int(861871)
+            starting-pos-body => int(861872)
+            transfer-encoding => string(4) "8bit"
+
+    Part 1.8
+    body-line-count => int(431)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(12) "More Imagery"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(936281)
+    line-count => int(434)
+    starting-pos => int(862177)
+    starting-pos-body => int(862241)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.8.1
+        body-line-count => int(406)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(23) "mail.sleepy.sau.158.532"
+        content-type => string(15) "multipart/mixed"
+        ending-pos => int(936281)
+        line-count => int(431)
+        starting-pos => int(862241)
+        starting-pos-body => int(863504)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.8.1.1
+            body-line-count => int(26)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-type => string(10) "text/plain"
+            ending-pos => int(864751)
+            line-count => int(27)
+            starting-pos => int(863530)
+            starting-pos-body => int(863531)
+            transfer-encoding => string(4) "8bit"
+
+            Part 1.8.1.2
+            body-line-count => int(369)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(23) "Mail architecture slide"
+            content-type => string(9) "image/pbm"
+            ending-pos => int(936251)
+            line-count => int(374)
+            starting-pos => int(864778)
+            starting-pos-body => int(864934)
+            transfer-encoding => string(6) "base64"
+
+    Part 1.9
+    body-line-count => int(6438)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(15) "PostScript demo"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(1327933)
+    line-count => int(6441)
+    starting-pos => int(936295)
+    starting-pos-body => int(936362)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.9.1
+        body-line-count => int(6421)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-description => string(14) "Captain Picard"
+        content-type => string(22) "application/postscript"
+        ending-pos => int(1327933)
+        line-count => int(6438)
+        starting-pos => int(936362)
+        starting-pos-body => int(937199)
+        transfer-encoding => string(4) "8bit"
+
+    Part 1.10
+    body-line-count => int(1015)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(21) "Quoted-Printable test"
+    content-type => string(9) "image/gif"
+    ending-pos => int(1405346)
+    line-count => int(1019)
+    starting-pos => int(1327947)
+    starting-pos-body => int(1328059)
+    transfer-encoding => string(16) "quoted-printable"
+
+    Part 1.11
+    body-line-count => int(1382)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(19) "q-p vs. base64 test"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(1507736)
+    line-count => int(1385)
+    starting-pos => int(1405361)
+    starting-pos-body => int(1405432)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.11.1
+        body-line-count => int(1368)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(8) "hal_9000"
+        content-type => string(15) "multipart/mixed"
+        ending-pos => int(1507736)
+        line-count => int(1382)
+        starting-pos => int(1405432)
+        starting-pos-body => int(1406106)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.11.1.1
+            body-line-count => int(807)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(21) "I'm sorry, Dave (q-p)"
+            content-type => string(11) "audio/basic"
+            ending-pos => int(1467518)
+            line-count => int(811)
+            starting-pos => int(1406117)
+            starting-pos-body => int(1406231)
+            transfer-encoding => string(16) "quoted-printable"
+
+            Part 1.11.1.2
+            body-line-count => int(549)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(24) "I'm sorry, Dave (BASE64)"
+            content-type => string(11) "audio/basic"
+            ending-pos => int(1507722)
+            line-count => int(553)
+            starting-pos => int(1467530)
+            starting-pos-body => int(1467637)
+            transfer-encoding => string(6) "base64"
+
+    Part 1.12
+    body-line-count => int(3282)
+    charset => string(8) "us-ascii"
+    content-base => string(1) "/"
+    content-description => string(22) "Multiple encapsulation"
+    content-type => string(14) "message/rfc822"
+    ending-pos => int(1819378)
+    line-count => int(3285)
+    starting-pos => int(1507750)
+    starting-pos-body => int(1507824)
+    transfer-encoding => string(4) "8bit"
+
+        Part 1.12.1
+        body-line-count => int(3271)
+        charset => string(8) "us-ascii"
+        content-base => string(1) "/"
+        content-boundary => string(36) "16819560-2078917053-688350843:#11603"
+        content-type => string(15) "multipart/mixed"
+        ending-pos => int(1819378)
+        line-count => int(3282)
+        starting-pos => int(1507824)
+        starting-pos-body => int(1508362)
+        transfer-encoding => string(4) "8bit"
+
+            Part 1.12.1.1
+            body-line-count => int(861)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(14) "The Simpsons!!"
+            content-type => string(22) "application/postscript"
+            ending-pos => int(1560994)
+            line-count => int(865)
+            starting-pos => int(1508401)
+            starting-pos-body => int(1508509)
+            transfer-encoding => string(6) "base64"
+
+            Part 1.12.1.2
+            body-line-count => int(299)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(28) "Alice's PDP-10 w/ TECO & DDT"
+            content-name => string(13) "Alices_PDP-10"
+            content-type => string(6) "binary"
+            ending-pos => int(1579392)
+            line-count => int(303)
+            starting-pos => int(1561034)
+            starting-pos-body => int(1561161)
+            transfer-encoding => string(6) "base64"
+
+            Part 1.12.1.3
+            body-line-count => int(2094)
+            charset => string(8) "us-ascii"
+            content-base => string(1) "/"
+            content-description => string(12) "Going deeper"
+            content-type => string(14) "message/rfc822"
+            ending-pos => int(1819337)
+            line-count => int(2097)
+            starting-pos => int(1579432)
+            starting-pos-body => int(1579496)
+            transfer-encoding => string(4) "8bit"
+
+                Part 1.12.1.3.1
+                body-line-count => int(2087)
+                charset => string(8) "us-ascii"
+                content-base => string(1) "/"
+                content-boundary => string(12) "foobarbazola"
+                content-type => string(15) "multipart/mixed"
+                ending-pos => int(1819337)
+                line-count => int(2094)
+                starting-pos => int(1579496)
+                starting-pos-body => int(1579726)
+                transfer-encoding => string(4) "8bit"
+
+                    Part 1.12.1.3.1.1
+                    body-line-count => int(7)
+                    charset => string(8) "us-ascii"
+                    content-base => string(1) "/"
+                    content-type => string(10) "text/plain"
+                    ending-pos => int(1580054)
+                    line-count => int(8)
+                    starting-pos => int(1579741)
+                    starting-pos-body => int(1579742)
+                    transfer-encoding => string(4) "8bit"
+
+                    Part 1.12.1.3.1.2
+                    body-line-count => int(838)
+                    charset => string(8) "us-ascii"
+                    content-base => string(1) "/"
+                    content-boundary => string(13) "seconddivider"
+                    content-type => string(18) "multipart/parallel"
+                    ending-pos => int(1739553)
+                    line-count => int(840)
+                    starting-pos => int(1580070)
+                    starting-pos-body => int(1580127)
+                    transfer-encoding => string(4) "8bit"
+
+                        Part 1.12.1.3.1.2.1
+                        body-line-count => int(16)
+                        charset => string(8) "us-ascii"
+                        content-base => string(1) "/"
+                        content-description => string(5) "Bunny"
+                        content-type => string(9) "image/gif"
+                        ending-pos => int(1583489)
+                        line-count => int(20)
+                        starting-pos => int(1580143)
+                        starting-pos-body => int(1580229)
+                        transfer-encoding => string(6) "base64"
+
+                        Part 1.12.1.3.1.2.2
+                        body-line-count => int(807)
+                        charset => string(8) "us-ascii"
+                        content-base => string(1) "/"
+                        content-description => string(14) "TV Theme songs"
+                        content-type => string(11) "audio/basic"
+                        ending-pos => int(1739502)
+                        line-count => int(811)
+                        starting-pos => int(1583506)
+                        starting-pos-body => int(1583603)
+                        transfer-encoding => string(6) "base64"
+
+                    Part 1.12.1.3.1.3
+                    body-line-count => int(195)
+                    charset => string(8) "us-ascii"
+                    content-base => string(1) "/"
+                    content-type => string(22) "application/atomicmail"
+                    ending-pos => int(1744335)
+                    line-count => int(197)
+                    starting-pos => int(1739568)
+                    starting-pos-body => int(1739606)
+                    transfer-encoding => string(4) "8bit"
+
+                    Part 1.12.1.3.1.4
+                    body-line-count => int(1031)
+                    charset => string(8) "us-ascii"
+                    content-base => string(1) "/"
+                    content-description => string(27) "Yet another level deeper..."
+                    content-type => string(14) "message/rfc822"
+                    ending-pos => int(1819320)
+                    line-count => int(1034)
+                    starting-pos => int(1744351)
+                    starting-pos-body => int(1744430)
+                    transfer-encoding => string(4) "8bit"
+
+                        Part 1.12.1.3.1.4.1
+                        body-line-count => int(1023)
+                        charset => string(8) "us-ascii"
+                        content-base => string(1) "/"
+                        content-description => string(13) "I'm Twying..."
+                        content-type => string(11) "audio/x-sun"
+                        ending-pos => int(1819320)
+                        line-count => int(1031)
+                        starting-pos => int(1744430)
+                        starting-pos-body => int(1744660)
+                        transfer-encoding => string(6) "base64"

@@ -24,7 +24,7 @@
 
 #define	MAXLEVELS	20
 #define	MAXPARTS	300
-#define IS_MIME_1(part)	((part)->mime_version && strcmp("1.0", (part)->mime_version) == 0)
+#define IS_MIME_1(part)	(((part)->mime_version && strcmp("1.0", (part)->mime_version) == 0) || ((part)->parent))
 #define CONTENT_TYPE_IS(part, contenttypevalue)	((part)->content_type && strcasecmp((part)->content_type->value, contenttypevalue) == 0)
 #define CONTENT_TYPE_ISL(part, contenttypevalue, len)	((part)->content_type && strncasecmp((part)->content_type->value, contenttypevalue, len) == 0)
 
@@ -175,11 +175,14 @@ PHPAPI void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 	STR_FREE(part->mime_version);
 	STR_FREE(part->content_transfer_encoding);
 	STR_FREE(part->charset);
+	STR_FREE(part->boundary);
 	STR_FREE(part->content_base);
 	STR_FREE(part->content_location);
 
-	if (part->content_type)
+	if (part->content_type) {
 		php_mimeheader_free(part->content_type);
+		part->content_type = NULL;
+	}
 	if (part->content_disposition)
 		php_mimeheader_free(part->content_disposition);
 	
@@ -286,13 +289,19 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 		if (strcmp(header_key, "content-transfer-encoding") == 0)
 			STR_SET_REPLACE(part->content_transfer_encoding, header_val_stripped);
 		if (strcmp(header_key, "content-type") == 0) {
-			char *charset;
+			char *charset, *boundary;
 
-			if (part->content_type)
+			if (part->content_type) {
 				php_mimeheader_free(part->content_type);
+				part->content_type = NULL;
+			}
 
 			part->content_type = php_mimeheader_alloc_from_tok(toks);
-			part->boundary = php_mimepart_attribute_get(part->content_type, "boundary");
+			
+			boundary = php_mimepart_attribute_get(part->content_type, "boundary");
+			if (boundary) {
+				part->boundary = estrdup(boundary);
+			}
 			
 			charset = php_mimepart_attribute_get(part->content_type, "charset");
 			if (charset) {
@@ -360,30 +369,27 @@ PHPAPI void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *en
 	}
 }
 
-static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
+static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 {
-	php_mimepart *workpart;
 	size_t origcount, linelen;
 	char *c;
 
 	/* sanity check */
-	if (zend_hash_num_elements(&part->children) > MAXPARTS) {
+	if (zend_hash_num_elements(&workpart->children) > MAXPARTS) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MIME message too complex");
 		return FAILURE;
 	}
 
-	c = part->parsedata.workbuf.c;
-	smart_str_0(&part->parsedata.workbuf);
+	c = workpart->parsedata.workbuf.c;
+	smart_str_0(&workpart->parsedata.workbuf);
 	
 	/* strip trailing \r\n -- we always have a trailing \n */
-	origcount = part->parsedata.workbuf.len;
+	origcount = workpart->parsedata.workbuf.len;
 	linelen = origcount - 1;
 	if (linelen && c[linelen-1] == '\r')
 		--linelen;
 
 	/* Discover which part we were last working on */
-	workpart = part;
-
 	while (workpart->parsedata.lastpart) {
 		int bound_len;
 		php_mimepart *lastpart = workpart->parsedata.lastpart;
@@ -462,11 +468,18 @@ static int php_mimepart_process_line(php_mimepart *part TSRMLS_DC)
 			if (!IS_MIME_1(workpart)) {
 				/* if we don't understand the MIME version, discard the content-type and
 				 * boundary */
-				if (part->content_type)
-					php_mimeheader_free(part->content_type);
-				if (part->content_disposition)
-					php_mimeheader_free(part->content_disposition);
-				workpart->boundary = NULL;
+				if (workpart->content_disposition) {
+					php_mimeheader_free(workpart->content_disposition);
+					workpart->content_disposition = NULL;
+				}
+				if (workpart->boundary) {
+					efree(workpart->boundary);
+					workpart->boundary = NULL;
+				}
+				if (workpart->content_type) {
+					php_mimeheader_free(workpart->content_type);
+					workpart->content_type = NULL;
+				}
 				workpart->content_type = php_mimeheader_alloc("text/plain");
 			}
 			/* if there is no content type, default to text/plain, but use multipart/digest when in
