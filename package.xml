@@ -19,7 +19,7 @@
   <release>
     <state>beta</state>
     <version>0.9.2</version>
-    <date>2003-04-19</date>
+    <date>2003-06-19</date>
     <notes>
       Bugfixes:
        - mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
