@@ -1416,10 +1416,15 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	add_assoc_long(return_value, "line-count",			part->nlines);
 	add_assoc_long(return_value, "body-line-count",		part->nbodylines);
 
-	add_assoc_string(return_value, "charset", part->charset, 1);
+	if (part->charset)
+		add_assoc_string(return_value, "charset", part->charset, 1);
+	else
+		add_assoc_string(return_value, "charset", "us-ascii", 1);
 	
 	if (part->content_transfer_encoding)
 		add_assoc_string(return_value, "transfer-encoding", part->content_transfer_encoding, 1);
+	else
+		add_assoc_string(return_value, "transfer-encoding", "8bit", 1);
 	
 	if (part->content_type)
 		add_attr_header_to_zval("content-type", "content-", return_value, part->content_type TSRMLS_CC);
@@ -1432,6 +1437,8 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 
 	if (part->content_base)
 		add_assoc_string(return_value, "content-base", part->content_base, 1);
+	else
+		add_assoc_string(return_value, "content-base", "/", 1);
 
 	/* extract the address part of the content-id only */
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), "content-id", sizeof("content-id"), (void**)&tmpval)) {
