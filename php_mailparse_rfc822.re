@@ -337,7 +337,14 @@ mailbox:	/* addr-spec / phrase route-addr */
 			;
 
 		if (addrs) {
-			address_value = php_rfc822_recombine_tokens(toks, i, j - i,
+			int a_start = i, a_count = j-i;
+			/* if an address is enclosed in <>, leave them out of the the
+			 * address value that we return */
+			if (toks->tokens[a_start].token == '<') {
+				a_start++;
+				a_count -= 2;
+			}
+			address_value = php_rfc822_recombine_tokens(toks, a_start, a_count,
 								PHP_RFC822_RECOMBINE_SPACE_ATOMS|
 								PHP_RFC822_RECOMBINE_IGNORE_COMMENTS|
 								PHP_RFC822_RECOMBINE_INCLUDE_QUOTES);
@@ -347,7 +354,15 @@ mailbox:	/* addr-spec / phrase route-addr */
 	} else {
 		/* RFC822: addr-spec = local-part "@" domain */
 		if (addrs) {
-			address_value = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
+			int a_start = start_tok, a_count = i - start_tok;
+			/* if an address is enclosed in <>, leave them out of the the
+			 * address value that we return */
+			if (toks->tokens[a_start].token == '<') {
+				a_start++;
+				a_count -= 2;
+			}
+
+			address_value = php_rfc822_recombine_tokens(toks, a_start, a_count,
 								PHP_RFC822_RECOMBINE_SPACE_ATOMS|
 								PHP_RFC822_RECOMBINE_IGNORE_COMMENTS|
 								PHP_RFC822_RECOMBINE_INCLUDE_QUOTES);
