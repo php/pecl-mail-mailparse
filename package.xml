@@ -18,9 +18,12 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.1</version>
-  <date>2005-01-01</date>
+  <version>2.1.1</version>
+  <date>2005-02-28</date>
   <notes>
+Fix off-by-one that caused a crash when parsing broken messages.
+
+---
 Avoid possible unterminated loops when parsing malformed email addresses.
 Fix a crash bug when not using the OO API.
   
