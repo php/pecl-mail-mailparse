@@ -70,7 +70,7 @@ static function_entry mimemessage_methods[] = {
 	{NULL, NULL, NULL}
 };
 
-static zend_class_entry mimemsg_class_entry;
+static zend_class_entry *mimemsg_class_entry;
 
 function_entry mailparse_functions[] = {
 	PHP_FE(mailparse_msg_parse_file,			NULL)
@@ -138,6 +138,8 @@ PHP_MAILPARSE_API int php_mailparse_le_mime_part(void)
 
 PHP_MINIT_FUNCTION(mailparse)
 {
+	zend_class_entry mmce;
+
 #ifdef ZTS
 	zend_mailparse_globals *mailparse_globals;
 
@@ -145,8 +147,8 @@ PHP_MINIT_FUNCTION(mailparse)
 	mailparse_globals = ts_resource(mailparse_globals_id);
 #endif
 
-	INIT_CLASS_ENTRY(mimemsg_class_entry, "mimemessage", mimemessage_methods);
-	zend_register_internal_class(&mimemsg_class_entry TSRMLS_CC);
+	INIT_CLASS_ENTRY(mmce, "mimemessage", mimemessage_methods);
+	mimemsg_class_entry = zend_register_internal_class(&mmce TSRMLS_CC);
 	
 	
 	le_mime_part = zend_register_list_destructors_ex(mimepart_dtor, NULL, mailparse_msg_name, module_number);
@@ -211,7 +213,7 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_
 	MAKE_STD_ZVAL(zpart);
 	php_mimepart_to_zval(zpart, part);
 
-	object_init_ex(object, &mimemsg_class_entry);
+	object_init_ex(object, mimemsg_class_entry);
 	PZVAL_IS_REF(object) = 1;
 	ZVAL_REFCOUNT(object) = 1;
 
