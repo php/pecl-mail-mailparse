@@ -642,7 +642,7 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, 
 PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position TSRMLS_DC)
 {
 	HashPosition pos;
-	php_mimepart **childpart;
+	php_mimepart **childpart = NULL;
 	
 	zend_hash_internal_pointer_reset_ex(&parent->children, &pos);
 	while(position-- > 0)
@@ -652,7 +652,11 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 	if (FAILURE == zend_hash_get_current_data_ex(&parent->children, (void**)&childpart, &pos))
 		return NULL;
 
-	return *childpart;
+	if(childpart) { 
+	  return *childpart;
+	} else {
+		return NULL;
+	}
 
 }
 
