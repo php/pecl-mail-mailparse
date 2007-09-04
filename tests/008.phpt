@@ -10,7 +10,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 --FILE--
 <?php
 error_reporting(0);
-$msg = & new MimeMessage("file", md5(uniqid("nothere")));
+$msg = new MimeMessage("file", md5(uniqid("nothere")));
 if (is_resource($msg))
 	echo "Err??";
 else

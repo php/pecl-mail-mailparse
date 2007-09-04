@@ -200,6 +200,7 @@ static int mailparse_mimemessage_populate(php_mimepart *part, zval *object TSRML
 	MAKE_STD_ZVAL(tmp);
 	mailparse_get_part_data(part, tmp TSRMLS_CC);
 	add_property_zval(object, "data", tmp);
+	ZVAL_DELREF(tmp);
 
 	return SUCCESS;
 }
@@ -1399,6 +1400,7 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), headerkey, strlen(headerkey)+1, (void**)&headerval)) {
 		MAKE_STD_ZVAL(newhdr);
 		*newhdr = **headerval;
+		newhdr->refcount = 1;
 		zval_copy_ctor(newhdr);
 		add_assoc_zval(return_value, headerkey, newhdr);
 	}
