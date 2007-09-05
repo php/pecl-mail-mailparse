@@ -443,12 +443,15 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
 		
 			if (isspace((int)(unsigned char)*c)) {
-				smart_str_appendl(&workpart->parsedata.headerbuf, " ", 1);
+
+				/* save header for possible continuation without the first char */
+				smart_str_appendl(&workpart->parsedata.headerbuf, c+1, linelen-1);
 			} else {
 				php_mimepart_process_header(workpart TSRMLS_CC);
+
+				/* save header for possible continuation */
+				smart_str_appendl(&workpart->parsedata.headerbuf, c, linelen);
 			}
-			/* save header for possible continuation */
-			smart_str_appendl(&workpart->parsedata.headerbuf, c, linelen);
 			
 		} else {
 			/* end of headers */
