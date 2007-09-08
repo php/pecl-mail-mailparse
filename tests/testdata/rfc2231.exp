@@ -1,0 +1,15 @@
+Message: rfc2231
+
+Part 1
+body-line-count => int(2)
+charset => string(8) "us-ascii"
+content-access-type => string(3) "URL"
+content-base => string(1) "/"
+content-title => string(74) "=?us-ascii?Q?This=20is=20even=20more=20=2A=2A=2Afun=2A=2A=2A=20?=isn't it!"
+content-type => string(21) "message/external-body"
+content-url => string(37) "http://pecl.php.net/package/mailparse"
+ending-pos => int(489)
+line-count => int(17)
+starting-pos => int(0)
+starting-pos-body => int(467)
+transfer-encoding => string(4) "8bit"

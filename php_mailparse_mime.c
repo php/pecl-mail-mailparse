@@ -50,11 +50,81 @@ static struct php_mimeheader_with_attributes * php_mimeheader_alloc(char *value)
 	return attr;
 }
 
+void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevcharset_p)
+{
+	char *strp, *startofvalue = NULL;
+	int quotes=0;
+	int valuepos;
+	int i;
+
+	/* Process string, get positions and replace	*/
+	/* Set to start of buffer*/
+	if (charset_p) {
+	
+		/* Previous charset already set so only convert %nn to =nn*/
+		if (prevcharset_p) quotes=2;
+		
+		strp = value;
+		while (*strp) {  
+	
+			/* Quote handling*/
+			if (*strp == '\'') 
+			{ 
+				if (quotes <= 1) {
+
+					/* End of charset*/
+					if (quotes == 0) {
+						*strp=0; 
+					} else {
+					 startofvalue = strp+1;
+					 valuepos = i;
+					}
+
+					quotes++;
+				}
+			} else {
+				/* Replace % with = - quoted printable*/
+				if (*strp == '%' && quotes==2)
+				{
+					*strp = '=';
+				}
+			}
+			strp++;
+		}
+	}
+
+	/* If first encoded token*/
+	if (charset_p && !prevcharset_p && startofvalue) { 
+		smart_str_appends(value_buf, "=?");
+		smart_str_appends(value_buf, value);
+		smart_str_appends(value_buf, "?Q?");
+		smart_str_appends(value_buf, startofvalue);  
+	}  
+	
+	/* If last encoded token*/
+	if (prevcharset_p && !charset_p)
+	{
+		smart_str_appends(value_buf, "?=");
+	}
+	
+	/* Append value*/
+	if ((!charset_p || (prevcharset_p && charset_p)) && value)
+	{
+		smart_str_appends(value_buf, value); 
+	}
+}
+
 static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_rfc822_tokenized_t *toks)
 {
 	struct php_mimeheader_with_attributes *attr;
 	int i, first_semi, next_semi, comments_before_semi, netscape_bug = 0;
-	
+	char *name_buf = NULL;
+	smart_str value_buf = {0};
+	int is_rfc2231_name = 0;
+	char *check_name, *check_end_name;
+	int charset_p, prevcharset_p = 0;
+	int namechanged, currentencoded = 0;
+
 	attr = ecalloc(1, sizeof(struct php_mimeheader_with_attributes));
 
 	MAKE_STD_ZVAL(attr->attributes);
@@ -106,7 +176,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 				/* count those tokens; we expect "token = token" (3 tokens); if there are
 				 * more than that, then something is quite possibly wrong - Netscape Bug! */
-				if (next_semi <= toks->ntokens
+				if (next_semi < toks->ntokens
 						&& toks->tokens[next_semi].token != ';'
 						&& next_semi - first_semi - comments_before_semi > 3) {
 					next_semi = i + 1;
@@ -117,17 +187,118 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 				value = php_rfc822_recombine_tokens(toks, i, next_semi - i,
 						PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
-			
-				add_assoc_string(attr->attributes, name, value, 0);
-				efree(name);
+	
+				/* support rfc2231 mime parameter value 
+				 *
+				 * Parameter Value Continuations:
+				 *
+				 * Content-Type: message/external-body; access-type=URL;
+				 *	URL*0="ftp://";
+				 *	URL*1="cs.utk.edu/pub/moore/bulk-mailer/bulk-mailer.tar"
+				 * 
+				 * is semantically identical to
+				 *
+				 * Content-Type: message/external-body; access-type=URL;
+				 *	URL="ftp://cs.utk.edu/pub/moore/bulk-mailer/bulk-mailer.tar"
+				 * 
+				 * Original rfc2231 support by IceWarp Ltd. <info@icewarp.com>
+				 */
+				check_name = strchr(name, '*');
+				if (check_name) {
+				  currentencoded = 1;	
+
+					/* Is last char * - charset encoding */
+					charset_p = *(name+strlen(name)-1) == '*';
+
+					/* Leave only attribute name without * */
+					*check_name = 0;
+				
+					/* New item or continuous */
+					if (NULL == name_buf) {
+						namechanged = 0;
+						name_buf = name;
+					} else {
+						namechanged = (strcmp(name_buf, name) != 0);
+						if (!namechanged) {
+							efree(name);
+							name = 0;
+						}
+					}
+
+					/* Check if name changed*/
+					if (!namechanged) {
+
+						/* Append string to buffer - check if to be encoded...	*/
+						rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
+						efree(value);
+				
+						/* Mark previous */
+						prevcharset_p = charset_p;
+					}
+
+					is_rfc2231_name = 1;
+				}
+
+				/* Last item was encoded	*/
+				if (1 == is_rfc2231_name) {
+					/* Name not null and name differs with new name*/
+					if (name && strcmp(name_buf, name) != 0) {
+						/* Finalize packet */
+						rfc2231_to_mime(&value_buf, NULL, 0, prevcharset_p);
+
+						add_assoc_string(attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len), 0);
+						efree(name_buf);
+						smart_str_free(&value_buf);
+
+						prevcharset_p = 0;
+						is_rfc2231_name = 0;
+						name_buf = NULL;
+
+						/* New non encoded name*/
+						if (!currentencoded) {
+							/* Add string*/
+							add_assoc_string(attr->attributes, name, value, 0);
+							efree(name);				
+						} else {		/* Encoded name changed*/
+							if (namechanged) {
+								/* Append string to buffer - check if to be encoded...	*/
+								rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
+								efree(value);
+				
+								/* Mark */
+								is_rfc2231_name = 1;
+								name_buf = name;			
+								prevcharset_p = charset_p;				
+							}
+						}
+
+						namechanged = 0;
+					}
+				} else {
+					add_assoc_string(attr->attributes, name, value, 0);
+					efree(name);
+				}
 			}
 		}
-		if (next_semi < toks->ntokens && !netscape_bug)
+
+		if (next_semi < toks->ntokens && !netscape_bug) {
 			next_semi++;
+		}
 
 		first_semi = next_semi;
 		netscape_bug = 0;
 	}
+
+	if (1 == is_rfc2231_name) {
+		/* Finalize packet */
+		rfc2231_to_mime(&value_buf, NULL, 0, prevcharset_p);
+
+		add_assoc_string(attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len), 0);
+		efree(name_buf);
+		smart_str_free(&value_buf);
+	}
+
+
 	return attr;
 }
 
