@@ -10,12 +10,6 @@
    <email>wez@php.net</email>
    <role>lead</role>
   </maintainer>
-  <maintainer>
-   <user>shire</user>
-   <name>Brian Shire</name>
-   <email>shire@php.net</email>
-   <role>lead</role>
-  </maintainer>
  </maintainers>
  <description>
   Mailparse is an extension for parsing and working with email messages.
