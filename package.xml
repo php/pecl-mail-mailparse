@@ -10,6 +10,12 @@
    <email>wez@php.net</email>
    <role>lead</role>
   </maintainer>
+  <maintainer>
+   <user>shire</user>
+   <name>Brian Shire</name>
+   <email>shire@php.net</email>
+   <role>lead</role>
+  </maintainer>
  </maintainers>
  <description>
   Mailparse is an extension for parsing and working with email messages.
@@ -18,34 +24,13 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.1.1</version>
-  <date>2005-02-28</date>
+  <version>2.1.2</version>
+  <date>2007-11-08</date>
   <notes>
-Fix off-by-one that caused a crash when parsing broken messages.
-
----
-Avoid possible unterminated loops when parsing malformed email addresses.
-Fix a crash bug when not using the OO API.
-  
-Add hack to provide "binary" transfer encoding, which is not supported
-by mbstring.
-
-Go "stable" at long last; the procedural interface is stable, but not the
-OO API.  (Despite the version number jump, no nee features have been added)
-
----
-
-Fix build problem with PHP 4.3.4 - mbstring extension was rearranged.
-
-Fix potential build problem.
-
-mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
-
-Improved uu-decoder to be more robust when dealing with strange line endings.
-Fix silly bug introduced by that fix...
-
-Fixed some memory leaks and problems when multiple uue attachments appear
-inline in a single mime part.
+  Fixed memory leaks and depricated code in tests.  
+  Patch for rfc2231 support by Jakub Klos.  
+  Fix incorrect handling of header continuation lines per RFC2822, patch by Jakub Klos.  
+  Initialize variable to prevent segfaults in cases where postion=0.  
   </notes>
   <filelist>
    <file role="src" name="config.m4"/>

@@ -103,7 +103,7 @@ zend_module_entry mailparse_module_entry = {
 	PHP_RINIT(mailparse),
 	PHP_RSHUTDOWN(mailparse),
 	PHP_MINFO(mailparse),
-    "2.1.1",
+    "2.1.2",
 	STANDARD_MODULE_PROPERTIES
 };
 

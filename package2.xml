@@ -12,43 +12,28 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>wez@php.net</email>
   <active>yes</active>
  </lead>
- <date>2005-02-28</date>
- <time>01:10:17</time>
+ <lead>
+  <name>Brian Shire</name>
+  <user>shire</user>
+  <email>shire@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2007-11-08</date>
+ <time>00:00:00</time>
  <version>
-  <release>2.1.1</release>
-  <api>2.1.1</api>
+  <release>2.1.2</release>
+  <api>2.1.2</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
- <notes>Fix off-by-one that caused a crash when parsing broken messages.
-
----
-Avoid possible unterminated loops when parsing malformed email addresses.
-Fix a crash bug when not using the OO API.
-  
-Add hack to provide &quot;binary&quot; transfer encoding, which is not supported
-by mbstring.
-
-Go &quot;stable&quot; at long last; the procedural interface is stable, but not the
-OO API.  (Despite the version number jump, no nee features have been added)
-
----
-
-Fix build problem with PHP 4.3.4 - mbstring extension was rearranged.
-
-Fix potential build problem.
-
-mailparse_msg_parse_file() no longer returns true instead of the mime resource.        
-
-Improved uu-decoder to be more robust when dealing with strange line endings.
-Fix silly bug introduced by that fix...
-
-Fixed some memory leaks and problems when multiple uue attachments appear
-inline in a single mime part.
-  
+ <notes>
+  Fixed memory leaks and depricated code in tests.  
+  Patch for rfc2231 support by Jakub Klos.  
+  Fix incorrect handling of header continuation lines per RFC2822, patch by Jakub Klos.  
+  Initialize variable to prevent segfaults in cases where postion=0.  
  </notes>
  <contents>
   <dir name="/">
