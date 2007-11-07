@@ -681,7 +681,7 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 {
 	int x, A, B, C, D, n;
 	size_t file_size = 0;
-	unsigned char line[128];
+	char line[128];
 
 	if (outstream) {
 		/* write to outstream */
@@ -1365,7 +1365,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	HashPosition pos;
 	zval **val;
 	char *key, *newkey;
-	int key_len, pref_len;
+	uint key_len, pref_len;
 
 	pref_len = strlen(attrprefix);
 
