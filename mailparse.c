@@ -232,7 +232,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 	php_mimepart *part;
 	zval *zpart;
 	char *mode;
-	long mode_len;
+	int mode_len;
 	zval *source = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz!", &mode, &mode_len, &source) == FAILURE)
@@ -840,7 +840,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 PHP_FUNCTION(mailparse_rfc822_parse_addresses)
 {
 	char *addresses;
-	long addresses_len;
+	int addresses_len;
 	php_rfc822_tokenized_t *toks = NULL;
 	php_rfc822_addresses_t *addrs = NULL;
 	int i;
@@ -1032,7 +1032,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 PHP_FUNCTION(mailparse_msg_parse)
 {
 	char *data;
-	long data_len;
+	int data_len;
 	zval *arg;
 	php_mimepart *part;
 
@@ -1054,7 +1054,7 @@ PHP_FUNCTION(mailparse_msg_parse)
 PHP_FUNCTION(mailparse_msg_parse_file)
 {
 	char *filename;
-	long filename_len;
+	int filename_len;
 	php_mimepart *part;
 	char *filebuf;
 	php_stream *stream;
@@ -1503,7 +1503,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	zval *arg;
 	php_mimepart *part, *foundpart;
 	char *mimesection;
-	long mimesection_len;
+	int mimesection_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &arg, &mimesection, &mimesection_len) == FAILURE)	{
 		RETURN_FALSE;
