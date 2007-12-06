@@ -612,17 +612,18 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 		if (linelen > 0) {
 		
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
-		
-			if (isspace((int)(unsigned char)*c)) {
-
-				/* save header for possible continuation without the first char */
-				smart_str_appendl(&workpart->parsedata.headerbuf, c+1, linelen-1);
+	
+      if(*c == ' ' || *c == '\t') { 
+        /* This doesn't technically confirm to rfc2822, as we're replacing \t with \s, but this seems to fix
+         * cases where clients incorrectly fold by inserting a \t character. 
+         */
+				smart_str_appendl(&workpart->parsedata.headerbuf, " ", 1);
+        c++; linelen--;
 			} else {
 				php_mimepart_process_header(workpart TSRMLS_CC);
-
-				/* save header for possible continuation */
-				smart_str_appendl(&workpart->parsedata.headerbuf, c, linelen);
 			}
+			/* save header for possible continuation */
+			smart_str_appendl(&workpart->parsedata.headerbuf, c, linelen);
 			
 		} else {
 			/* end of headers */
