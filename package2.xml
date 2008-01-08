@@ -21,8 +21,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <date>2008-01-08</date>
  <time>00:00:00</time>
  <version>
-  <release>2.1.3</release>
-  <api>2.1.3</api>
+  <release>2.1.4-dev</release>
+  <api>2.1.4-dev</api>
  </version>
  <stability>
   <release>stable</release>
@@ -30,8 +30,6 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-  Fixed problems with continuation lines introduced in 2.1.2.
-  Fixed bug #6862.
  </notes>
  <contents>
   <dir name="/">
