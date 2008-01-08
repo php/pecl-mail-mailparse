@@ -18,11 +18,11 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>shire@php.net</email>
   <active>yes</active>
  </lead>
- <date>2007-11-08</date>
+ <date>2008-01-08</date>
  <time>00:00:00</time>
  <version>
-  <release>2.1.2</release>
-  <api>2.1.2</api>
+  <release>2.1.3</release>
+  <api>2.1.3</api>
  </version>
  <stability>
   <release>stable</release>
@@ -30,10 +30,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-  Fixed memory leaks and depricated code in tests.  
-  Patch for rfc2231 support by Jakub Klos.  
-  Fix incorrect handling of header continuation lines per RFC2822, patch by Jakub Klos.  
-  Initialize variable to prevent segfaults in cases where postion=0.  
+  Fixed problems with continuation lines introduced in 2.1.2.
+  Fixed bug #6862.
  </notes>
  <contents>
   <dir name="/">
@@ -58,6 +56,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="007.phpt" role="test" />
     <file name="008.phpt" role="test" />
     <file name="009.phpt" role="test" />
+    <file name="010.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
