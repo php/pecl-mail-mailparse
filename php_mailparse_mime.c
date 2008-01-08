@@ -439,10 +439,25 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 			strcpy(newstr, Z_STRVAL_PP(zheaderval));
 			strcat(newstr, ", ");
 			strcat(newstr, header_val);
-
 			add_assoc_string(part->headerhash, header_key, newstr, 0);
 		} else {
-			add_assoc_string(part->headerhash, header_key, header_val, 1);
+			if(zend_hash_find(Z_ARRVAL_P(part->headerhash), header_key, strlen(header_key)+1, (void**)&zheaderval) == SUCCESS) {
+        if(Z_TYPE_PP(zheaderval) == IS_ARRAY) {
+          add_next_index_string(*zheaderval, header_val, 1);
+        } else {
+          /* Create a nested array if there is more than one of the same header */
+          zval *zarr;
+          MAKE_STD_ZVAL(zarr);
+          array_init(zarr);
+          add_next_index_zval(zarr, *zheaderval);
+          add_next_index_string(zarr, header_val, 1);
+          ZVAL_ADDREF(*zheaderval);  /* Don't destroy this just yet, we'll move it */
+          add_assoc_zval(part->headerhash, header_key, zarr);
+          ZVAL_DELREF(*zheaderval);
+        }
+      } else {
+        add_assoc_string(part->headerhash, header_key, header_val, 1);
+      }
 		}
 			
 		/* if it is useful, keep a pointer to it in the mime part */
