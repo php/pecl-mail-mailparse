@@ -30,6 +30,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
+   Fix bug #13155 (infinite loop and/or mem. corruption after calling mailparse_msg_get_part_data)
  </notes>
  <contents>
   <dir name="/">

@@ -449,11 +449,10 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
           zval *zarr;
           MAKE_STD_ZVAL(zarr);
           array_init(zarr);
+          ZVAL_ADDREF(*zheaderval);
           add_next_index_zval(zarr, *zheaderval);
           add_next_index_string(zarr, header_val, 1);
-          ZVAL_ADDREF(*zheaderval);  /* Don't destroy this just yet, we'll move it */
           add_assoc_zval(part->headerhash, header_key, zarr);
-          ZVAL_DELREF(*zheaderval);
         }
       } else {
         add_assoc_string(part->headerhash, header_key, header_val, 1);

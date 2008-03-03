@@ -27,6 +27,7 @@
   <version>2.1.4-dev</version>
   <date>2008-01-08</date>
   <notes>
+   Fix bug #13155 (infinite loop and/or mem. corruption after calling mailparse_msg_get_part_data)
   </notes>
   <filelist>
    <file role="src" name="config.m4"/>
