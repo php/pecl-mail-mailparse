@@ -53,9 +53,7 @@ static struct php_mimeheader_with_attributes * php_mimeheader_alloc(char *value)
 void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevcharset_p)
 {
 	char *strp, *startofvalue = NULL;
-	int quotes=0;
-	int valuepos;
-	int i;
+	int quotes = 0;
 
 	/* Process string, get positions and replace	*/
 	/* Set to start of buffer*/
@@ -77,7 +75,6 @@ void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevc
 						*strp=0; 
 					} else {
 					 startofvalue = strp+1;
-					 valuepos = i;
 					}
 
 					quotes++;
@@ -823,7 +820,10 @@ static int find_part_callback(php_mimepart *part, php_mimepart_enumerator *id, v
 
 PHP_MAILPARSE_API php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name TSRMLS_DC)
 {
-	struct find_part_struct find = { name, NULL };
+	struct find_part_struct find;
+
+	find.searchfor = name;
+	find.foundpart = NULL;
 	php_mimepart_enum_parts(parent, find_part_callback, &find TSRMLS_CC);
 	return find.foundpart;
 }
