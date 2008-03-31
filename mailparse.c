@@ -103,7 +103,7 @@ zend_module_entry mailparse_module_entry = {
 	PHP_RINIT(mailparse),
 	PHP_RSHUTDOWN(mailparse),
 	PHP_MINFO(mailparse),
-    "2.1.4-dev",
+	PHP_MAILPARSE_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
 
@@ -656,7 +656,7 @@ PHP_MINFO_FUNCTION(mailparse)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "mailparse support", "enabled");
-	php_info_print_table_row(2, "Extension Version", mailparse_module_entry.version);
+	php_info_print_table_row(2, "Extension Version", PHP_MAILPARSE_VERSION);
 	php_info_print_table_row(2, "Revision", "$Revision$");
 	php_info_print_table_end();
 
