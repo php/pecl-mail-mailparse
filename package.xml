@@ -24,11 +24,9 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.1.4</version>
-  <date>2008-04-08</date>
+  <version>2.1.5-dev</version>
+  <date>2008-xx-xx</date>
   <notes>
-   Fix bug #13155 (infinite loop and/or mem. corruption after calling mailparse_msg_get_part_data)
-   Fix Bug #13373 (compilation breaks with CodeWarrior compiler)
   </notes>
   <filelist>
    <file role="src" name="config.m4"/>

@@ -18,11 +18,11 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>shire@php.net</email>
   <active>yes</active>
  </lead>
- <date>2008-04-08</date>
+ <date>2008-xx-xx</date>
  <time>00:00:00</time>
  <version>
-  <release>2.1.4</release>
-  <api>2.1.4</api>
+  <release>2.1.5-dev</release>
+  <api>2.1.5-dev</api>
  </version>
  <stability>
   <release>stable</release>
@@ -30,8 +30,6 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-   Fix bug #13155 (infinite loop and/or mem. corruption after calling mailparse_msg_get_part_data)
-   Fix Bug #13373 (compilation breaks with CodeWarrior compiler)
  </notes>
  <contents>
   <dir name="/">
