@@ -200,7 +200,7 @@ static int mailparse_mimemessage_populate(php_mimepart *part, zval *object TSRML
 	MAKE_STD_ZVAL(tmp);
 	mailparse_get_part_data(part, tmp TSRMLS_CC);
 	add_property_zval(object, "data", tmp);
-	ZVAL_DELREF(tmp);
+	Z_DELREF_P(tmp);
 
 	return SUCCESS;
 }
@@ -215,8 +215,9 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_
 	php_mimepart_to_zval(zpart, part);
 
 	object_init_ex(object, mimemsg_class_entry);
-	PZVAL_IS_REF(object) = 1;
-	ZVAL_REFCOUNT(object) = 1;
+
+	Z_SET_ISREF_TO_P(object, 1);
+	Z_SET_REFCOUNT_P(object, 1);
 
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart, sizeof(zval *), NULL);
 
@@ -1400,7 +1401,7 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	if (SUCCESS == zend_hash_find(Z_ARRVAL_P(headers), headerkey, strlen(headerkey)+1, (void**)&headerval)) {
 		MAKE_STD_ZVAL(newhdr);
 		*newhdr = **headerval;
-		newhdr->refcount = 1;
+		Z_SET_REFCOUNT_P(newhdr, 1);
 		zval_copy_ctor(newhdr);
 		add_assoc_zval(return_value, headerkey, newhdr);
 	}
