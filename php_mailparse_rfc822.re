@@ -371,7 +371,6 @@ mailbox:	/* addr-spec / phrase route-addr */
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS | PHP_RFC822_RECOMBINE_COMMENTS_ONLY
 						| PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES
 						);
-B
 				} else if (has_strings) {
 					addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
@@ -523,8 +522,6 @@ PHP_FUNCTION(mailparse_test)
 	long header_len;
 	php_rfc822_tokenized_t *toks;
 	php_rfc822_addresses_t *addrs;
-	struct rfc822t *t;
-	int i;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &header, &header_len) == FAILURE) {
 		RETURN_FALSE;
@@ -532,7 +529,8 @@ PHP_FUNCTION(mailparse_test)
 
 
 #if 0
-	t = mailparse_rfc822t_alloc(header, NULL);
+    {
+	struct rfc822t *t = mailparse_rfc822t_alloc(header, NULL);
 	for (i = 0; i < t->ntokens; i++) {
 		printf("token %d:  token=%d/%c len=%d value=%s\n", i, t->tokens[i].token, t->tokens[i].token,
 			t->tokens[i].len, t->tokens[i].ptr);
@@ -541,6 +539,7 @@ PHP_FUNCTION(mailparse_test)
 	mailparse_rfc822t_free(t);
 
 	printf("--- and now:\n");
+    }
 #endif
 	
 	toks = php_mailparse_rfc822_tokenize((const char*)header, 1 TSRMLS_CC);

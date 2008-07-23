@@ -1241,7 +1241,7 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 		
 		if (n == 0)
 		{
-			zend_error(E_WARNING, "%s(): error reading from file at offset %d", get_active_function_name(TSRMLS_C), start_pos);
+			zend_error(E_WARNING, "%s(): error reading from file at offset %lld", get_active_function_name(TSRMLS_C), start_pos);
 			goto cleanup;
 		}
 

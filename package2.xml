@@ -30,6 +30,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
+   PHP-5.3 compatability (pierre)
+   Remove compile time warnings, regenerate re2c file, fix old re2c file typo (shire)
  </notes>
  <contents>
   <dir name="/">

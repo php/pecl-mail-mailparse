@@ -27,6 +27,8 @@
   <version>2.1.5-dev</version>
   <date>2008-xx-xx</date>
   <notes>
+    PHP-5.3 compatability (pierre)
+    Remove compile time warnings, regenerate re2c file, fix old re2c file typo (shire)
   </notes>
   <filelist>
    <file role="src" name="config.m4"/>
