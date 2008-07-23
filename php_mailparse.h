@@ -35,13 +35,13 @@ extern zend_module_entry mailparse_module_entry;
 
 #ifndef  Z_SET_REFCOUNT_P
 # if PHP_MAJOR_VERSION < 6 && (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 3)
-#  define Z_SET_REFCOUNT_P(pz, rc)  pz->refcount = rc 
-#  define Z_UNSET_ISREF_P(pz) pz->is_ref = 0 
-#  define Z_DELREF_P(pz) pz->refcount--
-#  define Z_REFCOUNT_P(pz) pz->refcount
-#  define Z_ISREF_P(pz) pz->is_ref
-#  define Z_ADDREF_P(pz) pz->refcount++
-#  define Z_SET_ISREF_TO_P(pz, isref) pz->is_ref = isref
+#  define Z_SET_REFCOUNT_P(pz, rc)  (pz)->refcount = rc 
+#  define Z_UNSET_ISREF_P(pz) (pz)->is_ref = 0 
+#  define Z_DELREF_P(pz) (pz)->refcount--
+#  define Z_REFCOUNT_P(pz) (pz)->refcount
+#  define Z_ISREF_P(pz) (pz)->is_ref
+#  define Z_ADDREF_P(pz) (pz)->refcount++
+#  define Z_SET_ISREF_TO_P(pz, isref) (pz)->is_ref = isref
 # endif
 #endif
 

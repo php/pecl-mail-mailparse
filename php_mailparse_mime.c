@@ -118,7 +118,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 	char *name_buf = NULL;
 	smart_str value_buf = {0};
 	int is_rfc2231_name = 0;
-	char *check_name, *check_end_name;
+	char *check_name;
 	int charset_p, prevcharset_p = 0;
 	int namechanged, currentencoded = 0;
 
