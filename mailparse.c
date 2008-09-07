@@ -260,6 +260,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 		*part->source.zval = *source;
 		zval_copy_ctor(part->source.zval);
+		Z_SET_REFCOUNT_P(part->source.zval, 1);
 		convert_to_string_ex(&part->source.zval);
 	}
 	
@@ -282,6 +283,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 		*part->source.zval = *source;
 		zval_copy_ctor(part->source.zval);
+		Z_SET_REFCOUNT_P(part->source.zval, 1);
 		convert_to_string_ex(&part->source.zval);
 	}
 

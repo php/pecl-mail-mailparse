@@ -358,8 +358,8 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 	
 	smart_str_free(&part->parsedata.workbuf);
 	smart_str_free(&part->parsedata.headerbuf);
-	
-	FREE_ZVAL(part->source.zval);
+
+	zval_ptr_dtor(&part->source.zval);
 
 	zval_ptr_dtor(&part->headerhash);
 

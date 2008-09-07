@@ -32,6 +32,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <notes>
    PHP-5.3 compatability (pierre)
    Remove compile time warnings, regenerate re2c file, fix old re2c file typo (shire)
+   Fix memory leak in mailparse_mimemessage creation (shire)
  </notes>
  <contents>
   <dir name="/">
