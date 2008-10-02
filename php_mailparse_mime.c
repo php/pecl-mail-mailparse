@@ -317,6 +317,7 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(void)
 	array_init(part->headerhash);
 
 	MAKE_STD_ZVAL(part->source.zval);
+	Z_TYPE_P(part->source.zval) = IS_NULL;
 	
 	/* begin in header parsing mode */
 	part->parsedata.in_header = 1;
