@@ -1368,6 +1368,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	HashPosition pos;
 	zval **val;
 	char *key, *newkey;
+  long num_index;
 	uint key_len, pref_len;
 
 	pref_len = strlen(attrprefix);
@@ -1375,11 +1376,15 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(attr->attributes), &pos);
 	while (SUCCESS == zend_hash_get_current_data_ex(Z_ARRVAL_P(attr->attributes), (void**)&val, &pos)) {
 
-		zend_hash_get_current_key_ex(Z_ARRVAL_P(attr->attributes), &key, &key_len, NULL, 0, &pos);
+		zend_hash_get_current_key_ex(Z_ARRVAL_P(attr->attributes), &key, &key_len, &num_index, 0, &pos);
 
-		spprintf(&newkey, 0, "%s%s", attrprefix, key);
-		add_assoc_string(return_value, newkey, Z_STRVAL_PP(val), 1);
-		efree(newkey);
+    if (key_len) {
+      spprintf(&newkey, 0, "%s%s", attrprefix, key);
+    } else {
+      spprintf(&newkey, 0, "%s%d", attrprefix, num_index);
+    }
+    add_assoc_string(return_value, newkey, Z_STRVAL_PP(val), 1);
+    efree(newkey);
 		
 		zend_hash_move_forward_ex(Z_ARRVAL_P(attr->attributes), &pos);
 	}
