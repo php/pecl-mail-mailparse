@@ -1135,7 +1135,7 @@ static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *i
 			return FAILURE;
 		}
         if ((i + len + 1) >= sizeof(buf)) {
-                //zend_error(E_ERROR, "The structure buffer has been exceeded.  Please try decreasing the nesting depth of messages and report this to the developers.");
+                zend_error(E_ERROR, "The structure buffer has been exceeded.  Please try decreasing the nesting depth of messages and report this to the developers.");
         }
 		sprintf(&buf[i], "%s%c", intbuf, id->next ? '.' : '\0');
 		i += len + (id->next ? 1 : 0);
