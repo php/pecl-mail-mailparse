@@ -1123,25 +1123,32 @@ static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *i
 {
 	zval *return_value = (zval *)ptr;
 	char intbuf[16];
-	char buf[1024];
+	char *buf;
+	int buf_size;
 	int len, i = 0;
 
-	while(id && i < sizeof(buf))	{
+	buf_size = 1024;
+	buf = emalloc(buf_size);
+	while(id && i < buf_size)	{
 		sprintf(intbuf, "%d", id->id);
 		len = strlen(intbuf);
-		if (len > (sizeof(buf)-i))	{
+		if (len > (buf_size-i))	{
 			/* too many sections: bail */
 			zend_error(E_WARNING, "%s(): too many nested sections in message", get_active_function_name(TSRMLS_C));
 			return FAILURE;
 		}
-        if ((i + len + 1) >= sizeof(buf)) {
-                zend_error(E_ERROR, "The structure buffer has been exceeded.  Please try decreasing the nesting depth of messages and report this to the developers.");
-        }
+		if ((i + len + 1) >= buf_size) {
+			buf_size = buf_size << 1;
+			buf = erealloc(buf, buf_size); 
+			if (!buf) {
+				zend_error(E_ERROR, "The structure buffer has been exceeded (%d).  Please try decreasing the nesting depth of messages and report this to the developers.", buf_size);
+			}
+		}
 		sprintf(&buf[i], "%s%c", intbuf, id->next ? '.' : '\0');
 		i += len + (id->next ? 1 : 0);
 		id = id->next;
 	}
-	add_next_index_string(return_value, buf,1);
+	add_next_index_string(return_value, buf,0);
 	return SUCCESS;
 }
 
