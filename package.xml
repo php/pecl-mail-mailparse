@@ -24,9 +24,10 @@
  <license>PHP</license>
  <release>
   <state>stable</state>
-  <version>2.1.5-dev</version>
-  <date>2008-xx-xx</date>
+  <version>2.1.5</version>
+  <date>2008-03-03</date>
   <notes>
+    fix buffer overflow/segfault problem seen on windows (shire)
     PHP-5.3 compatability (pierre)
     Remove compile time warnings, regenerate re2c file, fix old re2c file typo (shire)
     Fix memory leak in mailparse_mimemessage creation (shire)

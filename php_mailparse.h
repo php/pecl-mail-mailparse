@@ -25,7 +25,7 @@
 extern zend_module_entry mailparse_module_entry;
 #define phpext_mailparse_ptr &mailparse_module_entry
 
-#define PHP_MAILPARSE_VERSION "2.1.5-dev"
+#define PHP_MAILPARSE_VERSION "2.1.5"
 
 #ifdef PHP_WIN32
 #define PHP_MAILPARSE_API __declspec(dllexport)

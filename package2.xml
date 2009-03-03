@@ -18,11 +18,11 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>shire@php.net</email>
   <active>yes</active>
  </lead>
- <date>2008-xx-xx</date>
+ <date>2008-03-03</date>
  <time>00:00:00</time>
  <version>
-  <release>2.1.5-dev</release>
-  <api>2.1.5-dev</api>
+  <release>2.1.5</release>
+  <api>2.1.5</api>
  </version>
  <stability>
   <release>stable</release>
