@@ -18,7 +18,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>shire@php.net</email>
   <active>yes</active>
  </lead>
- <date>2008-03-03</date>
+ <date>2009-03-03</date>
  <time>00:00:00</time>
  <version>
   <release>2.1.5</release>
@@ -30,6 +30,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
+   fix buffer overflow/segfault problem seen on windows (shire)
    PHP-5.3 compatability (pierre)
    Remove compile time warnings, regenerate re2c file, fix old re2c file typo (shire)
    Fix memory leak in mailparse_mimemessage creation (shire)

@@ -25,7 +25,7 @@
  <release>
   <state>stable</state>
   <version>2.1.5</version>
-  <date>2008-03-03</date>
+  <date>2009-03-03</date>
   <notes>
     fix buffer overflow/segfault problem seen on windows (shire)
     PHP-5.3 compatability (pierre)
