@@ -357,20 +357,20 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 PHP_FUNCTION(mailparse_mimemessage_get_child)
 {
 	php_mimepart *part, *foundpart;
-	zval **item_to_find;
+	zval *item_to_find;
 
 	part = mimemsg_get_object(getThis() TSRMLS_CC);
 
 	if (part == NULL)
 		RETURN_NULL();
 	
-	if (FAILURE == zend_get_parameters_ex(1, &item_to_find))
+	if (FAILURE == zend_get_parameters(ht, 1, &item_to_find))
 		RETURN_NULL();
 
-	if (Z_TYPE_PP(item_to_find) == IS_STRING) {
-		foundpart = php_mimepart_find_by_name(part, Z_STRVAL_PP(item_to_find) TSRMLS_CC);
+	if (Z_TYPE_P(item_to_find) == IS_STRING) {
+		foundpart = php_mimepart_find_by_name(part, Z_STRVAL_P(item_to_find) TSRMLS_CC);
 	} else {
-		foundpart = php_mimepart_find_child_by_position(part, Z_LVAL_PP(item_to_find) TSRMLS_CC);	
+		foundpart = php_mimepart_find_child_by_position(part, Z_LVAL_P(item_to_find) TSRMLS_CC);	
 	}
 
 	if (!foundpart)	{
@@ -880,7 +880,7 @@ PHP_FUNCTION(mailparse_rfc822_parse_addresses)
    Figures out the best way of encoding the content read from the file pointer fp, which must be seek-able */
 PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 {
-	zval **file;
+	zval *file;
 	int longline = 0;
 	int linelen = 0;
 	int c;
@@ -888,11 +888,11 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 	php_stream *stream;
 	char * name;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &file) == FAILURE)	{
+	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters(ht, 1, &file) == FAILURE)	{
 		WRONG_PARAM_COUNT;
 	}
 
-	php_stream_from_zval(stream, file);
+	php_stream_from_zval(stream, &file);
 
 	php_stream_rewind(stream);
 	while(!php_stream_eof(stream))	{
@@ -945,7 +945,7 @@ static int mailparse_stream_flush(void *stream MAILPARSE_MBSTRING_TSRMLS_DC)
 
 PHP_FUNCTION(mailparse_stream_encode)
 {
-	zval **srcfile, **destfile, **encod;
+	zval *srcfile, *destfile, *encod;
 	php_stream *srcstream, *deststream;
 	char *buf;
 	size_t len;
@@ -953,26 +953,26 @@ PHP_FUNCTION(mailparse_stream_encode)
 	enum mbfl_no_encoding enc;
 	mbfl_convert_filter *conv = NULL;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &srcfile, &destfile, &encod) == FAILURE)	{
+	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters(ht, 3, &srcfile, &destfile, &encod) == FAILURE)	{
 		WRONG_PARAM_COUNT;
 	}
 
-	if (Z_TYPE_PP(srcfile) == IS_RESOURCE && Z_LVAL_PP(srcfile) == 0)	{
+	if (Z_TYPE_P(srcfile) == IS_RESOURCE && Z_LVAL_P(srcfile) == 0)	{
 		RETURN_FALSE;
 	}
-	if (Z_TYPE_PP(destfile) == IS_RESOURCE && Z_LVAL_PP(destfile) == 0)	{
+	if (Z_TYPE_P(destfile) == IS_RESOURCE && Z_LVAL_P(destfile) == 0)	{
 		RETURN_FALSE;
 	}
 
-	php_stream_from_zval(srcstream, srcfile);
-	php_stream_from_zval(deststream, destfile);
+	php_stream_from_zval(srcstream, &srcfile);
+	php_stream_from_zval(deststream, &destfile);
 
-	convert_to_string_ex(encod);
-	enc = mbfl_name2no_encoding(Z_STRVAL_PP(encod));
+	convert_to_string_ex(&encod);
+	enc = mbfl_name2no_encoding(Z_STRVAL_P(encod));
 	if (enc == mbfl_no_encoding_invalid)	{
 		zend_error(E_WARNING, "%s(): unknown encoding \"%s\"",
 				get_active_function_name(TSRMLS_C),
-				Z_STRVAL_PP(encod)
+				Z_STRVAL_P(encod)
 				);
 		RETURN_FALSE;
 	}
