@@ -479,8 +479,10 @@ PHP_MAILPARSE_API php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rf
 	php_rfc822_addresses_t *addrs = ecalloc(1, sizeof(php_rfc822_addresses_t));
 
 	parse_address_tokens(toks, NULL, &addrs->naddrs);
-	addrs->addrs = addrs->naddrs ? ecalloc(addrs->naddrs, sizeof(php_rfc822_address_t)) : NULL;
-	parse_address_tokens(toks, addrs, &addrs->naddrs);
+    if (addrs->naddrs) {
+        addrs->addrs = ecalloc(addrs->naddrs, sizeof(php_rfc822_address_t));
+        parse_address_tokens(toks, addrs, &addrs->naddrs);
+    }
 
 	return addrs;
 }
