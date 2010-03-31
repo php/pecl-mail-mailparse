@@ -56,7 +56,7 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 static int le_mime_part;
 
 
-static function_entry mimemessage_methods[] = {
+static zend_function_entry mimemessage_methods[] = {
 	PHP_NAMED_FE(mimemessage,			PHP_FN(mailparse_mimemessage),					NULL)
 	PHP_NAMED_FE(get_child,				PHP_FN(mailparse_mimemessage_get_child),		NULL)
 	PHP_NAMED_FE(get_child_count,		PHP_FN(mailparse_mimemessage_get_child_count),	NULL)
@@ -72,7 +72,7 @@ static function_entry mimemessage_methods[] = {
 
 static zend_class_entry *mimemsg_class_entry;
 
-function_entry mailparse_functions[] = {
+zend_function_entry mailparse_functions[] = {
 	PHP_FE(mailparse_msg_parse_file,			NULL)
 	PHP_FE(mailparse_msg_get_part,				NULL)
 	PHP_FE(mailparse_msg_get_structure,			NULL)
