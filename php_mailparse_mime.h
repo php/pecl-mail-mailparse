@@ -81,7 +81,7 @@ struct _php_mimepart {
 
 };
 
-PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(void);
+PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D);
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC);
 PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
 PHP_MAILPARSE_API void php_mimepart_get_offsets(php_mimepart *part, off_t *start, off_t *end, off_t *start_body, int *nlines, int *nbodylines);

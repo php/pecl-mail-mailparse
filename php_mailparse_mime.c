@@ -305,7 +305,7 @@ static void php_mimepart_free_child(php_mimepart **part)
 	php_mimepart_free(*part TSRMLS_CC);
 }
 
-PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(void)
+PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
 {
 	php_mimepart *part = ecalloc(1, sizeof(php_mimepart));
 
@@ -508,9 +508,9 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 	return SUCCESS;
 }
 
-static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit)
+static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit TSRMLS_DC)
 {
-	php_mimepart *child = php_mimepart_alloc();
+	php_mimepart *child = php_mimepart_alloc(TSRMLS_C);
 	int ret;
 
 	parentpart->parsedata.lastpart = child;
@@ -575,7 +575,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 
 	/* Discover which part we were last working on */
 	while (workpart->parsedata.lastpart) {
-		int bound_len;
+		size_t bound_len;
 		php_mimepart *lastpart = workpart->parsedata.lastpart;
 
 		if (lastpart->parsedata.completed) {
@@ -599,7 +599,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 				return SUCCESS;
 			}
 
-			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
+			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1 TSRMLS_CC);
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
 			newpart->mime_version = estrdup(workpart->mime_version);
 			newpart->parsedata.in_header = 1;
@@ -688,7 +688,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 			}
 					
 			if (CONTENT_TYPE_IS(workpart, "message/rfc822")) {
-				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0);
+				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0 TSRMLS_CC);
 				workpart->parsedata.in_header = 1;
 				return SUCCESS;
 				
@@ -696,7 +696,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 		
 			/* create a section for the preamble that precedes the first boundary */
 			if (workpart->boundary) {
-				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1);
+				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1 TSRMLS_CC);
 				workpart->parsedata.in_header = 0;
 				workpart->parsedata.is_dummy = 1;
 				return SUCCESS;
@@ -918,7 +918,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC)
 PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC)
 {
 	if (buf && bufsize) {
-		int i;
+		size_t i;
 
 		if (part->extract_filter) {
 			for (i = 0; i < bufsize; i++) {

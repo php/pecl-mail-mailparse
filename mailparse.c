@@ -240,7 +240,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 		RETURN_FALSE;
 
 	/* prepare the mime part for this object */
-	part = php_mimepart_alloc();
+	part = php_mimepart_alloc(TSRMLS_C);
 	MAKE_STD_ZVAL(zpart);
 	php_mimepart_to_zval(zpart, part);
 
@@ -1074,7 +1074,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 
 	filebuf = emalloc(MAILPARSE_BUFSIZ);
 
-	part = php_mimepart_alloc();
+	part = php_mimepart_alloc(TSRMLS_C);
 	php_mimepart_to_zval(return_value, part);
 
 	while(!php_stream_eof(stream))	{
@@ -1113,7 +1113,7 @@ PHP_FUNCTION(mailparse_msg_free)
    Returns a handle that can be used to parse a message */
 PHP_FUNCTION(mailparse_msg_create)
 {
-	php_mimepart *part = php_mimepart_alloc();
+	php_mimepart *part = php_mimepart_alloc(TSRMLS_C);
 
 	php_mimepart_to_zval(return_value, part);
 }
