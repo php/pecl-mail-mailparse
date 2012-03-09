@@ -18,11 +18,16 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>shire@php.net</email>
   <active>yes</active>
  </lead>
- <date>2009-xx-xx</date>
- <time>00:00:00</time>
+ <lead>
+  <name>John Jawed</name>
+  <user>jawed</user>
+  <email>jawed@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2012-03-09</date>
  <version>
-  <release>2.1.6-dev</release>
-  <api>2.1.6-dev</api>
+  <release>2.1.6</release>
+  <api>2.1.6</api>
  </version>
  <stability>
   <release>stable</release>
@@ -30,6 +35,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
+ - PHP 5.4 compatibility
+ - BUG: Fixed TSRM build
+ - BUG: Don't attempt parse addresses if # of addresses is 0
  </notes>
  <contents>
   <dir name="/">
