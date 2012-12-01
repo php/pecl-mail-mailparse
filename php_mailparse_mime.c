@@ -722,7 +722,19 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 		if (len < bufsize && buf[len] == '\n') {
 			++len;
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);
-			php_mimepart_process_line(part TSRMLS_CC);
+			if (php_mimepart_process_line(part TSRMLS_CC) == FAILURE) {
+				/* php_mimepart_process_line() only returns FAILURE in case the count of children
+				 * have exceeded MAXPARTS and doing so at the very begining, without doing any work.
+				 * It'd do this for all of the following lines, since the exceeded state won't change.
+				 * As no additional work have been done since the last php_mimepart_process_line() call, 
+				 * it is safe to break the loop now not caring about the rest of the code.
+				 * 
+				 * Known issues:
+				 *  - some callers aren't obeying the returned value, but that's in the mailmessage 
+				 *    object which is not documented and seemingly otdated/unfinished anyway
+				 */
+				return FAILURE;
+			};
 			part->parsedata.workbuf.len = 0;
 		} else {
 			smart_str_appendl(&part->parsedata.workbuf, buf, len);

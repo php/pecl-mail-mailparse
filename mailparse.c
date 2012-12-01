@@ -1081,6 +1081,8 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 		int got = php_stream_read(stream, filebuf, MAILPARSE_BUFSIZ);
 		if (got > 0)	{
 			if (FAILURE == php_mimepart_parse(part, filebuf, got TSRMLS_CC)) {
+				/* We have to destroy the already allocated part, if we not return it */
+				php_mimepart_free(part TSRMLS_CC);
 				RETVAL_FALSE;
 				break;
 			}
