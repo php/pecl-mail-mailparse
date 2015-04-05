@@ -6,10 +6,10 @@ charset => string(8) "us-ascii"
 content-base => string(1) "/"
 content-boundary => string(37) "=====================_71195359==_.ALT"
 content-type => string(21) "multipart/alternative"
-ending-pos => int(5425)
+ending-pos => int(5284)
 line-count => int(141)
 starting-pos => int(0)
-starting-pos-body => int(1976)
+starting-pos-body => int(1940)
 transfer-encoding => string(4) "8bit"
 
     Part 1.1
@@ -19,8 +19,8 @@ transfer-encoding => string(4) "8bit"
     content-charset => string(10) "iso-8859-1"
     content-format => string(6) "flowed"
     content-type => string(10) "text/plain"
-    ending-pos => int(5378)
+    ending-pos => int(5240)
     line-count => int(101)
-    starting-pos => int(2017)
-    starting-pos-body => int(2127)
+    starting-pos => int(1980)
+    starting-pos-body => int(2087)
     transfer-encoding => string(16) "quoted-printable"
