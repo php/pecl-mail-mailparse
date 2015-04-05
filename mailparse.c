@@ -1267,7 +1267,7 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 		
 		if (n == 0)
 		{
-			zend_error(E_WARNING, "%s(): error reading from file at offset %lld", get_active_function_name(TSRMLS_C), start_pos);
+			zend_error(E_WARNING, "%s(): error reading from file at offset %ld", get_active_function_name(TSRMLS_C), start_pos);
 			goto cleanup;
 		}
 
@@ -1392,10 +1392,8 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	HashPosition pos;
 	zval **val;
 	char *key, *newkey;
-  long num_index;
-	uint key_len, pref_len;
-
-	pref_len = strlen(attrprefix);
+	ulong num_index;
+	uint key_len;
 
 	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(attr->attributes), &pos);
 	while (SUCCESS == zend_hash_get_current_data_ex(Z_ARRVAL_P(attr->attributes), (void**)&val, &pos)) {
@@ -1405,7 +1403,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
     if (key_len) {
       spprintf(&newkey, 0, "%s%s", attrprefix, key);
     } else {
-      spprintf(&newkey, 0, "%s%d", attrprefix, num_index);
+      spprintf(&newkey, 0, "%s%lu", attrprefix, num_index);
     }
     add_assoc_string(return_value, newkey, Z_STRVAL_PP(val), 1);
     efree(newkey);
