@@ -26,7 +26,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2012-03-09</date>
  <version>
-  <release>2.1.6</release>
+  <release>2.1.7</release>
   <api>2.1.6</api>
  </version>
  <stability>
@@ -35,9 +35,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
- - PHP 5.4 compatibility
- - BUG: Fixed TSRM build
- - BUG: Don't attempt parse addresses if # of addresses is 0
+- fix mailparse_uudecode_all, return correct "filename", and don't delete them
+- fix test suite
  </notes>
  <contents>
   <dir name="/">
