@@ -754,6 +754,18 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 	return file_size;
 }
 
+/* php_stream_fopen_temporary_file auto unlink the file on close
+ * this will keep the file
+ */
+static php_stream *_mailparse_create_stream(char **path) {
+	int fd;
+
+	fd = php_open_temporary_fd(NULL, "mailparse", path);
+	if (fd != -1)	{
+		return php_stream_fopen_from_fd_rel(fd, "r+b", NULL);
+	}
+	return NULL;
+}
 
 /* {{{ proto array mailparse_uudecode_all(resource fp)
    Scans the data from fp and extract each embedded uuencoded file. Returns an array listing filename information */
@@ -770,7 +782,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 
 	php_stream_from_zval(instream, &file);
 
-	outstream = php_stream_fopen_temporary_file(NULL, "mailparse", &outpath);
+	outstream = _mailparse_create_stream(&outpath);
 	if (outstream == NULL)	{
 		zend_error(E_WARNING, "%s(): unable to open temp file", get_active_function_name(TSRMLS_C));
 		RETURN_FALSE;
@@ -810,7 +822,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 			add_assoc_string(item, "origfilename", origfilename, 1);
 
 			/* create a temp file for the data */
-			partstream = php_stream_fopen_temporary_file(NULL, "mailparse", &outpath);
+			partstream = _mailparse_create_stream(&outpath);
 			if (partstream)	{
 				nparts++;
 				add_assoc_string(item, "filename", outpath, 0);
