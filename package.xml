@@ -37,6 +37,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <notes>
 - fix mailparse_uudecode_all, return correct "filename", and don't delete them
 - fix test suite
+- update license version to 3.01 and add LICENSE file
  </notes>
  <contents>
   <dir name="/">
@@ -65,6 +66,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
+   <file name="LICENSE" role="doc" />
    <file name="CREDITS" role="doc" />
    <file name="mailparse.c" role="src" />
    <file name="Makefile.frag" role="src" />
