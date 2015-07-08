@@ -23,7 +23,7 @@
 #include "php_mailparse.h"
 #include "php_mailparse_rfc822.h"
 #include "ext/standard/php_string.h"
-#include "ext/standard/php_smart_str.h"
+#include "ext/standard/php_smart_string.h"
 #line 39 "/Users/shire/data/mailparse/git/mailparse/php_mailparse_rfc822.re"
 
 
@@ -72,38 +72,38 @@ printf("ground: start=%p limit=%p cursor=%p: [%d] %s\n", start, YYLIMIT, YYCURSO
 {
 	YYCTYPE yych;
 	static const unsigned char yybm[] = {
-		  0, 192, 192, 192, 192, 192, 192, 192, 
-		192,  96,  96, 192, 192,  96, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		 96,  64,   0, 192, 192,  64, 192, 192, 
-		 64,  64, 192, 192,  64, 192,  64,  64, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192,  64,  64,  64,  64,  64,  64, 
-		 64, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192,  64, 192,  64, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
-		192, 192, 192, 192, 192, 192, 192, 192, 
+		  0, 192, 192, 192, 192, 192, 192, 192,
+		192,  96,  96, 192, 192,  96, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		 96,  64,   0, 192, 192,  64, 192, 192,
+		 64,  64, 192, 192,  64, 192,  64,  64,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192,  64,  64,  64,  64,  64,  64,
+		 64, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192,  64, 192,  64, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
+		192, 192, 192, 192, 192, 192, 192, 192,
 	};
 
 	if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
@@ -281,7 +281,7 @@ yy26:
 								tokens++;
 							}
 							++*ntokens;
-							
+
 							goto state_ground;
 						}
 #line 288 "<stdout>"
@@ -341,7 +341,7 @@ PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const ch
 	strcpy(toks->buffer, header);
 	toks->buffer[len] = 0;
 	toks->buffer[len+1] = 0; /* mini hack: the parser sometimes relies in this */
-	
+
 	tokenize(toks->buffer, NULL, &toks->ntokens, report_errors TSRMLS_CC);
 	toks->tokens = toks->ntokens ? ecalloc(toks->ntokens, sizeof(php_rfc822_token_t)) : NULL;
 	tokenize(toks->buffer, toks->tokens, &toks->ntokens, report_errors TSRMLS_CC);
@@ -361,40 +361,40 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 	char *ret = NULL;
 	int i, upper, last_was_atom = 0, this_is_atom = 0, tok_equiv;
 	size_t len = 1; /* for the NUL terminator */
-	
+
 	upper = first_token + n_tokens;
 	if (upper > toks->ntokens)
 		upper = toks->ntokens;
-	
+
 	for (i = first_token; i < upper; i++, last_was_atom = this_is_atom) {
 
 		tok_equiv = toks->tokens[i].token;
 		if (tok_equiv == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES)
 			tok_equiv = '"';
-		
+
 		if (flags & PHP_RFC822_RECOMBINE_IGNORE_COMMENTS && tok_equiv == '(')
 			continue;
 		if (flags & PHP_RFC822_RECOMBINE_COMMENTS_ONLY && tok_equiv != '(' && !(toks->tokens[i].token == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES))
 			continue;
-	
+
 		this_is_atom = php_rfc822_token_is_atom(toks->tokens[i].token);
 		if (this_is_atom && last_was_atom && flags & PHP_RFC822_RECOMBINE_SPACE_ATOMS)
 			len++; /* allow room for a space */
 
 		if (flags & PHP_RFC822_RECOMBINE_INCLUDE_QUOTES && tok_equiv == '"')
 			len += 2;
-			
+
 		len += toks->tokens[i].valuelen;
 	}
 
 	last_was_atom = this_is_atom = 0;
 
 	ret = emalloc(len);
-	
+
 	for (i = first_token, len = 0; i < upper; i++, last_was_atom = this_is_atom) {
 		const char *tokvalue;
 		int toklen;
-		
+
 		tok_equiv = toks->tokens[i].token;
 		if (tok_equiv == '(' && flags & PHP_RFC822_RECOMBINE_COMMENTS_TO_QUOTES)
 			tok_equiv = '"';
@@ -406,7 +406,7 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 
 		tokvalue = toks->tokens[i].value;
 		toklen = toks->tokens[i].valuelen;
-		
+
 		this_is_atom = php_rfc822_token_is_atom(toks->tokens[i].token);
 		if (this_is_atom && last_was_atom && flags & PHP_RFC822_RECOMBINE_SPACE_ATOMS) {
 			ret[len] = ' ';
@@ -429,7 +429,7 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 
 	}
 	ret[len] = 0;
-	
+
 	if (flags & PHP_RFC822_RECOMBINE_STRTOLOWER)
 		php_strtolower(ret, len);
 
@@ -441,15 +441,15 @@ static void parse_address_tokens(php_rfc822_tokenized_t *toks,
 {
 	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start, group_lbl_end;
 	int a_start, a_count; /* position and count for address part of a name */
-	smart_str group_addrs = { 0, };
+	smart_string group_addrs = { 0, };
 	char *address_value = NULL;
-	
+
 address:	/* mailbox / group */
 
 	if (start_tok >= toks->ntokens) {
 		/* the end */
 		*naddrs = iaddr;
-		smart_str_free(&group_addrs);
+		smart_string_free(&group_addrs);
 		return;
 	}
 
@@ -472,7 +472,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 	if (start_tok >= toks->ntokens) {
 		/* the end */
 		*naddrs = iaddr;
-		smart_str_free(&group_addrs);
+		smart_string_free(&group_addrs);
 		return;
 	}
 
@@ -514,16 +514,16 @@ mailbox:	/* addr-spec / phrase route-addr */
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
 
 				}
-				
+
 		}
-		
+
 	}
 
 	if (i < toks->ntokens && toks->tokens[i].token == '<') {
 		int j;
 		/* RFC822: route-addr = "<" [route] addr-spec ">" */
 		/* look for the closing '>' and recombine as the address part */
-		
+
 		for (j = i; j < toks->ntokens && toks->tokens[j].token != '>'; j++)
 			;
 
@@ -572,8 +572,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 
 		if (in_group) {
 			if (group_addrs.len)
-				smart_str_appendl(&group_addrs, ",", 1);
-			smart_str_appends(&group_addrs, address_value);
+				smart_string_appendl(&group_addrs, ",", 1);
+			smart_string_appends(&group_addrs, address_value);
 			efree(address_value);
 		} else {
 			addrs->addrs[iaddr].address = address_value;
@@ -590,8 +590,8 @@ mailbox:	/* addr-spec / phrase route-addr */
 		/* end of group */
 
 		if (addrs) {
-			smart_str_appendl(&group_addrs, ";", 1);
-			smart_str_0(&group_addrs);
+			smart_string_appendl(&group_addrs, ";", 1);
+			smart_string_0(&group_addrs);
 			addrs->addrs[iaddr].address = estrdup(group_addrs.c);
 			group_addrs.len = 0;
 
@@ -681,15 +681,15 @@ PHP_FUNCTION(mailparse_test)
 	printf("--- and now:\n");
     }
 #endif
-	
+
 	toks = php_mailparse_rfc822_tokenize((const char*)header, 1 TSRMLS_CC);
 	php_rfc822_print_tokens(toks);
-	
+
 	addrs = php_rfc822_parse_address_tokens(toks);
 	php_rfc822_print_addresses(addrs);
 	php_rfc822_free_addresses(addrs);
 
-	php_rfc822_tokenize_free(toks);	
+	php_rfc822_tokenize_free(toks);
 }
 
 /*

@@ -39,7 +39,7 @@ static void php_mimeheader_free(struct php_mimeheader_with_attributes *attr)
 static struct php_mimeheader_with_attributes * php_mimeheader_alloc(char *value)
 {
 	struct php_mimeheader_with_attributes *attr;
-	
+
 	attr = ecalloc(1, sizeof(struct php_mimeheader_with_attributes));
 
 	MAKE_STD_ZVAL(attr->attributes);
@@ -50,7 +50,7 @@ static struct php_mimeheader_with_attributes * php_mimeheader_alloc(char *value)
 	return attr;
 }
 
-void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevcharset_p)
+void rfc2231_to_mime(smart_string* value_buf, char* value, int charset_p, int prevcharset_p)
 {
 	char *strp, *startofvalue = NULL;
 	int quotes = 0;
@@ -58,21 +58,21 @@ void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevc
 	/* Process string, get positions and replace	*/
 	/* Set to start of buffer*/
 	if (charset_p) {
-	
+
 		/* Previous charset already set so only convert %nn to =nn*/
 		if (prevcharset_p) quotes=2;
-		
+
 		strp = value;
-		while (*strp) {  
-	
+		while (*strp) {
+
 			/* Quote handling*/
-			if (*strp == '\'') 
-			{ 
+			if (*strp == '\'')
+			{
 				if (quotes <= 1) {
 
 					/* End of charset*/
 					if (quotes == 0) {
-						*strp=0; 
+						*strp=0;
 					} else {
 					 startofvalue = strp+1;
 					}
@@ -91,23 +91,23 @@ void rfc2231_to_mime(smart_str* value_buf, char* value, int charset_p, int prevc
 	}
 
 	/* If first encoded token*/
-	if (charset_p && !prevcharset_p && startofvalue) { 
-		smart_str_appends(value_buf, "=?");
-		smart_str_appends(value_buf, value);
-		smart_str_appends(value_buf, "?Q?");
-		smart_str_appends(value_buf, startofvalue);  
-	}  
-	
+	if (charset_p && !prevcharset_p && startofvalue) {
+		smart_string_appends(value_buf, "=?");
+		smart_string_appends(value_buf, value);
+		smart_string_appends(value_buf, "?Q?");
+		smart_string_appends(value_buf, startofvalue);
+	}
+
 	/* If last encoded token*/
 	if (prevcharset_p && !charset_p)
 	{
-		smart_str_appends(value_buf, "?=");
+		smart_string_appends(value_buf, "?=");
 	}
-	
+
 	/* Append value*/
 	if ((!charset_p || (prevcharset_p && charset_p)) && value)
 	{
-		smart_str_appends(value_buf, value); 
+		smart_string_appends(value_buf, value);
 	}
 }
 
@@ -116,7 +116,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 	struct php_mimeheader_with_attributes *attr;
 	int i, first_semi, next_semi, comments_before_semi, netscape_bug = 0;
 	char *name_buf = NULL;
-	smart_str value_buf = {0};
+	smart_string value_buf = {0};
 	int is_rfc2231_name = 0;
 	char *check_name;
 	int charset_p, prevcharset_p = 0;
@@ -128,7 +128,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 	array_init(attr->attributes);
 
 /*  php_rfc822_print_tokens(toks); */
-	
+
 	/* look for optional ; which separates optional attributes from the main value */
 	for (first_semi = 2; first_semi < toks->ntokens; first_semi++)
 		if (toks->tokens[first_semi].token == ';')
@@ -155,8 +155,8 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 			if (toks->tokens[next_semi].token == '(')
 				comments_before_semi++;
 		}
-		
-	
+
+
 		i = first_semi;
 		if (i < next_semi)	{
 			i++;
@@ -184,32 +184,32 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						PHP_RFC822_RECOMBINE_STRTOLOWER|PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 				value = php_rfc822_recombine_tokens(toks, i, next_semi - i,
 						PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
-	
-				/* support rfc2231 mime parameter value 
+
+				/* support rfc2231 mime parameter value
 				 *
 				 * Parameter Value Continuations:
 				 *
 				 * Content-Type: message/external-body; access-type=URL;
 				 *	URL*0="ftp://";
 				 *	URL*1="cs.utk.edu/pub/moore/bulk-mailer/bulk-mailer.tar"
-				 * 
+				 *
 				 * is semantically identical to
 				 *
 				 * Content-Type: message/external-body; access-type=URL;
 				 *	URL="ftp://cs.utk.edu/pub/moore/bulk-mailer/bulk-mailer.tar"
-				 * 
+				 *
 				 * Original rfc2231 support by IceWarp Ltd. <info@icewarp.com>
 				 */
 				check_name = strchr(name, '*');
 				if (check_name) {
-				  currentencoded = 1;	
+				  currentencoded = 1;
 
 					/* Is last char * - charset encoding */
 					charset_p = *(name+strlen(name)-1) == '*';
 
 					/* Leave only attribute name without * */
 					*check_name = 0;
-				
+
 					/* New item or continuous */
 					if (NULL == name_buf) {
 						namechanged = 0;
@@ -228,7 +228,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						/* Append string to buffer - check if to be encoded...	*/
 						rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
 						efree(value);
-				
+
 						/* Mark previous */
 						prevcharset_p = charset_p;
 					}
@@ -245,7 +245,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 						add_assoc_string(attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len), 0);
 						efree(name_buf);
-						smart_str_free(&value_buf);
+						smart_string_free(&value_buf);
 
 						prevcharset_p = 0;
 						is_rfc2231_name = 0;
@@ -255,17 +255,17 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						if (!currentencoded) {
 							/* Add string*/
 							add_assoc_string(attr->attributes, name, value, 0);
-							efree(name);				
+							efree(name);
 						} else {		/* Encoded name changed*/
 							if (namechanged) {
 								/* Append string to buffer - check if to be encoded...	*/
 								rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
 								efree(value);
-				
+
 								/* Mark */
 								is_rfc2231_name = 1;
-								name_buf = name;			
-								prevcharset_p = charset_p;				
+								name_buf = name;
+								prevcharset_p = charset_p;
 							}
 						}
 
@@ -292,7 +292,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 		add_assoc_string(attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len), 0);
 		efree(name_buf);
-		smart_str_free(&value_buf);
+		smart_string_free(&value_buf);
 	}
 
 
@@ -312,13 +312,13 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
 	part->part_index = 1;
 
 	zend_hash_init(&part->children, 0, NULL, (dtor_func_t)php_mimepart_free_child, 0);
-	
+
 	MAKE_STD_ZVAL(part->headerhash);
 	array_init(part->headerhash);
 
 	MAKE_STD_ZVAL(part->source.zval);
 	Z_TYPE_P(part->source.zval) = IS_NULL;
-	
+
 	/* begin in header parsing mode */
 	part->parsedata.in_header = 1;
 	part->rsrc_id = ZEND_REGISTER_RESOURCE(NULL, part, php_mailparse_le_mime_part());
@@ -336,7 +336,7 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 		if (part->parent != NULL && part->parent->rsrc_id > 0)
 			return;
 	}
-	
+
 	/* free contained parts */
 
 	zend_hash_destroy(&part->children);
@@ -356,9 +356,9 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 		php_mimeheader_free(part->content_disposition);
 		part->content_disposition = NULL;
 	}
-	
-	smart_str_free(&part->parsedata.workbuf);
-	smart_str_free(&part->parsedata.headerbuf);
+
+	smart_string_free(&part->parsedata.workbuf);
+	smart_string_free(&part->parsedata.headerbuf);
 
 	zval_ptr_dtor(&part->source.zval);
 
@@ -399,7 +399,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 	if (part->parsedata.headerbuf.len == 0)
 		return SUCCESS;
 
-	smart_str_0(&part->parsedata.headerbuf);
+	smart_string_0(&part->parsedata.headerbuf);
 
 	/* parse the header line */
 	toks = php_mailparse_rfc822_tokenize((const char*)part->parsedata.headerbuf.c, 0 TSRMLS_CC);
@@ -415,10 +415,10 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 
 	/* get a lower-case version of the first token */
 	header_key = php_rfc822_recombine_tokens(toks, 0, 1, PHP_RFC822_RECOMBINE_IGNORE_COMMENTS|PHP_RFC822_RECOMBINE_STRTOLOWER);
-	
+
 	header_val = strchr(part->parsedata.headerbuf.c, ':');
 	header_val_stripped = php_rfc822_recombine_tokens(toks, 2, toks->ntokens-2, PHP_RFC822_RECOMBINE_IGNORE_COMMENTS|PHP_RFC822_RECOMBINE_STRTOLOWER);
-	
+
 	if (header_val) {
 		header_val++;
 		while (isspace(*header_val))
@@ -448,7 +448,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
           MAKE_STD_ZVAL(zarr);
           array_init(zarr);
           Z_ADDREF_P(*zheaderval);
-		
+
           add_next_index_zval(zarr, *zheaderval);
           add_next_index_string(zarr, header_val, 1);
           add_assoc_zval(part->headerhash, header_key, zarr);
@@ -457,7 +457,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
         add_assoc_string(part->headerhash, header_key, header_val, 1);
       }
 		}
-			
+
 		/* if it is useful, keep a pointer to it in the mime part */
 		if (strcmp(header_key, "mime-version") == 0)
 			STR_SET_REPLACE(part->mime_version, header_val_stripped);
@@ -470,7 +470,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 			STR_FREE(part->content_base);
 			part->content_base = php_rfc822_recombine_tokens(toks, 2, toks->ntokens-2, PHP_RFC822_RECOMBINE_IGNORE_COMMENTS);
 		}
-			
+
 		if (strcmp(header_key, "content-transfer-encoding") == 0)
 			STR_SET_REPLACE(part->content_transfer_encoding, header_val_stripped);
 		if (strcmp(header_key, "content-type") == 0) {
@@ -482,12 +482,12 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 			}
 
 			part->content_type = php_mimeheader_alloc_from_tok(toks);
-			
+
 			boundary = php_mimepart_attribute_get(part->content_type, "boundary");
 			if (boundary) {
 				part->boundary = estrdup(boundary);
 			}
-			
+
 			charset = php_mimepart_attribute_get(part->content_type, "charset");
 			if (charset) {
 				STR_SET_REPLACE(part->charset, charset);
@@ -496,7 +496,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 		if (strcmp(header_key, "content-disposition") == 0) {
 			part->content_disposition = php_mimeheader_alloc_from_tok(toks);
 		}
-		
+
 	}
 	STR_FREE(header_key);
 	STR_FREE(header_val_stripped);
@@ -515,7 +515,7 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 
 	parentpart->parsedata.lastpart = child;
 	child->parent = parentpart;
-	
+
 	child->source.kind = parentpart->source.kind;
 	if (parentpart->source.kind != mpNONE) {
 		*child->source.zval = *parentpart->source.zval;
@@ -524,14 +524,14 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 
 	ret = zend_hash_next_index_insert(&parentpart->children, (void*)&child, sizeof(php_mimepart *), NULL);
 	child->startpos = child->endpos = child->bodystart = child->bodyend = startpos;
-	
+
 	if (inherit) {
 		if (parentpart->content_transfer_encoding)
 			child->content_transfer_encoding = estrdup(parentpart->content_transfer_encoding);
 		if (parentpart->charset)
 			child->charset = estrdup(parentpart->charset);
 	}
-	
+
 	return child;
 }
 
@@ -565,8 +565,8 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 	}
 
 	c = workpart->parsedata.workbuf.c;
-	smart_str_0(&workpart->parsedata.workbuf);
-	
+	smart_string_0(&workpart->parsedata.workbuf);
+
 	/* strip trailing \r\n -- we always have a trailing \n */
 	origcount = workpart->parsedata.workbuf.len;
 	linelen = origcount - 1;
@@ -623,25 +623,25 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 	} else {
 
 		if (linelen > 0) {
-		
+
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
-	
-      if(*c == ' ' || *c == '\t') { 
+
+      if(*c == ' ' || *c == '\t') {
         /* This doesn't technically confirm to rfc2822, as we're replacing \t with \s, but this seems to fix
-         * cases where clients incorrectly fold by inserting a \t character. 
+         * cases where clients incorrectly fold by inserting a \t character.
          */
-				smart_str_appendl(&workpart->parsedata.headerbuf, " ", 1);
+				smart_string_appendl(&workpart->parsedata.headerbuf, " ", 1);
         c++; linelen--;
 			} else {
 				php_mimepart_process_header(workpart TSRMLS_CC);
 			}
 			/* save header for possible continuation */
-			smart_str_appendl(&workpart->parsedata.headerbuf, c, linelen);
-			
+			smart_string_appendl(&workpart->parsedata.headerbuf, c, linelen);
+
 		} else {
 			/* end of headers */
 			php_mimepart_process_header(workpart TSRMLS_CC);
-			
+
 			/* start of body */
 			workpart->parsedata.in_header = 0;
 			workpart->bodystart = workpart->endpos + origcount;
@@ -652,7 +652,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 			 * Let's relax and pretend they said they were mime 1.0 compatible */
 			if (workpart->mime_version == NULL && workpart->content_type != NULL)
 				workpart->mime_version = estrdup("1.0");
-		
+
 			if (!IS_MIME_1(workpart)) {
 				/* if we don't understand the MIME version, discard the content-type and
 				 * boundary */
@@ -686,14 +686,14 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 			if (workpart->charset == NULL) {
 				workpart->charset = estrdup(MAILPARSEG(def_charset));
 			}
-					
+
 			if (CONTENT_TYPE_IS(workpart, "message/rfc822")) {
 				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0 TSRMLS_CC);
 				workpart->parsedata.in_header = 1;
 				return SUCCESS;
-				
+
 			}
-		
+
 			/* create a section for the preamble that precedes the first boundary */
 			if (workpart->boundary) {
 				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1 TSRMLS_CC);
@@ -701,19 +701,19 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 				workpart->parsedata.is_dummy = 1;
 				return SUCCESS;
 			}
-			
-			return SUCCESS;	
+
+			return SUCCESS;
 		}
-		
+
 	}
-	
+
 	return SUCCESS;
 }
 
 PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC)
 {
 	size_t len;
-	
+
 	while(bufsize > 0) {
 		/* look for EOL */
 		for (len = 0; len < bufsize; len++)
@@ -721,23 +721,23 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 				break;
 		if (len < bufsize && buf[len] == '\n') {
 			++len;
-			smart_str_appendl(&part->parsedata.workbuf, buf, len);
+			smart_string_appendl(&part->parsedata.workbuf, buf, len);
 			if (php_mimepart_process_line(part TSRMLS_CC) == FAILURE) {
 				/* php_mimepart_process_line() only returns FAILURE in case the count of children
 				 * have exceeded MAXPARTS and doing so at the very begining, without doing any work.
 				 * It'd do this for all of the following lines, since the exceeded state won't change.
-				 * As no additional work have been done since the last php_mimepart_process_line() call, 
+				 * As no additional work have been done since the last php_mimepart_process_line() call,
 				 * it is safe to break the loop now not caring about the rest of the code.
-				 * 
+				 *
 				 * Known issues:
-				 *  - some callers aren't obeying the returned value, but that's in the mailmessage 
+				 *  - some callers aren't obeying the returned value, but that's in the mailmessage
 				 *    object which is not documented and seemingly otdated/unfinished anyway
 				 */
 				return FAILURE;
 			};
 			part->parsedata.workbuf.len = 0;
 		} else {
-			smart_str_appendl(&part->parsedata.workbuf, buf, len);
+			smart_string_appendl(&part->parsedata.workbuf, buf, len);
 		}
 
 		buf += len;
@@ -756,7 +756,7 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 	*child = NULL;
 	if (FAILURE == (*callback)(part, top, ptr TSRMLS_CC))
 		return FAILURE;
-	
+
 	*child = &next;
 	next.id = 1;
 
@@ -787,7 +787,7 @@ PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepar
 	HashPosition pos;
 	php_mimepart **childpart;
 	int index = 0;
-	
+
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
 	while (SUCCESS == zend_hash_get_current_data_ex(&part->children, (void**)&childpart, &pos)) {
 		if (FAILURE == (*callback)(part, *childpart, index, ptr TSRMLS_CC))
@@ -828,7 +828,7 @@ static int find_part_callback(php_mimepart *part, php_mimepart_enumerator *id, v
 	}
 	if (*num == 0)
 		find->foundpart = part;
-	
+
 	return SUCCESS;
 }
 
@@ -846,16 +846,16 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 {
 	HashPosition pos;
 	php_mimepart **childpart = NULL;
-	
+
 	zend_hash_internal_pointer_reset_ex(&parent->children, &pos);
 	while(position-- > 0)
 		if (FAILURE == zend_hash_move_forward_ex(&parent->children, &pos))
 			return NULL;
-	
+
 	if (FAILURE == zend_hash_get_current_data_ex(&parent->children, (void**)&childpart, &pos))
 		return NULL;
 
-	if(childpart) { 
+	if(childpart) {
 	  return *childpart;
 	} else {
 		return NULL;
@@ -868,10 +868,10 @@ static int filter_into_work_buffer(int c, void *dat MAILPARSE_MBSTRING_TSRMLS_DC
 	php_mimepart *part = dat;
 	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 
-	smart_str_appendc(&part->parsedata.workbuf, c);
+	smart_string_appendc(&part->parsedata.workbuf, c);
 
 	if (part->parsedata.workbuf.len >= 4096) {
-		
+
 		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len TSRMLS_CC);
 		part->parsedata.workbuf.len = 0;
 	}
@@ -882,7 +882,7 @@ static int filter_into_work_buffer(int c, void *dat MAILPARSE_MBSTRING_TSRMLS_DC
 PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC)
 {
 	enum mbfl_no_encoding from = mbfl_no_encoding_8bit;
-	
+
 	if (do_decode && part->content_transfer_encoding) {
 		from = mbfl_name2no_encoding(part->content_transfer_encoding);
 		if (from == mbfl_no_encoding_invalid) {
@@ -898,7 +898,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 	part->extract_func = decoder;
 	part->extract_context = ptr;
 	part->parsedata.workbuf.len = 0;
-	
+
 	if (do_decode) {
 		if (from == mbfl_no_encoding_8bit || from == mbfl_no_encoding_7bit) {
 			part->extract_filter = NULL;
@@ -912,7 +912,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 					);
 		}
 	}
-	
+
 }
 
 PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC)
@@ -957,7 +957,7 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS
 		return;
 
 	part->parent = NULL;
-	
+
 	zend_hash_internal_pointer_reset_ex(&parent->children, &pos);
 	while(SUCCESS == zend_hash_get_current_data_ex(&parent->children, (void**)&childpart, &pos)) {
 

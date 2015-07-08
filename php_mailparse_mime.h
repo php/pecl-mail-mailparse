@@ -20,7 +20,7 @@
 #ifndef php_mailparse_mime_h
 #define php_mailparse_mime_h
 
-#include "ext/standard/php_smart_str.h"
+#include "ext/standard/php_smart_string.h"
 
 typedef struct _php_mimepart php_mimepart;
 
@@ -47,7 +47,7 @@ struct _php_mimepart {
 	HashTable children;	/* child parts */
 
 	struct php_mimepart_source source;
-	
+
 	off_t startpos, endpos;		/* offsets of this part in the message */
 	off_t bodystart, bodyend;	/* offsets of the body content of this part */
 	size_t nlines, nbodylines;	/* number of lines in section/body */
@@ -58,11 +58,11 @@ struct _php_mimepart {
 	char *content_base;
 	char *boundary;
 	char *charset;
-	
+
 	struct php_mimeheader_with_attributes *content_type, *content_disposition;
-	
+
 	zval *headerhash; /* a record of all the headers */
-	
+
 	/* these are used during part extraction */
 	php_mimepart_extract_func_t extract_func;
 	mbfl_convert_filter *extract_filter;
@@ -74,8 +74,8 @@ struct _php_mimepart {
 		int is_dummy:1;
 		int completed:1;
 
-		smart_str workbuf;
-		smart_str headerbuf;
+		smart_string workbuf;
+		smart_string headerbuf;
 		php_mimepart *lastpart;
 	} parsedata;
 
