@@ -129,7 +129,7 @@ PHP_INI_END()
 
 #define mailparse_msg_name	"mailparse_mail_structure"
 
-#define mailparse_fetch_mimepart_resource(rfcvar, zvalarg)	ZEND_FETCH_RESOURCE(rfcvar, php_mimepart *, zvalarg, -1, mailparse_msg_name, le_mime_part)
+#define mailparse_fetch_mimepart_resource(rfcvar, zvalarg) rfcvar = (php_mimepart *)zend_fetch_resource(Z_RES_P(zvalarg), mailparse_msg_name, le_mime_part)
 
 PHP_MAILPARSE_API int php_mailparse_le_mime_part(void)
 {
@@ -1057,8 +1057,7 @@ PHP_FUNCTION(mailparse_msg_parse)
 		RETURN_FALSE;
 	}
 
-	// TODO Sean-Der
-	//mailparse_fetch_mimepart_resource(part, &arg);
+	mailparse_fetch_mimepart_resource(part, arg);
 
 	if (FAILURE == php_mimepart_parse(part, data, data_len TSRMLS_CC)) {
 		RETURN_FALSE;
@@ -1121,7 +1120,7 @@ PHP_FUNCTION(mailparse_msg_free)
 		RETURN_FALSE;
 	}
 
-	//mailparse_fetch_mimepart_resource(part, &arg);
+	mailparse_fetch_mimepart_resource(part, arg);
 	/* zend_list_delete(Z_LVAL_P(arg)); */
 	RETURN_TRUE;
 }
@@ -1182,8 +1181,7 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 		RETURN_FALSE;
 	}
 
-	// TODO Sean-Der
-	//mailparse_fetch_mimepart_resource(part, &arg);
+	mailparse_fetch_mimepart_resource(part, arg);
 
 	if (array_init(return_value) == FAILURE)	{
 		RETURN_FALSE;
@@ -1301,13 +1299,11 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 		RETURN_FALSE;
 	}
 
-	// TODO Sean-Der
-	//mailparse_fetch_mimepart_resource(part, &zpart);
+	mailparse_fetch_mimepart_resource(part, zpart);
 
 	/* filename can be a filename or a stream */
 	if (Z_TYPE_P(filename) == IS_RESOURCE) {
-		// TODO Sean-Der
-		//php_stream_from_zval(srcstream, &filename);
+		php_stream_from_zval(srcstream, filename);
 	} else if (isfile) {
 		convert_to_string_ex(filename);
 		srcstream = php_stream_open_wrapper(Z_STRVAL_P(filename), "rb", REPORT_ERRORS, NULL);
@@ -1526,8 +1522,7 @@ PHP_FUNCTION(mailparse_msg_get_part_data)
 		RETURN_FALSE;
 	}
 
-	// TODO Sean-Der
-	//mailparse_fetch_mimepart_resource(part, &arg);
+	mailparse_fetch_mimepart_resource(part, arg);
 
 	mailparse_get_part_data(part, return_value TSRMLS_CC);
 }
@@ -1546,8 +1541,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 		RETURN_FALSE;
 	}
 
-	//TODO Sean-Der
-	//mailparse_fetch_mimepart_resource(part, &arg);
+	mailparse_fetch_mimepart_resource(part, arg);
 
 	foundpart = php_mimepart_find_by_name(part, mimesection TSRMLS_CC);
 
