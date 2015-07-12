@@ -26,7 +26,7 @@ typedef struct _php_mimepart php_mimepart;
 
 struct php_mimeheader_with_attributes {
 	char *value;
-	zval *attributes;
+	zval attributes;
 };
 
 PHP_MAILPARSE_API char *php_mimepart_attribute_get(struct php_mimeheader_with_attributes *attr, char *attrname);
@@ -37,7 +37,7 @@ typedef int (*php_mimepart_extract_func_t)(php_mimepart *part, void *context, co
  * It is used mainly for writeable mime parts. */
 struct php_mimepart_source {
 	enum { mpNONE, mpSTRING, mpSTREAM } kind;
-	zval *zval;
+	zval zval;
 };
 
 struct _php_mimepart {
@@ -61,7 +61,7 @@ struct _php_mimepart {
 
 	struct php_mimeheader_with_attributes *content_type, *content_disposition;
 
-	zval *headerhash; /* a record of all the headers */
+	zval headerhash; /* a record of all the headers */
 
 	/* these are used during part extraction */
 	php_mimepart_extract_func_t extract_func;

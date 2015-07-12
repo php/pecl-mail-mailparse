@@ -260,10 +260,10 @@ PHP_FUNCTION(mailparse_mimemessage)
 		/* source is the actual message */
 		part->source.kind = mpSTRING;
 
-		*part->source.zval = *source;
-		zval_copy_ctor(part->source.zval);
-		Z_SET_REFCOUNT_P(part->source.zval, 1);
-		convert_to_string_ex(part->source.zval);
+		part->source.zval = *source;
+		zval_copy_ctor(&part->source.zval);
+		Z_SET_REFCOUNT_P(&part->source.zval, 1);
+		convert_to_string_ex(&part->source.zval);
 	}
 
 	if (strcmp(mode, "file") == 0) {
@@ -278,25 +278,25 @@ PHP_FUNCTION(mailparse_mimemessage)
 			RETURN_FALSE;
 		}
 
-		php_stream_to_zval(srcstream, part->source.zval);
+		php_stream_to_zval(srcstream, &part->source.zval);
 	}
 	if (strcmp(mode, "stream") == 0) {
 		part->source.kind = mpSTREAM;
 
-		*part->source.zval = *source;
-		zval_copy_ctor(part->source.zval);
-		Z_SET_REFCOUNT_P(part->source.zval, 1);
-		convert_to_string_ex(part->source.zval);
+		part->source.zval = *source;
+		zval_copy_ctor(&part->source.zval);
+		Z_SET_REFCOUNT_P(&part->source.zval, 1);
+		convert_to_string_ex(&part->source.zval);
 	}
 
 	/* parse the data from the source */
 	if (part->source.kind == mpSTRING) {
-		php_mimepart_parse(part, Z_STRVAL_P(part->source.zval), Z_STRLEN_P(part->source.zval) TSRMLS_CC);
+		php_mimepart_parse(part, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval) TSRMLS_CC);
 	} else if (part->source.kind == mpSTREAM) {
 		php_stream *srcstream;
 		char buf[1024];
 
-		php_stream_from_zval(srcstream, part->source.zval);
+		php_stream_from_zval(srcstream, &part->source.zval);
 
 		php_stream_rewind(srcstream);
 		while(!php_stream_eof(srcstream)) {
@@ -419,9 +419,9 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 
 
 	if (part->source.kind == mpSTRING)
-		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(part->source.zval), Z_STRLEN_P(part->source.zval));
+		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
 	else
-		php_stream_from_zval(srcstream, part->source.zval);
+		php_stream_from_zval(srcstream, &part->source.zval);
 
 	if (srcstream == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
@@ -506,9 +506,9 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 	}
 
 	if (part->source.kind == mpSTRING)
-		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(part->source.zval), Z_STRLEN_P(part->source.zval));
+		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
 	else
-		php_stream_from_zval(srcstream, part->source.zval);
+		php_stream_from_zval(srcstream, &part->source.zval);
 
 	if (srcstream == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
@@ -588,9 +588,9 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 		return;
 
 	if (part->source.kind == mpSTRING)
-		instream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(part->source.zval), Z_STRLEN_P(part->source.zval));
+		instream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
 	else
-		php_stream_from_zval(instream, part->source.zval);
+		php_stream_from_zval(instream, &part->source.zval);
 
 	if (instream == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
@@ -1394,10 +1394,10 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	ulong num_index;
 	zend_string *str_key;
 
-	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(attr->attributes), &pos);
-	while ((val = zend_hash_get_current_data_ex(Z_ARRVAL_P(attr->attributes), &pos)) != NULL) {
+	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(&attr->attributes), &pos);
+	while ((val = zend_hash_get_current_data_ex(Z_ARRVAL_P(&attr->attributes), &pos)) != NULL) {
 
-		zend_hash_get_current_key_ex(Z_ARRVAL_P(attr->attributes), &str_key, &num_index, &pos);
+		zend_hash_get_current_key_ex(Z_ARRVAL_P(&attr->attributes), &str_key, &num_index, &pos);
 
     if (str_key) {
       spprintf(&newkey, 0, "%s%s", attrprefix, str_key->val);
@@ -1407,7 +1407,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
     add_assoc_string(return_value, newkey, Z_STRVAL_P(val));
     efree(newkey);
 
-		zend_hash_move_forward_ex(Z_ARRVAL_P(attr->attributes), &pos);
+		zend_hash_move_forward_ex(Z_ARRVAL_P(&attr->attributes), &pos);
 	}
 
 	/* do this last so that a bogus set of headers like this:
@@ -1447,7 +1447,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	array_init(return_value);
 
 	/* get headers for this section */
-	*headers = *part->headerhash;
+	*headers = part->headerhash;
 	zval_copy_ctor(headers);
 
 	add_assoc_zval(return_value, "headers", headers);
