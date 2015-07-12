@@ -117,10 +117,11 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 {
 	php_mimepart *part = res->ptr;
 
-	if (part->parent == NULL && part->rsrc_id) {
-		part->rsrc_id = 0;
-		php_mimepart_free(part TSRMLS_CC);
-	}
+	//TODO Sean-Der
+	//if (part->parent == NULL && part->rsrc_id) {
+	//	part->rsrc_id = 0;
+	//	php_mimepart_free(part TSRMLS_CC);
+	//}
 }
 
 PHP_INI_BEGIN()
@@ -1048,18 +1049,17 @@ PHP_FUNCTION(mailparse_stream_encode)
    Incrementally parse data into buffer */
 PHP_FUNCTION(mailparse_msg_parse)
 {
-	char *data;
-	int data_len;
+	zend_string *data;
 	zval *arg;
 	php_mimepart *part;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &arg, &data, &data_len) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &arg, &data) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	if (FAILURE == php_mimepart_parse(part, data, data_len TSRMLS_CC)) {
+	if (FAILURE == php_mimepart_parse(part, data->val, data->len TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
 	RETURN_TRUE;
@@ -1132,8 +1132,7 @@ PHP_FUNCTION(mailparse_msg_create)
 {
 	php_mimepart *part = php_mimepart_alloc(TSRMLS_C);
 
-	// TODO Sean-Der
-	//php_mimepart_to_zval(return_value, part);
+	RETURN_RES(part->rsrc);
 }
 /* }}} */
 
@@ -1447,7 +1446,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	array_init(return_value);
 
 	/* get headers for this section */
-	*headers = part->headerhash;
+	headers = &part->headerhash;
 	zval_copy_ctor(headers);
 
 	add_assoc_zval(return_value, "headers", headers);
@@ -1534,16 +1533,15 @@ PHP_FUNCTION(mailparse_msg_get_part)
 {
 	zval *arg;
 	php_mimepart *part, *foundpart;
-	char *mimesection;
-	int mimesection_len;
+	zend_string *mimesection;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &arg, &mimesection, &mimesection_len) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &arg, &mimesection) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	foundpart = php_mimepart_find_by_name(part, mimesection TSRMLS_CC);
+	foundpart = php_mimepart_find_by_name(part, mimesection->val TSRMLS_CC);
 
 	if (!foundpart)	{
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "cannot find section %s in message", mimesection);

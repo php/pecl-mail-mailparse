@@ -317,23 +317,20 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
 
 	/* begin in header parsing mode */
 	part->parsedata.in_header = 1;
-	//TODO Sean-Der
-	//part->rsrc_id = ZEND_REGISTER_RESOURCE(NULL, part, php_mailparse_le_mime_part());
-
+	part->rsrc = zend_register_resource(part, php_mailparse_le_mime_part());
 	return part;
 }
 
 
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 {
-	if (part->rsrc_id) {
+	if (part->rsrc) {
 	        // TODO Sean-Der
 		//long tmp = part->rsrc_id;
-		part->rsrc_id = 0;
-		//TODO Sean-Der
+		//part->rsrc_id = 0;
 		//zend_list_delete(tmp);
-		if (part->parent != NULL && part->parent->rsrc_id > 0)
-			return;
+		//if (part->parent != NULL && part->parent->rsrc_id > 0)
+		//	return;
 	}
 
 	/* free contained parts */

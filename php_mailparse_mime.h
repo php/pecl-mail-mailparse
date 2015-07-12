@@ -42,7 +42,7 @@ struct php_mimepart_source {
 
 struct _php_mimepart {
 	php_mimepart *parent;
-	long rsrc_id;		/* for auto-cleanup */
+	zend_resource *rsrc;	/* for auto-cleanup */
 	int part_index;		/* sequence number of this part */
 	HashTable children;	/* child parts */
 
