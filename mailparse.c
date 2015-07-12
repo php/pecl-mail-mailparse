@@ -761,15 +761,13 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream 
 /* php_stream_fopen_temporary_file auto unlink the file on close
  * this will keep the file
  */
-static php_stream *_mailparse_create_stream(char **path) {
-	//TODO Sean-Der
-	//int fd;
+static php_stream *_mailparse_create_stream(zend_string **path) {
+	int fd;
 
-	//
-	//fd = php_open_temporary_fd(NULL, "mailparse", path);
-	//if (fd != -1)	{
-	//	return php_stream_fopen_from_fd_rel(fd, "r+b", NULL);
-	//}
+	fd = php_open_temporary_fd(NULL, "mailparse", path);
+	if (fd != -1)	{
+		return php_stream_fopen_from_fd(fd, "r+b", NULL);
+	}
 	return NULL;
 }
 
@@ -779,7 +777,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 {
 	zval *file, item;
 	char *buffer = NULL;
-	char *outpath = NULL;
+	zend_string *outpath;
 	int nparts = 0;
 	php_stream *instream, *outstream = NULL, *partstream = NULL;
 
@@ -817,7 +815,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				/* create an initial item representing the file with all uuencoded parts
 				 * removed */
 				array_init(&item);
-				add_assoc_string(&item, "filename", outpath);
+				add_assoc_string(&item, "filename", outpath->val);
 				add_next_index_zval(return_value, &item);
 			}
 
@@ -829,7 +827,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 			partstream = _mailparse_create_stream(&outpath);
 			if (partstream)	{
 				nparts++;
-				add_assoc_string(&item, "filename", outpath);
+				add_assoc_string(&item, "filename", outpath->val);
 				add_next_index_zval(return_value, &item);
 
 				/* decode it */
@@ -847,7 +845,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 
 	if (nparts == 0) {
 		/* delete temporary file */
-		unlink(outpath);
+		unlink(outpath->val);
 		efree(outpath);
 		RETURN_FALSE;
 	}
