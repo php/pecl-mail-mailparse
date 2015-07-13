@@ -856,16 +856,15 @@ PHP_FUNCTION(mailparse_uudecode_all)
    Parse addresses and returns a hash containing that data */
 PHP_FUNCTION(mailparse_rfc822_parse_addresses)
 {
-	char *addresses;
-	int addresses_len;
+	zend_string *addresses;
 	php_rfc822_tokenized_t *toks = NULL;
 	php_rfc822_addresses_t *addrs = NULL;
 	int i;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &addresses, &addresses_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &addresses) == FAILURE) {
 		RETURN_FALSE;
 	}
-	toks = php_mailparse_rfc822_tokenize((const char*)addresses, 1 TSRMLS_CC);
+	toks = php_mailparse_rfc822_tokenize((const char*)addresses->val, 1 TSRMLS_CC);
 	addrs = php_rfc822_parse_address_tokens(toks);
 
 	array_init(return_value);

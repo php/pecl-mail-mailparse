@@ -63,6 +63,7 @@ other = any\allspecials;
 
 #define ADD_ATOM_TOKEN()	do { if (tokens) { tokens->token = *start; tokens->value = start; tokens->valuelen = 1; tokens++; } ++*ntokens; } while (0)
 #define REPORT_ERR(msg)		do { if (report_errors) zend_error(E_WARNING, "input is not rfc822 compliant: %s", msg); } while(0)
+#define STR_FREE(ptr) if (ptr) { efree(ptr); }
 /* Tokenize a header. tokens may be NULL, in which case the number of tokens are
    counted, allowing the caller to allocate enough room */
 static void tokenize(const char *header, php_rfc822_token_t *tokens, int *ntokens, int report_errors TSRMLS_DC)
