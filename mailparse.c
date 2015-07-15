@@ -235,11 +235,10 @@ PHP_FUNCTION(mailparse_mimemessage)
 	zval *object = getThis();
 	php_mimepart *part;
 	zval zpart;
-	char *mode;
-	int mode_len;
+	zend_string *mode;
 	zval *source = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz!", &mode, &mode_len, &source) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sz!", &mode, &source) == FAILURE)
 		RETURN_FALSE;
 
 	/* prepare the mime part for this object */
@@ -251,13 +250,13 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 	/* now check the args */
 
-	if (strcmp(mode, "new") == 0)
+	if (strcmp(mode->val, "new") == 0)
 		RETURN_TRUE;
 
 	if (source == NULL)
 		RETURN_FALSE;
 
-	if (strcmp(mode, "var") == 0 && Z_TYPE_P(source) == IS_STRING) {
+	if (strcmp(mode->val, "var") == 0 && Z_TYPE_P(source) == IS_STRING) {
 		/* source is the actual message */
 		part->source.kind = mpSTRING;
 
@@ -267,7 +266,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 		convert_to_string_ex(&part->source.zval);
 	}
 
-	if (strcmp(mode, "file") == 0) {
+	if (strcmp(mode->val, "file") == 0) {
 		/* source is the name of a file */
 		php_stream *srcstream;
 
@@ -281,7 +280,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 		php_stream_to_zval(srcstream, &part->source.zval);
 	}
-	if (strcmp(mode, "stream") == 0) {
+	if (strcmp(mode->val, "stream") == 0) {
 		part->source.kind = mpSTREAM;
 
 		part->source.zval = *source;
