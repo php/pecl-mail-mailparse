@@ -1311,8 +1311,7 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 			cbfunc = extract_callback_stream;
 			cbdata = deststream = php_stream_memory_create(TEMP_STREAM_DEFAULT);
 		} else if (Z_TYPE_P(callbackfunc) == IS_RESOURCE) {
-			//TODO Sean-Der
-			//php_stream_from_zval(deststream, &callbackfunc);
+			php_stream_from_zval(deststream, callbackfunc);
 			cbfunc = extract_callback_stream;
 			cbdata = deststream;
 			deststream = NULL; /* don't free this one */
