@@ -175,8 +175,6 @@ static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
 {
 	zval *zpart;
 	php_mimepart *part;
-	int type;
-
 
 	if (Z_TYPE_P(object) != IS_OBJECT) {
 		return NULL;
@@ -186,11 +184,9 @@ static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
 		return NULL;
 	}
 
-	// TODO Sean-Der
-	//part = zend_list_find(Z_LVAL_PP(zpart), &type);
-
-	if (type != le_mime_part)
+	if ((part = (php_mimepart *) zend_fetch_resource_ex(zpart, mailparse_msg_name, le_mime_part)) == NULL) {
 		return NULL;
+	}
 
 	return part;
 }
@@ -213,8 +209,7 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_
 	//TODO Sean-Der
 	//zend_list_addref(part->rsrc_id);
 
-	//TODO Sean-Der
-	//php_mimepart_to_zval(zpart, part);
+	php_mimepart_to_zval(&zpart, part->rsrc);
 
 	object_init_ex(object, mimemsg_class_entry);
 
@@ -243,8 +238,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 	/* prepare the mime part for this object */
 	part = php_mimepart_alloc(TSRMLS_C);
-	//TODO Sean-Der
-	//php_mimepart_to_zval(zpart, part);
+	php_mimepart_to_zval(&zpart, part->rsrc);
 
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart);
 
@@ -1085,8 +1079,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 	filebuf = emalloc(MAILPARSE_BUFSIZ);
 
 	part = php_mimepart_alloc(TSRMLS_C);
-	// TODO Sean-Der
-	//php_mimepart_to_zval(return_value, part);
+	php_mimepart_to_zval(return_value, part->rsrc);
 
 	while(!php_stream_eof(stream))	{
 		int got = php_stream_read(stream, filebuf, MAILPARSE_BUFSIZ);
@@ -1545,7 +1538,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	}
 	//TODO Sean-Der
 	//zend_list_addref(foundpart->rsrc_id);
-	//php_mimepart_to_zval(return_value, foundpart);
+	php_mimepart_to_zval(return_value, foundpart->rsrc);
 }
 /* }}} */
 

@@ -90,7 +90,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC);
 PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC);
 
-#define php_mimepart_to_zval(zval, part)	ZVAL_RESOURCE(zval, part->rsrc_id)
+#define php_mimepart_to_zval(zval, part)	ZVAL_RES(zval, part)
 
 typedef struct _php_mimepart_enumerator php_mimepart_enumerator;
 struct _php_mimepart_enumerator {
