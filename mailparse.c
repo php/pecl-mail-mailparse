@@ -137,6 +137,12 @@ PHP_MAILPARSE_API int php_mailparse_le_mime_part(void)
 	return le_mime_part;
 }
 
+PHP_MAILPARSE_API char* php_mailparse_msg_name(void)
+{
+	return mailparse_msg_name;
+}
+
+
 PHP_MINIT_FUNCTION(mailparse)
 {
 	zend_class_entry mmce;
@@ -184,7 +190,7 @@ static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
 		return NULL;
 	}
 
-	if ((part = (php_mimepart *) zend_fetch_resource_ex(zpart, mailparse_msg_name, le_mime_part)) == NULL) {
+	if ((mailparse_fetch_mimepart_resource(part, zpart)) == NULL) {
 		return NULL;
 	}
 

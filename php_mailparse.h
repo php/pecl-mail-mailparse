@@ -65,6 +65,7 @@ PHP_FUNCTION(mailparse_uudecode_all);
 PHP_FUNCTION(mailparse_test);
 
 PHP_MAILPARSE_API int php_mailparse_le_mime_part(void);
+PHP_MAILPARSE_API char* php_mailparse_msg_name(void);
 
 /* mimemessage object */
 PHP_FUNCTION(mailparse_mimemessage);

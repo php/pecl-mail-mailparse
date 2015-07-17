@@ -28,6 +28,7 @@
 #define CONTENT_TYPE_IS(part, contenttypevalue)	((part)->content_type && strcasecmp((part)->content_type->value, contenttypevalue) == 0)
 #define CONTENT_TYPE_ISL(part, contenttypevalue, len)	((part)->content_type && strncasecmp((part)->content_type->value, contenttypevalue, len) == 0)
 #define STR_FREE(ptr) if (ptr) { efree(ptr); }
+#define mailparse_fetch_mimepart_resource(rfcvar, zvalarg) rfcvar = (php_mimepart *)zend_fetch_resource(Z_RES_P(zvalarg), php_mailparse_msg_name(), php_mailparse_le_mime_part())
 
 static void php_mimeheader_free(struct php_mimeheader_with_attributes *attr)
 {
@@ -514,6 +515,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit TSRMLS_DC)
 {
 	php_mimepart *child = php_mimepart_alloc(TSRMLS_C);
+	zval child_z;
 
 	parentpart->parsedata.lastpart = child;
 	child->parent = parentpart;
@@ -524,7 +526,8 @@ static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t start
 		zval_copy_ctor(&child->source.zval);
 	}
 
-	zend_hash_next_index_insert(&parentpart->children, (zval *) &child);
+        ZVAL_RES(&child_z, child->rsrc);
+	zend_hash_next_index_insert(&parentpart->children, &child_z);
 	child->startpos = child->endpos = child->bodystart = child->bodyend = startpos;
 
 	if (inherit) {
@@ -753,6 +756,7 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 {
 	php_mimepart_enumerator next;
 	php_mimepart *childpart;
+	zval *childpart_z;
 	HashPosition pos;
 
 	*child = NULL;
@@ -766,7 +770,8 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 		next.id = 0;
 
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
-	while ((childpart = (php_mimepart *)zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
+	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
+	      mailparse_fetch_mimepart_resource(childpart, childpart_z);
 		if (next.id)
 			if (FAILURE == enum_parts_recurse(top, &next.next, childpart, callback, ptr TSRMLS_CC))
 				return FAILURE;
@@ -788,10 +793,13 @@ PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepar
 {
 	HashPosition pos;
 	php_mimepart *childpart;
+	zval *childpart_z;
+
 	int index = 0;
 
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
-	while ((childpart = (php_mimepart *) zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
+	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
+		mailparse_fetch_mimepart_resource(childpart, childpart_z);
 		if (FAILURE == (*callback)(part, childpart, index, ptr TSRMLS_CC))
 			return;
 
@@ -848,14 +856,17 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 {
 	HashPosition pos;
 	php_mimepart *childpart = NULL;
+	zval *childpart_z;
 
 	zend_hash_internal_pointer_reset_ex(&parent->children, &pos);
 	while(position-- > 0)
 		if (FAILURE == zend_hash_move_forward_ex(&parent->children, &pos))
 			return NULL;
 
-	if ((childpart = (php_mimepart *)zend_hash_get_current_data_ex(&parent->children, &pos)) == NULL)
+	if ((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) == NULL) {
+		mailparse_fetch_mimepart_resource(childpart, childpart_z);
 		return NULL;
+	}
 
 	if(childpart) {
 	  return childpart;
@@ -954,6 +965,7 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS
 	php_mimepart *parent = part->parent;
 	HashPosition pos;
 	php_mimepart *childpart;
+	zval *childpart_z;
 
 	if (parent == NULL)
 		return;
@@ -961,8 +973,9 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS
 	part->parent = NULL;
 
 	zend_hash_internal_pointer_reset_ex(&parent->children, &pos);
-	while((childpart = (php_mimepart *)zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
-		if ((childpart = (php_mimepart *)zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
+	while((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
+		if ((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
+			mailparse_fetch_mimepart_resource(childpart, childpart_z);
 			if (childpart == part) {
 				ulong h;
 				zend_hash_get_current_key_ex(&parent->children, NULL, &h, &pos);
