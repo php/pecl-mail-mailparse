@@ -439,6 +439,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 			strcat(newstr, ", ");
 			strcat(newstr, header_val);
 			add_assoc_string(&part->headerhash, header_key, newstr);
+			efree(newstr);
 		} else {
 			if((zheaderval = zend_hash_find(Z_ARRVAL_P(&part->headerhash), header_zstring)) != NULL) {
 			      if(Z_TYPE_P(zheaderval) == IS_ARRAY) {

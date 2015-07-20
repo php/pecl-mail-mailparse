@@ -1063,18 +1063,17 @@ PHP_FUNCTION(mailparse_msg_parse)
    Parse file and return a resource representing the structure */
 PHP_FUNCTION(mailparse_msg_parse_file)
 {
-	char *filename;
-	int filename_len;
+	zend_string *filename;
 	php_mimepart *part;
 	char *filebuf;
 	php_stream *stream;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &filename) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	/* open file and read it in */
-	stream = php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
+	stream = php_stream_open_wrapper(filename->val, "rb", REPORT_ERRORS, NULL);
 	if (stream == NULL)	{
 		RETURN_FALSE;
 	}
@@ -1154,6 +1153,7 @@ static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *i
 		id = id->next;
 	}
 	add_next_index_string(return_value, buf);
+	efree(buf);
 	return SUCCESS;
 }
 
@@ -1424,7 +1424,7 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 
 static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS_DC)
 {
-	zval *headers, *tmpval;
+	zval headers, *tmpval;
 	zend_string *hash_key;
 	off_t startpos, endpos, bodystart;
 	int nlines, nbodylines;
@@ -1432,10 +1432,9 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	array_init(return_value);
 
 	/* get headers for this section */
-	headers = &part->headerhash;
-	zval_copy_ctor(headers);
+	ZVAL_DUP(&headers, &part->headerhash);
 
-	add_assoc_zval(return_value, "headers", headers);
+	add_assoc_zval(return_value, "headers", &headers);
 
 	php_mimepart_get_offsets(part, &startpos, &endpos, &bodystart, &nlines, &nbodylines);
 
@@ -1477,7 +1476,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 
 	/* extract the address part of the content-id only */
 	hash_key = zend_string_init("content-id", sizeof("content-id") - 1, 0);
-	if ((tmpval = zend_hash_find(Z_ARRVAL_P(headers), hash_key)) != NULL) {
+	if ((tmpval = zend_hash_find(Z_ARRVAL_P(&headers), hash_key)) != NULL) {
 		php_rfc822_tokenized_t *toks;
 		php_rfc822_addresses_t *addrs;
 
@@ -1490,9 +1489,9 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	}
 	zend_string_release(hash_key);
 
-	add_header_reference_to_zval("content-description", return_value, headers TSRMLS_CC);
-	add_header_reference_to_zval("content-language", return_value, headers TSRMLS_CC);
-	add_header_reference_to_zval("content-md5", return_value, headers TSRMLS_CC);
+	add_header_reference_to_zval("content-description", return_value, &headers TSRMLS_CC);
+	add_header_reference_to_zval("content-language", return_value, &headers TSRMLS_CC);
+	add_header_reference_to_zval("content-md5", return_value, &headers TSRMLS_CC);
 
 	return SUCCESS;
 }
