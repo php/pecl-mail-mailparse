@@ -1409,15 +1409,14 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 
 static void add_header_reference_to_zval(char *headerkey, zval *return_value, zval *headers TSRMLS_DC)
 {
-	zval *headerval, *newhdr;
+	zval *headerval, newhdr;
 	zend_string *hash_key;
 
 	hash_key = zend_string_init(headerkey, strlen(headerkey), 0);
 	if ((headerval = zend_hash_find(Z_ARRVAL_P(headers), hash_key)) != NULL) {
-		*newhdr = *headerval;
-		Z_SET_REFCOUNT_P(newhdr, 1);
-		zval_copy_ctor(newhdr);
-		add_assoc_zval(return_value, headerkey, newhdr);
+		ZVAL_DUP(&newhdr, headerval);
+		Z_SET_REFCOUNT_P(&newhdr, 1);
+		add_assoc_zval(return_value, headerkey, &newhdr);
 	}
 	zend_string_release(hash_key);
 }
