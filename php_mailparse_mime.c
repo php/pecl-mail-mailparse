@@ -457,7 +457,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
         add_assoc_string(&part->headerhash, header_key, header_val);
       }
 		}
-
+		zend_string_release(header_zstring);
 		/* if it is useful, keep a pointer to it in the mime part */
 		if (strcmp(header_key, "mime-version") == 0)
 			STR_SET_REPLACE(part->mime_version, header_val_stripped);

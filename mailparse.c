@@ -819,6 +819,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 			array_init(&item);
 			add_assoc_string(&item, "origfilename", origfilename);
 
+			zend_string_release(outpath);
 			/* create a temp file for the data */
 			partstream = _mailparse_create_stream(&outpath);
 			if (partstream)	{
@@ -830,6 +831,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				mailparse_do_uudecode(instream, partstream TSRMLS_CC);
 				php_stream_close(partstream);
 			}
+			zend_string_release(outpath);
 		} else {
 			/* write to the output file */
 			php_stream_write_string(outstream, buffer);
@@ -841,8 +843,6 @@ PHP_FUNCTION(mailparse_uudecode_all)
 
 	if (nparts == 0) {
 		/* delete temporary file */
-		unlink(outpath->val);
-		efree(outpath);
 		RETURN_FALSE;
 	}
 }
@@ -1488,6 +1488,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 		php_rfc822_free_addresses(addrs);
 		php_rfc822_tokenize_free(toks);
 	}
+	zend_string_release(hash_key);
 
 	add_header_reference_to_zval("content-description", return_value, headers TSRMLS_CC);
 	add_header_reference_to_zval("content-language", return_value, headers TSRMLS_CC);
