@@ -117,11 +117,10 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 {
 	php_mimepart *part = res->ptr;
 
-	//TODO Sean-Der
-	//if (part->parent == NULL && part->rsrc_id) {
-	//	part->rsrc_id = 0;
-	//	php_mimepart_free(part TSRMLS_CC);
-	//}
+	if (part->parent == NULL && part->rsrc) {
+		part->rsrc = NULL;
+		php_mimepart_free(part TSRMLS_CC);
+	}
 }
 
 PHP_INI_BEGIN()
@@ -212,16 +211,14 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_
 {
 	zval zpart;
 
-	//TODO Sean-Der
-	//zend_list_addref(part->rsrc_id);
+	part->rsrc->gc.refcount++;
 
 	php_mimepart_to_zval(&zpart, part->rsrc);
 
 	object_init_ex(object, mimemsg_class_entry);
 
-	//TODO Sean-Der
-	//Z_SET_ISREF_TO_P(object, 1);
-	//Z_SET_REFCOUNT_P(object, 1);
+	ZVAL_MAKE_REF(object);
+	Z_SET_REFCOUNT_P(object, 1);
 
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart);
 
@@ -1109,14 +1106,10 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 PHP_FUNCTION(mailparse_msg_free)
 {
 	zval *arg;
-	php_mimepart *part;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
-
-	mailparse_fetch_mimepart_resource(part, arg);
-	/* zend_list_delete(Z_LVAL_P(arg)); */
+	zend_list_delete(Z_RES_P(arg));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1422,8 +1415,7 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	hash_key = zend_string_init(headerkey, strlen(headerkey), 0);
 	if ((headerval = zend_hash_find(Z_ARRVAL_P(headers), hash_key)) != NULL) {
 		*newhdr = *headerval;
-		// TODO Sean-Der
-		//Z_SET_REFCOUNT_P(newhdr, 1);
+		Z_SET_REFCOUNT_P(newhdr, 1);
 		zval_copy_ctor(newhdr);
 		add_assoc_zval(return_value, headerkey, newhdr);
 	}
@@ -1541,8 +1533,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "cannot find section %s in message", mimesection);
 		RETURN_FALSE;
 	}
-	//TODO Sean-Der
-	//zend_list_addref(foundpart->rsrc_id);
+	foundpart->rsrc->gc.refcount++;
 	php_mimepart_to_zval(return_value, foundpart->rsrc);
 }
 /* }}} */

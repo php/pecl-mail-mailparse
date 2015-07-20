@@ -326,12 +326,9 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
 {
 	if (part->rsrc) {
-	        // TODO Sean-Der
-		//long tmp = part->rsrc_id;
-		//part->rsrc_id = 0;
-		//zend_list_delete(tmp);
-		//if (part->parent != NULL && part->parent->rsrc_id > 0)
-		//	return;
+		zend_list_delete(part->rsrc);
+		if (part->parent != NULL && part->parent->rsrc == NULL)
+			return;
 	}
 
 	/* free contained parts */
@@ -450,8 +447,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
           /* Create a nested array if there is more than one of the same header */
           zval zarr;
           array_init(&zarr);
-					// TODO Sean-Der
-          //Z_ADDREF_P(*zheaderval);
+          Z_ADDREF_P(zheaderval);
 
           add_next_index_zval(&zarr, zheaderval);
           add_next_index_string(&zarr, header_val);
