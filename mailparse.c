@@ -217,9 +217,6 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object)
 
 	object_init_ex(object, mimemsg_class_entry);
 
-	ZVAL_MAKE_REF(object);
-	Z_SET_REFCOUNT_P(object, 1);
-
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart);
 
 	/* recurses for any of our child parts */
@@ -247,23 +244,21 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 	/* now check the args */
 
-	if (strcmp(mode->val, "new") == 0)
+	if (zend_string_equals_literal(mode, "new"))
 		RETURN_TRUE;
 
 	if (source == NULL)
 		RETURN_FALSE;
 
-	if (strcmp(mode->val, "var") == 0 && Z_TYPE_P(source) == IS_STRING) {
+	if (zend_string_equals_literal(mode, "var") && Z_TYPE_P(source) == IS_STRING) {
 		/* source is the actual message */
 		part->source.kind = mpSTRING;
 
-		part->source.zval = *source;
-		zval_copy_ctor(&part->source.zval);
-		Z_SET_REFCOUNT_P(&part->source.zval, 1);
+		ZVAL_DUP(&part->source.zval, source);
 		convert_to_string_ex(&part->source.zval);
 	}
 
-	if (strcmp(mode->val, "file") == 0) {
+	if (zend_string_equals_literal(mode, "file")) {
 		/* source is the name of a file */
 		php_stream *srcstream;
 
@@ -277,12 +272,10 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 		php_stream_to_zval(srcstream, &part->source.zval);
 	}
-	if (strcmp(mode->val, "stream") == 0) {
+	if (zend_string_equals_literal(mode, "stream")) {
 		part->source.kind = mpSTREAM;
 
-		part->source.zval = *source;
-		zval_copy_ctor(&part->source.zval);
-		Z_SET_REFCOUNT_P(&part->source.zval, 1);
+		ZVAL_DUP(&part->source.zval, source);
 		convert_to_string_ex(&part->source.zval);
 	}
 
