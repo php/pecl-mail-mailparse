@@ -303,7 +303,7 @@ static void php_mimepart_free_child(zval *childpart_z)
       php_mimepart_free((php_mimepart *)zend_fetch_resource(Z_RES_P(childpart_z), php_mailparse_msg_name(), php_mailparse_le_mime_part()));
 }
 
-PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
+PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
 {
 	php_mimepart *part = ecalloc(1, sizeof(php_mimepart));
 
@@ -322,7 +322,7 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc(TSRMLS_D)
 }
 
 
-PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 {
 	if (part->rsrc) {
 		zend_list_delete(part->rsrc);
@@ -390,7 +390,7 @@ PHP_MAILPARSE_API char *php_mimepart_attribute_get(struct php_mimeheader_with_at
 
 #define STR_SET_REPLACE(ptr, newval)	do { STR_FREE(ptr); ptr = estrdup(newval); } while(0)
 
-static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
+static int php_mimepart_process_header(php_mimepart *part)
 {
 	php_rfc822_tokenized_t *toks;
 	char *header_key, *header_val, *header_val_stripped;
@@ -403,7 +403,7 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 	smart_string_0(&part->parsedata.headerbuf);
 
 	/* parse the header line */
-	toks = php_mailparse_rfc822_tokenize((const char*)part->parsedata.headerbuf.c, 0 TSRMLS_CC);
+	toks = php_mailparse_rfc822_tokenize((const char*)part->parsedata.headerbuf.c, 0);
 
 	/* valid headers consist of at least three tokens, with the first being a string and the
 	 * second token being a ':' */
@@ -509,9 +509,9 @@ static int php_mimepart_process_header(php_mimepart *part TSRMLS_DC)
 	return SUCCESS;
 }
 
-static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit TSRMLS_DC)
+static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit)
 {
-	php_mimepart *child = php_mimepart_alloc(TSRMLS_C);
+	php_mimepart *child = php_mimepart_alloc();
 	zval child_z;
 
 	parentpart->parsedata.lastpart = child;
@@ -555,14 +555,14 @@ PHP_MAILPARSE_API void php_mimepart_get_offsets(php_mimepart *part, off_t *start
 	}
 }
 
-static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
+static int php_mimepart_process_line(php_mimepart *workpart)
 {
 	size_t origcount, linelen;
 	char *c;
 
 	/* sanity check */
 	if (zend_hash_num_elements(&workpart->children) > MAXPARTS) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MIME message too complex");
+		php_error_docref(NULL, E_WARNING, "MIME message too complex");
 		return FAILURE;
 	}
 
@@ -601,7 +601,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 				return SUCCESS;
 			}
 
-			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1 TSRMLS_CC);
+			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
 			newpart->mime_version = estrdup(workpart->mime_version);
 			newpart->parsedata.in_header = 1;
@@ -635,14 +635,14 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 				smart_string_appendl(&workpart->parsedata.headerbuf, " ", 1);
         c++; linelen--;
 			} else {
-				php_mimepart_process_header(workpart TSRMLS_CC);
+				php_mimepart_process_header(workpart);
 			}
 			/* save header for possible continuation */
 			smart_string_appendl(&workpart->parsedata.headerbuf, c, linelen);
 
 		} else {
 			/* end of headers */
-			php_mimepart_process_header(workpart TSRMLS_CC);
+			php_mimepart_process_header(workpart);
 
 			/* start of body */
 			workpart->parsedata.in_header = 0;
@@ -690,7 +690,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 			}
 
 			if (CONTENT_TYPE_IS(workpart, "message/rfc822")) {
-				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0 TSRMLS_CC);
+				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0);
 				workpart->parsedata.in_header = 1;
 				return SUCCESS;
 
@@ -698,7 +698,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 
 			/* create a section for the preamble that precedes the first boundary */
 			if (workpart->boundary) {
-				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1 TSRMLS_CC);
+				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1);
 				workpart->parsedata.in_header = 0;
 				workpart->parsedata.is_dummy = 1;
 				return SUCCESS;
@@ -712,7 +712,7 @@ static int php_mimepart_process_line(php_mimepart *workpart TSRMLS_DC)
 	return SUCCESS;
 }
 
-PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC)
+PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, size_t bufsize)
 {
 	size_t len;
 
@@ -724,7 +724,7 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 		if (len < bufsize && buf[len] == '\n') {
 			++len;
 			smart_string_appendl(&part->parsedata.workbuf, buf, len);
-			if (php_mimepart_process_line(part TSRMLS_CC) == FAILURE) {
+			if (php_mimepart_process_line(part) == FAILURE) {
 				/* php_mimepart_process_line() only returns FAILURE in case the count of children
 				 * have exceeded MAXPARTS and doing so at the very begining, without doing any work.
 				 * It'd do this for all of the following lines, since the exceeded state won't change.
@@ -749,7 +749,7 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 }
 
 static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumerator **child,
-		php_mimepart *part, mimepart_enumerator_func callback, void *ptr TSRMLS_DC)
+		php_mimepart *part, mimepart_enumerator_func callback, void *ptr)
 {
 	php_mimepart_enumerator next;
 	php_mimepart *childpart;
@@ -757,7 +757,7 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 	HashPosition pos;
 
 	*child = NULL;
-	if (FAILURE == (*callback)(part, top, ptr TSRMLS_CC))
+	if (FAILURE == (*callback)(part, top, ptr))
 		return FAILURE;
 
 	*child = &next;
@@ -770,7 +770,7 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
 	      mailparse_fetch_mimepart_resource(childpart, childpart_z);
 		if (next.id)
-			if (FAILURE == enum_parts_recurse(top, &next.next, childpart, callback, ptr TSRMLS_CC))
+			if (FAILURE == enum_parts_recurse(top, &next.next, childpart, callback, ptr))
 				return FAILURE;
 		next.id++;
 		zend_hash_move_forward_ex(&part->children, &pos);
@@ -778,15 +778,15 @@ static int enum_parts_recurse(php_mimepart_enumerator *top, php_mimepart_enumera
 	return SUCCESS;
 }
 
-PHP_MAILPARSE_API void php_mimepart_enum_parts(php_mimepart *part, mimepart_enumerator_func callback, void *ptr TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_enum_parts(php_mimepart *part, mimepart_enumerator_func callback, void *ptr)
 {
 	php_mimepart_enumerator top;
 	top.id = 1;
 
-	enum_parts_recurse(&top, &top.next, part, callback, ptr TSRMLS_CC);
+	enum_parts_recurse(&top, &top.next, part, callback, ptr);
 }
 
-PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepart_child_enumerator_func callback, void *ptr TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepart_child_enumerator_func callback, void *ptr)
 {
 	HashPosition pos;
 	php_mimepart *childpart;
@@ -797,7 +797,7 @@ PHP_MAILPARSE_API void php_mimepart_enum_child_parts(php_mimepart *part, mimepar
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
 	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
 		mailparse_fetch_mimepart_resource(childpart, childpart_z);
-		if (FAILURE == (*callback)(part, childpart, index, ptr TSRMLS_CC))
+		if (FAILURE == (*callback)(part, childpart, index, ptr))
 			return;
 
 		zend_hash_move_forward_ex(&part->children, &pos);
@@ -810,7 +810,7 @@ struct find_part_struct {
 	php_mimepart *foundpart;
 };
 
-static int find_part_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr TSRMLS_DC)
+static int find_part_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr)
 {
 	struct find_part_struct *find = ptr;
 	const unsigned char *num = (const unsigned char*)find->searchfor;
@@ -839,17 +839,17 @@ static int find_part_callback(php_mimepart *part, php_mimepart_enumerator *id, v
 	return SUCCESS;
 }
 
-PHP_MAILPARSE_API php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name TSRMLS_DC)
+PHP_MAILPARSE_API php_mimepart *php_mimepart_find_by_name(php_mimepart *parent, const char *name)
 {
 	struct find_part_struct find;
 
 	find.searchfor = name;
 	find.foundpart = NULL;
-	php_mimepart_enum_parts(parent, find_part_callback, &find TSRMLS_CC);
+	php_mimepart_enum_parts(parent, find_part_callback, &find);
 	return find.foundpart;
 }
 
-PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position TSRMLS_DC)
+PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart *parent, int position)
 {
 	HashPosition pos;
 	php_mimepart *childpart = NULL;
@@ -873,23 +873,22 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 
 }
 
-static int filter_into_work_buffer(int c, void *dat MAILPARSE_MBSTRING_TSRMLS_DC)
+static int filter_into_work_buffer(int c, void *dat)
 {
 	php_mimepart *part = dat;
-	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 
 	smart_string_appendc(&part->parsedata.workbuf, c);
 
 	if (part->parsedata.workbuf.len >= 4096) {
 
-		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len TSRMLS_CC);
+		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
 		part->parsedata.workbuf.len = 0;
 	}
 
 	return c;
 }
 
-PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr)
 {
 	enum mbfl_no_encoding from = mbfl_no_encoding_8bit;
 
@@ -898,7 +897,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 		if (from == mbfl_no_encoding_invalid) {
 			if (strcasecmp("binary", part->content_transfer_encoding) != 0) {
 				zend_error(E_WARNING, "%s(): mbstring doesn't know how to decode %s transfer encoding!",
-						get_active_function_name(TSRMLS_C),
+						get_active_function_name(),
 						part->content_transfer_encoding);
 			}
 			from = mbfl_no_encoding_8bit;
@@ -918,46 +917,45 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 					filter_into_work_buffer,
 					NULL,
 					part
-					MAILPARSE_MBSTRING_TSRMLS_CC
 					);
 		}
 	}
 
 }
 
-PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part)
 {
 	if (part->extract_filter) {
-		mbfl_convert_filter_flush(part->extract_filter MAILPARSE_MBSTRING_TSRMLS_CC);
-		mbfl_convert_filter_delete(part->extract_filter MAILPARSE_MBSTRING_TSRMLS_CC);
+		mbfl_convert_filter_flush(part->extract_filter);
+		mbfl_convert_filter_delete(part->extract_filter);
 	}
 	if (part->extract_func && part->parsedata.workbuf.len > 0) {
-		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len TSRMLS_CC);
+		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
 		part->parsedata.workbuf.len = 0;
 	}
 }
 
-PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize TSRMLS_DC)
+PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize)
 {
 	if (buf && bufsize) {
 		size_t i;
 
 		if (part->extract_filter) {
 			for (i = 0; i < bufsize; i++) {
-				if (mbfl_convert_filter_feed(buf[i], part->extract_filter MAILPARSE_MBSTRING_TSRMLS_CC) < 0) {
+				if (mbfl_convert_filter_feed(buf[i], part->extract_filter) < 0) {
 					zend_error(E_WARNING, "%s() - filter conversion failed. Input message is probably incorrectly encoded\n",
-							get_active_function_name(TSRMLS_C));
+							get_active_function_name());
 					return -1;
 				}
 			}
 		} else {
-			return part->extract_func(part, part->extract_context, buf, bufsize TSRMLS_CC);
+			return part->extract_func(part, part->extract_context, buf, bufsize);
 		}
 	}
 	return 0;
 }
 
-PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part)
 {
 	php_mimepart *parent = part->parent;
 	HashPosition pos;
@@ -984,7 +982,7 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part TSRMLS
 	}
 }
 
-PHP_MAILPARSE_API void php_mimepart_add_child(php_mimepart *part, php_mimepart *child TSRMLS_DC)
+PHP_MAILPARSE_API void php_mimepart_add_child(php_mimepart *part, php_mimepart *child)
 {
 
 }

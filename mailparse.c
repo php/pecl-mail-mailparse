@@ -44,14 +44,14 @@
 #define MAILPARSE_EXTRACT_RETURN	2		/* return extracted data as a string */
 
 static int extract_part(php_mimepart *part, int decode, php_stream *src, void *callbackdata,
-		php_mimepart_extract_func_t callback TSRMLS_DC);
-static int extract_callback_stream(php_mimepart *part, void *ptr, const char *p, size_t n TSRMLS_DC);
-static int extract_callback_stdout(php_mimepart *part, void *ptr, const char *p, size_t n TSRMLS_DC);
+		php_mimepart_extract_func_t callback);
+static int extract_callback_stream(php_mimepart *part, void *ptr, const char *p, size_t n);
+static int extract_callback_stdout(php_mimepart *part, void *ptr, const char *p, size_t n);
 
-static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr TSRMLS_DC);
-static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS_DC);
-static int mailparse_mimemessage_populate(php_mimepart *part, zval *object TSRMLS_DC);
-static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream TSRMLS_DC);
+static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr);
+static int mailparse_get_part_data(php_mimepart *part, zval *return_value);
+static int mailparse_mimemessage_populate(php_mimepart *part, zval *object);
+static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream);
 
 static int le_mime_part;
 
@@ -119,7 +119,7 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 
 	if (part->parent == NULL && part->rsrc) {
 		part->rsrc = NULL;
-		php_mimepart_free(part TSRMLS_CC);
+		php_mimepart_free(part);
 	}
 }
 
@@ -154,7 +154,7 @@ PHP_MINIT_FUNCTION(mailparse)
 #endif
 
 	INIT_CLASS_ENTRY(mmce, "mimemessage", mimemessage_methods);
-	mimemsg_class_entry = zend_register_internal_class(&mmce TSRMLS_CC);
+	mimemsg_class_entry = zend_register_internal_class(&mmce);
 
 
 	le_mime_part = zend_register_list_destructors_ex(mimepart_dtor, NULL, mailparse_msg_name, module_number);
@@ -176,7 +176,7 @@ PHP_MSHUTDOWN_FUNCTION(mailparse)
 
 /* {{{ ------------- MimeMessage methods */
 
-static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
+static inline php_mimepart *mimemsg_get_object(zval *object)
 {
 	zval *zpart;
 	php_mimepart *part;
@@ -196,18 +196,18 @@ static inline php_mimepart *mimemsg_get_object(zval *object TSRMLS_DC)
 	return part;
 }
 
-static int mailparse_mimemessage_populate(php_mimepart *part, zval *object TSRMLS_DC)
+static int mailparse_mimemessage_populate(php_mimepart *part, zval *object)
 {
 	zval tmp;
 
-	mailparse_get_part_data(part, &tmp TSRMLS_CC);
+	mailparse_get_part_data(part, &tmp);
 	add_property_zval(object, "data", &tmp);
 	Z_DELREF_P(&tmp);
 
 	return SUCCESS;
 }
 
-static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_DC)
+static int mailparse_mimemessage_export(php_mimepart *part, zval *object)
 {
 	zval zpart;
 
@@ -223,7 +223,7 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object TSRMLS_
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart);
 
 	/* recurses for any of our child parts */
-	mailparse_mimemessage_populate(part, object TSRMLS_CC);
+	mailparse_mimemessage_populate(part, object);
 
 	return SUCCESS;
 }
@@ -236,11 +236,11 @@ PHP_FUNCTION(mailparse_mimemessage)
 	zend_string *mode;
 	zval *source = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sz!", &mode, &source) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Sz!", &mode, &source) == FAILURE)
 		RETURN_FALSE;
 
 	/* prepare the mime part for this object */
-	part = php_mimepart_alloc(TSRMLS_C);
+	part = php_mimepart_alloc();
 	php_mimepart_to_zval(&zpart, part->rsrc);
 
 	zend_hash_index_update(Z_OBJPROP_P(object), 0, &zpart);
@@ -288,7 +288,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 
 	/* parse the data from the source */
 	if (part->source.kind == mpSTRING) {
-		php_mimepart_parse(part, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval) TSRMLS_CC);
+		php_mimepart_parse(part, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
 	} else if (part->source.kind == mpSTREAM) {
 		php_stream *srcstream;
 		char buf[1024];
@@ -299,33 +299,33 @@ PHP_FUNCTION(mailparse_mimemessage)
 		while(!php_stream_eof(srcstream)) {
 			size_t n = php_stream_read(srcstream, buf, sizeof(buf));
 			if (n > 0)
-				php_mimepart_parse(part, buf, n TSRMLS_CC);
+				php_mimepart_parse(part, buf, n);
 		}
 	}
 
-	mailparse_mimemessage_populate(part, object TSRMLS_CC);
+	mailparse_mimemessage_populate(part, object);
 }
 
 PHP_FUNCTION(mailparse_mimemessage_remove)
 {
 	php_mimepart *part;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 	if (part == NULL)
 		RETURN_FALSE;
 
-	php_mimepart_remove_from_parent(part TSRMLS_CC);
+	php_mimepart_remove_from_parent(part);
 }
 
 PHP_FUNCTION(mailparse_mimemessage_add_child)
 {
 	php_mimepart *part;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 	if (part == NULL)
 		RETURN_FALSE;
 
-	php_mimepart_remove_from_parent(part TSRMLS_CC);
+	php_mimepart_remove_from_parent(part);
 }
 
 
@@ -333,7 +333,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_child_count)
 {
 	php_mimepart *part;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 	if (part == NULL)
 		RETURN_FALSE;
 
@@ -344,10 +344,10 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 {
 	php_mimepart *part;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 
 	if (part && part->parent) {
-		mailparse_mimemessage_export(part->parent, return_value TSRMLS_CC);
+		mailparse_mimemessage_export(part->parent, return_value);
 	} else {
 		RETURN_NULL();
 	}
@@ -356,10 +356,10 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 PHP_FUNCTION(mailparse_mimemessage_get_child)
 {
 	php_mimepart *part, *foundpart;
-	zval *item_to_find_int;
+	zend_long item_to_find_int = 0;
 	zend_string *item_to_find_str;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 
 	if (part == NULL)
 		RETURN_NULL();
@@ -369,16 +369,16 @@ PHP_FUNCTION(mailparse_mimemessage_get_child)
 	}
 
 	if (item_to_find_str) {
-		foundpart = php_mimepart_find_by_name(part, item_to_find_str->val TSRMLS_CC);
+		foundpart = php_mimepart_find_by_name(part, item_to_find_str->val);
 	} else {
-		foundpart = php_mimepart_find_child_by_position(part, Z_LVAL_P(item_to_find_int) TSRMLS_CC);
+		foundpart = php_mimepart_find_child_by_position(part, item_to_find_int);
 	}
 
 	if (!foundpart)	{
 		RETURN_NULL();
 	}
 
-	mailparse_mimemessage_export(foundpart, return_value TSRMLS_CC);
+	mailparse_mimemessage_export(foundpart, return_value);
 }
 
 static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETERS)
@@ -386,24 +386,24 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 	php_mimepart *part;
 	zval *zarg = NULL;
 	php_stream *srcstream, *deststream = NULL;
-	long mode = MAILPARSE_EXTRACT_OUTPUT;
+	zend_long mode = MAILPARSE_EXTRACT_OUTPUT;
 	php_mimepart_extract_func_t callback = extract_callback_stdout;
 	void *callback_data = NULL;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 
 	RETVAL_NULL();
 
 	if (part == NULL)
 		return;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|lz!", &mode, &zarg))
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "|lz!", &mode, &zarg))
 		return;
 
 	switch(mode) {
 		case MAILPARSE_EXTRACT_STREAM:
 			if (zarg == NULL) {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "Parameter 2 must be a stream");
+				php_error_docref(NULL, E_WARNING, "Parameter 2 must be a stream");
 				return;
 			}
 
@@ -421,7 +421,7 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 		php_stream_from_zval(srcstream, &part->source.zval);
 
 	if (srcstream == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
+		php_error_docref(NULL, E_WARNING, "MimeMessage object is missing a source stream!");
 		goto cleanup;
 	}
 
@@ -430,7 +430,7 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 		callback = extract_callback_stream;
 	}
 
-	if (SUCCESS == extract_part(part, flags, srcstream, callback_data, callback TSRMLS_CC)) {
+	if (SUCCESS == extract_part(part, flags, srcstream, callback_data, callback)) {
 
 		if (mode == MAILPARSE_EXTRACT_RETURN) {
 			size_t len;
@@ -468,27 +468,27 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 	php_mimepart *part;
 	zval *zarg = NULL;
 	php_stream *srcstream, *deststream = NULL;
-	long mode = MAILPARSE_EXTRACT_OUTPUT;
-	long index = 0; /* which uue to extract */
+	zend_long mode = MAILPARSE_EXTRACT_OUTPUT;
+	zend_long index = 0; /* which uue to extract */
 	off_t end;
 	off_t start_pos;
 	char buffer[4096];
 	int nparts = 0;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 
 	RETVAL_NULL();
 
 	if (part == NULL)
 		return;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|lz!", &index, &mode, &zarg))
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|lz!", &index, &mode, &zarg))
 		return;
 
 	switch(mode) {
 		case MAILPARSE_EXTRACT_STREAM:
 			if (zarg == NULL) {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "Parameter 2 must be a stream");
+				php_error_docref(NULL, E_WARNING, "Parameter 2 must be a stream");
 				return;
 			}
 
@@ -508,7 +508,7 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 		php_stream_from_zval(srcstream, &part->source.zval);
 
 	if (srcstream == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
+		php_error_docref(NULL, E_WARNING, "MimeMessage object is missing a source stream!");
 		goto cleanup;
 	}
 
@@ -534,7 +534,7 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 
 			/* make the return an array */
 			if (nparts == index) {
-				mailparse_do_uudecode(srcstream, deststream TSRMLS_CC);
+				mailparse_do_uudecode(srcstream, deststream);
 				if (mode == MAILPARSE_EXTRACT_RETURN) {
 					size_t len;
 					char *buf;
@@ -548,7 +548,7 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 				break;
 			} else {
 				/* skip that part */
-				mailparse_do_uudecode(srcstream, NULL TSRMLS_CC);
+				mailparse_do_uudecode(srcstream, NULL);
 			}
 		} else {
 			if (php_stream_tell(srcstream) >= end)
@@ -577,7 +577,7 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 	int nparts = 0;
 	zval item;
 
-	part = mimemsg_get_object(getThis() TSRMLS_CC);
+	part = mimemsg_get_object(getThis());
 
 	RETVAL_FALSE;
 
@@ -590,7 +590,7 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 		php_stream_from_zval(instream, &part->source.zval);
 
 	if (instream == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "MimeMessage object is missing a source stream!");
+		php_error_docref(NULL, E_WARNING, "MimeMessage object is missing a source stream!");
 		goto cleanup;
 	}
 
@@ -625,7 +625,7 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 			add_assoc_long(&item, "start-pos", php_stream_tell(instream));
 
 			/* decode it and remember the file size */
-			file_size = mailparse_do_uudecode(instream, NULL TSRMLS_CC);
+			file_size = mailparse_do_uudecode(instream, NULL);
 			add_assoc_long(&item, "filesize", file_size);
 
 			curr_pos = php_stream_tell(instream);
@@ -633,7 +633,7 @@ PHP_FUNCTION(mailparse_mimemessage_enum_uue)
 			if (curr_pos > end) {
 				/* we somehow overran the message boundary; the message itself is
 				 * probably bogus, so lets cancel this item */
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "uue attachment overran part boundary; this should not happen, message is probably malformed");
+				php_error_docref(NULL, E_WARNING, "uue attachment overran part boundary; this should not happen, message is probably malformed");
 				zval_ptr_dtor(&item);
 				break;
 			}
@@ -680,7 +680,7 @@ PHP_RSHUTDOWN_FUNCTION(mailparse)
 
 #define UUDEC(c)	(char)(((c)-' ')&077)
 #define UU_NEXT(v)	if (line[x] == '\0' || line[x] == '\r' || line[x] == '\n') break; v = line[x++]; v = UUDEC(v)
-static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream TSRMLS_DC)
+static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream)
 {
 	int x, A, B, C, D, n;
 	size_t file_size = 0;
@@ -777,14 +777,14 @@ PHP_FUNCTION(mailparse_uudecode_all)
 	int nparts = 0;
 	php_stream *instream, *outstream = NULL, *partstream = NULL;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &file))
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &file))
 		return;
 
 	php_stream_from_zval(instream, file);
 
 	outstream = _mailparse_create_stream(&outpath);
 	if (outstream == NULL)	{
-		zend_error(E_WARNING, "%s(): unable to open temp file", get_active_function_name(TSRMLS_C));
+		zend_error(E_WARNING, "%s(): unable to open temp file", get_active_function_name());
 		RETURN_FALSE;
 	}
 
@@ -828,7 +828,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				add_next_index_zval(return_value, &item);
 
 				/* decode it */
-				mailparse_do_uudecode(instream, partstream TSRMLS_CC);
+				mailparse_do_uudecode(instream, partstream);
 				php_stream_close(partstream);
 			}
 			zend_string_release(outpath);
@@ -857,10 +857,10 @@ PHP_FUNCTION(mailparse_rfc822_parse_addresses)
 	php_rfc822_addresses_t *addrs = NULL;
 	int i;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &addresses) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S", &addresses) == FAILURE) {
 		RETURN_FALSE;
 	}
-	toks = php_mailparse_rfc822_tokenize((const char*)addresses->val, 1 TSRMLS_CC);
+	toks = php_mailparse_rfc822_tokenize((const char*)addresses->val, 1);
 	addrs = php_rfc822_parse_address_tokens(toks);
 
 	array_init(return_value);
@@ -896,7 +896,7 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 	php_stream *stream;
 	char * name;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &file) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &file) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
@@ -938,16 +938,14 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 /* {{{ proto boolean mailparse_stream_encode(resource sourcefp, resource destfp, string encoding)
    Streams data from source file pointer, apply encoding and write to destfp */
 
-static int mailparse_stream_output(int c, void *stream MAILPARSE_MBSTRING_TSRMLS_DC)
+static int mailparse_stream_output(int c, void *stream)
 {
 	char buf = c;
-	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 
 	return php_stream_write((php_stream*)stream, &buf, 1);
 }
-static int mailparse_stream_flush(void *stream MAILPARSE_MBSTRING_TSRMLS_DC)
+static int mailparse_stream_flush(void *stream)
 {
-	MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD();
 	return php_stream_flush((php_stream*)stream);
 }
 
@@ -962,7 +960,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	enum mbfl_no_encoding enc;
 	mbfl_convert_filter *conv = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrS", &srcfile, &destfile, &encod) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rrS", &srcfile, &destfile, &encod) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
@@ -979,7 +977,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	enc = mbfl_name2no_encoding(encod->val);
 	if (enc == mbfl_no_encoding_invalid)	{
 		zend_error(E_WARNING, "%s(): unknown encoding \"%s\"",
-				get_active_function_name(TSRMLS_C),
+				get_active_function_name(),
 				encod->val
 				);
 		RETURN_FALSE;
@@ -993,7 +991,6 @@ PHP_FUNCTION(mailparse_stream_encode)
 			mailparse_stream_output,
 			mailparse_stream_flush,
 			deststream
-			MAILPARSE_MBSTRING_TSRMLS_CC
 			);
 
 	if (enc == mbfl_no_encoding_qprint) {
@@ -1008,7 +1005,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				len = strlen(buf);
 
 				if (strncmp(buf, "From ", 5) == 0) {
-					mbfl_convert_filter_flush(conv MAILPARSE_MBSTRING_TSRMLS_CC);
+					mbfl_convert_filter_flush(conv);
 					php_stream_write(deststream, "=46rom ", 7);
 					i = 5;
 				} else {
@@ -1016,7 +1013,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				}
 
 				for (; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv MAILPARSE_MBSTRING_TSRMLS_CC);
+					mbfl_convert_filter_feed(buf[i], conv);
 			}
 		}
 
@@ -1027,13 +1024,13 @@ PHP_FUNCTION(mailparse_stream_encode)
 			{
 				size_t i;
 				for (i=0; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv MAILPARSE_MBSTRING_TSRMLS_CC);
+					mbfl_convert_filter_feed(buf[i], conv);
 			}
 		}
 	}
 
-	mbfl_convert_filter_flush(conv MAILPARSE_MBSTRING_TSRMLS_CC);
-	mbfl_convert_filter_delete(conv MAILPARSE_MBSTRING_TSRMLS_CC);
+	mbfl_convert_filter_flush(conv);
+	mbfl_convert_filter_delete(conv);
 	efree(buf);
 }
 /* }}} */
@@ -1046,13 +1043,13 @@ PHP_FUNCTION(mailparse_msg_parse)
 	zval *arg;
 	php_mimepart *part;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &arg, &data) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rS", &arg, &data) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	if (FAILURE == php_mimepart_parse(part, data->val, data->len TSRMLS_CC)) {
+	if (FAILURE == php_mimepart_parse(part, data->val, data->len)) {
 		RETURN_FALSE;
 	}
 	RETURN_TRUE;
@@ -1068,7 +1065,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 	char *filebuf;
 	php_stream *stream;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &filename) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S", &filename) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
@@ -1080,15 +1077,15 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 
 	filebuf = emalloc(MAILPARSE_BUFSIZ);
 
-	part = php_mimepart_alloc(TSRMLS_C);
+	part = php_mimepart_alloc();
 	php_mimepart_to_zval(return_value, part->rsrc);
 
 	while(!php_stream_eof(stream))	{
 		int got = php_stream_read(stream, filebuf, MAILPARSE_BUFSIZ);
 		if (got > 0)	{
-			if (FAILURE == php_mimepart_parse(part, filebuf, got TSRMLS_CC)) {
+			if (FAILURE == php_mimepart_parse(part, filebuf, got)) {
 				/* We have to destroy the already allocated part, if we not return it */
-				php_mimepart_free(part TSRMLS_CC);
+				php_mimepart_free(part);
 				RETVAL_FALSE;
 				break;
 			}
@@ -1105,7 +1102,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 PHP_FUNCTION(mailparse_msg_free)
 {
 	zval *arg;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &arg) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
 	zend_list_delete(Z_RES_P(arg));
@@ -1117,13 +1114,13 @@ PHP_FUNCTION(mailparse_msg_free)
    Returns a handle that can be used to parse a message */
 PHP_FUNCTION(mailparse_msg_create)
 {
-	php_mimepart *part = php_mimepart_alloc(TSRMLS_C);
+	php_mimepart *part = php_mimepart_alloc();
 
 	RETURN_RES(part->rsrc);
 }
 /* }}} */
 
-static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr TSRMLS_DC)
+static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr)
 {
 	zval *return_value = (zval *)ptr;
 	char intbuf[16];
@@ -1138,7 +1135,7 @@ static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *i
 		len = strlen(intbuf);
 		if (len > (buf_size-i))	{
 			/* too many sections: bail */
-			zend_error(E_WARNING, "%s(): too many nested sections in message", get_active_function_name(TSRMLS_C));
+			zend_error(E_WARNING, "%s(): too many nested sections in message", get_active_function_name());
 			return FAILURE;
 		}
 		if ((i + len + 1) >= buf_size) {
@@ -1164,7 +1161,7 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 	zval *arg;
 	php_mimepart *part;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &arg) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
@@ -1173,12 +1170,12 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 	if (array_init(return_value) == FAILURE)	{
 		RETURN_FALSE;
 	}
-	php_mimepart_enum_parts(part, &get_structure_callback, return_value TSRMLS_CC);
+	php_mimepart_enum_parts(part, &get_structure_callback, return_value);
 }
 /* }}} */
 
 /* callback for decoding using a "userdefined" php function */
-static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const char *p, size_t n TSRMLS_DC)
+static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const char *p, size_t n)
 {
 	zval retval, arg;
 
@@ -1188,8 +1185,8 @@ static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const 
 
 	/* TODO: use zend_is_callable */
 
-	if (call_user_function(EG(function_table), NULL, userfunc, &retval, 1, &arg TSRMLS_CC) == FAILURE)
-		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name(TSRMLS_C));
+	if (call_user_function(EG(function_table), NULL, userfunc, &retval, 1, &arg) == FAILURE)
+		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name());
 
 	zval_ptr_dtor(&retval);
 	zval_ptr_dtor(&arg);
@@ -1198,14 +1195,14 @@ static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const 
 }
 
 /* callback for decoding to the current output buffer */
-static int extract_callback_stdout(php_mimepart *part, void *ptr, const char *p, size_t n TSRMLS_DC)
+static int extract_callback_stdout(php_mimepart *part, void *ptr, const char *p, size_t n)
 {
 	ZEND_WRITE(p, n);
 	return 0;
 }
 
 /* callback for decoding to a stream */
-static int extract_callback_stream(php_mimepart *part, void *ptr, const char *p, size_t n TSRMLS_DC)
+static int extract_callback_stream(php_mimepart *part, void *ptr, const char *p, size_t n)
 {
 	php_stream_write((php_stream*)ptr, p, n);
 	return 0;
@@ -1217,7 +1214,7 @@ static int extract_callback_stream(php_mimepart *part, void *ptr, const char *p,
 #define MAILPARSE_DECODE_NOBODY		4		/* don't include the body */
 
 static int extract_part(php_mimepart *part, int decode, php_stream *src, void *callbackdata,
-		php_mimepart_extract_func_t callback TSRMLS_DC)
+		php_mimepart_extract_func_t callback)
 {
 	off_t end;
 	off_t start_pos;
@@ -1232,10 +1229,10 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 	else
 		end = part->parent ? part->bodyend : part->endpos;
 
-	php_mimepart_decoder_prepare(part, decode & MAILPARSE_DECODE_8BIT, callback, callbackdata TSRMLS_CC);
+	php_mimepart_decoder_prepare(part, decode & MAILPARSE_DECODE_8BIT, callback, callbackdata);
 
 	if (php_stream_seek(src, start_pos, SEEK_SET) == -1) {
-		zend_error(E_WARNING, "%s(): unable to seek to section start", get_active_function_name(TSRMLS_C));
+		zend_error(E_WARNING, "%s(): unable to seek to section start", get_active_function_name());
 		goto cleanup;
 	}
 
@@ -1252,20 +1249,20 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 
 		if (n == 0)
 		{
-			zend_error(E_WARNING, "%s(): error reading from file at offset %ld", get_active_function_name(TSRMLS_C), start_pos);
+			zend_error(E_WARNING, "%s(): error reading from file at offset %ld", get_active_function_name(), start_pos);
 			goto cleanup;
 		}
 
 		filebuf[n] = '\0';
 
-		php_mimepart_decoder_feed(part, filebuf, n TSRMLS_CC);
+		php_mimepart_decoder_feed(part, filebuf, n);
 
 		start_pos += n;
 	}
 	ret = SUCCESS;
 
 cleanup:
-	php_mimepart_decoder_finish(part TSRMLS_CC);
+	php_mimepart_decoder_finish(part);
 
 	if (filebuf)
 		efree(filebuf);
@@ -1282,7 +1279,7 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 	void *cbdata = NULL;
 	int close_src_stream = 0;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz|z", &zpart, &filename, &callbackfunc)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rz|z", &zpart, &filename, &callbackfunc)) {
 		RETURN_FALSE;
 	}
 
@@ -1327,7 +1324,7 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 
 	RETVAL_FALSE;
 
-	if (SUCCESS == extract_part(part, decode, srcstream, cbdata, cbfunc TSRMLS_CC)) {
+	if (SUCCESS == extract_part(part, decode, srcstream, cbdata, cbfunc)) {
 
 		if (deststream != NULL) {
 			/* return it's contents as a string */
@@ -1372,7 +1369,7 @@ PHP_FUNCTION(mailparse_msg_extract_part_file)
 /* }}} */
 
 static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *return_value,
-		struct php_mimeheader_with_attributes *attr TSRMLS_DC)
+		struct php_mimeheader_with_attributes *attr)
 {
 	HashPosition pos;
 	zval *val;
@@ -1407,7 +1404,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	add_assoc_string(return_value, valuelabel, attr->value);
 }
 
-static void add_header_reference_to_zval(char *headerkey, zval *return_value, zval *headers TSRMLS_DC)
+static void add_header_reference_to_zval(char *headerkey, zval *return_value, zval *headers)
 {
 	zval *headerval, newhdr;
 	zend_string *hash_key;
@@ -1421,7 +1418,7 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	zend_string_release(hash_key);
 }
 
-static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS_DC)
+static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 {
 	zval headers, *tmpval;
 	zend_string *hash_key;
@@ -1455,12 +1452,12 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 		add_assoc_string(return_value, "transfer-encoding", "8bit");
 
 	if (part->content_type)
-		add_attr_header_to_zval("content-type", "content-", return_value, part->content_type TSRMLS_CC);
+		add_attr_header_to_zval("content-type", "content-", return_value, part->content_type);
 	else
 		add_assoc_string(return_value, "content-type", "text/plain; (error)");
 
 	if (part->content_disposition)
-		add_attr_header_to_zval("content-disposition", "disposition-", return_value, part->content_disposition TSRMLS_CC);
+		add_attr_header_to_zval("content-disposition", "disposition-", return_value, part->content_disposition);
 
 	if (part->content_location)
 		add_assoc_string(return_value, "content-location", part->content_location);
@@ -1479,7 +1476,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 		php_rfc822_tokenized_t *toks;
 		php_rfc822_addresses_t *addrs;
 
-		toks = php_mailparse_rfc822_tokenize(Z_STRVAL_P(tmpval), 1 TSRMLS_CC);
+		toks = php_mailparse_rfc822_tokenize(Z_STRVAL_P(tmpval), 1);
 		addrs = php_rfc822_parse_address_tokens(toks);
 		if (addrs->naddrs > 0)
 			add_assoc_string(return_value, "content-id", addrs->addrs[0].address);
@@ -1488,9 +1485,9 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value TSRMLS
 	}
 	zend_string_release(hash_key);
 
-	add_header_reference_to_zval("content-description", return_value, &headers TSRMLS_CC);
-	add_header_reference_to_zval("content-language", return_value, &headers TSRMLS_CC);
-	add_header_reference_to_zval("content-md5", return_value, &headers TSRMLS_CC);
+	add_header_reference_to_zval("content-description", return_value, &headers);
+	add_header_reference_to_zval("content-language", return_value, &headers);
+	add_header_reference_to_zval("content-md5", return_value, &headers);
 
 	return SUCCESS;
 }
@@ -1502,13 +1499,13 @@ PHP_FUNCTION(mailparse_msg_get_part_data)
 	zval *arg;
 	php_mimepart *part;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &arg) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	mailparse_get_part_data(part, return_value TSRMLS_CC);
+	mailparse_get_part_data(part, return_value);
 }
 /* }}} */
 
@@ -1520,16 +1517,16 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	php_mimepart *part, *foundpart;
 	zend_string *mimesection;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &arg, &mimesection) == FAILURE)	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rS", &arg, &mimesection) == FAILURE)	{
 		RETURN_FALSE;
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	foundpart = php_mimepart_find_by_name(part, mimesection->val TSRMLS_CC);
+	foundpart = php_mimepart_find_by_name(part, mimesection->val);
 
 	if (!foundpart)	{
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "cannot find section %s in message", mimesection);
+		php_error_docref(NULL, E_WARNING, "cannot find section %s in message", mimesection);
 		RETURN_FALSE;
 	}
 	foundpart->rsrc->gc.refcount++;

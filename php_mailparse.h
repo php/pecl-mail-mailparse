@@ -80,9 +80,6 @@ PHP_FUNCTION(mailparse_mimemessage_remove);
 PHP_FUNCTION(mailparse_mimemessage_add_child);
 
 # include "ext/mbstring/libmbfl/mbfl/mbfilter.h"
-# define MAILPARSE_MBSTRING_TSRMLS_CC	/* pain */
-# define MAILPARSE_MBSTRING_TSRMLS_DC	/* pain */
-# define MAILPARSE_MBSTRING_TSRMLS_FETCH_IF_BRAIN_DEAD()	TSRMLS_FETCH()
 
 #include "php_mailparse_rfc822.h"
 #include "php_mailparse_mime.h"

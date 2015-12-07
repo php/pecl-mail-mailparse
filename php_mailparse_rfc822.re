@@ -66,7 +66,7 @@ other = any\allspecials;
 #define STR_FREE(ptr) if (ptr) { efree(ptr); }
 /* Tokenize a header. tokens may be NULL, in which case the number of tokens are
    counted, allowing the caller to allocate enough room */
-static void tokenize(const char *header, php_rfc822_token_t *tokens, int *ntokens, int report_errors TSRMLS_DC)
+static void tokenize(const char *header, php_rfc822_token_t *tokens, int *ntokens, int report_errors)
 {
 	register const char *p, *q, *start;
 	int in_bracket = 0;
@@ -195,7 +195,7 @@ stop:
 #endif
 }
 
-PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC)
+PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors)
 {
 	php_rfc822_tokenized_t *toks = ecalloc(1, sizeof(php_rfc822_tokenized_t));
 	int len = strlen(header);
@@ -205,9 +205,9 @@ PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const ch
 	toks->buffer[len] = 0;
 	toks->buffer[len+1] = 0; /* mini hack: the parser sometimes relies in this */
 
-	tokenize(toks->buffer, NULL, &toks->ntokens, report_errors TSRMLS_CC);
+	tokenize(toks->buffer, NULL, &toks->ntokens, report_errors);
 	toks->tokens = toks->ntokens ? ecalloc(toks->ntokens, sizeof(php_rfc822_token_t)) : NULL;
-	tokenize(toks->buffer, toks->tokens, &toks->ntokens, report_errors TSRMLS_CC);
+	tokenize(toks->buffer, toks->tokens, &toks->ntokens, report_errors);
 	return toks;
 }
 
@@ -522,11 +522,11 @@ void php_rfc822_print_tokens(php_rfc822_tokenized_t *toks)
 PHP_FUNCTION(mailparse_test)
 {
 	char *header;
-	long header_len;
+	size_t header_len;
 	php_rfc822_tokenized_t *toks;
 	php_rfc822_addresses_t *addrs;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &header, &header_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &header, &header_len) == FAILURE) {
 		RETURN_FALSE;
 	}
 
@@ -545,7 +545,7 @@ PHP_FUNCTION(mailparse_test)
     }
 #endif
 
-	toks = php_mailparse_rfc822_tokenize((const char*)header, 1 TSRMLS_CC);
+	toks = php_mailparse_rfc822_tokenize((const char*)header, 1);
 	php_rfc822_print_tokens(toks);
 
 	addrs = php_rfc822_parse_address_tokens(toks);

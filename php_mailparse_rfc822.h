@@ -48,7 +48,7 @@ struct _php_rfc822_addresses {
 	int naddrs;
 };
 
-PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors TSRMLS_DC);
+PHP_MAILPARSE_API php_rfc822_tokenized_t *php_mailparse_rfc822_tokenize(const char *header, int report_errors);
 PHP_MAILPARSE_API void php_rfc822_tokenize_free(php_rfc822_tokenized_t *toks);
 
 PHP_MAILPARSE_API php_rfc822_addresses_t *php_rfc822_parse_address_tokens(php_rfc822_tokenized_t *toks);
