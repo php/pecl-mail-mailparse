@@ -226,7 +226,6 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 						/* Append string to buffer - check if to be encoded...	*/
 						rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
-						efree(value);
 
 						/* Mark previous */
 						prevcharset_p = charset_p;
@@ -242,7 +241,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						/* Finalize packet */
 						rfc2231_to_mime(&value_buf, NULL, 0, prevcharset_p);
 
-						add_assoc_string(&attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len));
+						add_assoc_stringl(&attr->attributes, name_buf, value_buf.c, value_buf.len);
 						efree(name_buf);
 						smart_string_free(&value_buf);
 
@@ -259,7 +258,6 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 							if (namechanged) {
 								/* Append string to buffer - check if to be encoded...	*/
 								rfc2231_to_mime(&value_buf, value, charset_p, prevcharset_p);
-								efree(value);
 
 								/* Mark */
 								is_rfc2231_name = 1;
@@ -274,6 +272,8 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 					add_assoc_string(&attr->attributes, name, value);
 					efree(name);
 				}
+
+				efree(value);
 			}
 		}
 
@@ -289,7 +289,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 		/* Finalize packet */
 		rfc2231_to_mime(&value_buf, NULL, 0, prevcharset_p);
 
-		add_assoc_string(&attr->attributes, name_buf, estrndup(value_buf.c, value_buf.len));
+		add_assoc_stringl(&attr->attributes, name_buf, value_buf.c, value_buf.len);
 		efree(name_buf);
 		smart_string_free(&value_buf);
 	}
@@ -327,8 +327,6 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 	if (part->rsrc) {
 		zend_list_delete(part->rsrc);
 		part->rsrc = NULL;
-		if (part->parent != NULL && part->parent->rsrc == NULL)
-			return;
 	}
 
 	/* free contained parts */

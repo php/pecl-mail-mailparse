@@ -117,8 +117,7 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 {
 	php_mimepart *part = res->ptr;
 
-	if (part->parent == NULL && part->rsrc) {
-		part->rsrc = NULL;
+	if (part->parent == NULL) {
 		php_mimepart_free(part);
 	}
 }
