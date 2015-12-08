@@ -361,7 +361,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_child)
 	}
 
 	if (item_to_find_str) {
-		foundpart = php_mimepart_find_by_name(part, item_to_find_str->val);
+		foundpart = php_mimepart_find_by_name(part, ZSTR_VAL(item_to_find_str));
 	} else {
 		foundpart = php_mimepart_find_child_by_position(part, item_to_find_int);
 	}
@@ -803,7 +803,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				/* create an initial item representing the file with all uuencoded parts
 				 * removed */
 				array_init(&item);
-				add_assoc_string(&item, "filename", outpath->val);
+				add_assoc_string(&item, "filename", ZSTR_VAL(outpath));
 				add_next_index_zval(return_value, &item);
 			}
 
@@ -816,7 +816,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 			partstream = _mailparse_create_stream(&outpath);
 			if (partstream)	{
 				nparts++;
-				add_assoc_string(&item, "filename", outpath->val);
+				add_assoc_string(&item, "filename", ZSTR_VAL(outpath));
 				add_next_index_zval(return_value, &item);
 
 				/* decode it */
@@ -852,7 +852,7 @@ PHP_FUNCTION(mailparse_rfc822_parse_addresses)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S", &addresses) == FAILURE) {
 		RETURN_FALSE;
 	}
-	toks = php_mailparse_rfc822_tokenize((const char*)addresses->val, 1);
+	toks = php_mailparse_rfc822_tokenize((const char*)ZSTR_VAL(addresses), 1);
 	addrs = php_rfc822_parse_address_tokens(toks);
 
 	array_init(return_value);
@@ -966,7 +966,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	php_stream_from_zval(srcstream, srcfile);
 	php_stream_from_zval(deststream, destfile);
 
-	enc = mbfl_name2no_encoding(encod->val);
+	enc = mbfl_name2no_encoding(ZSTR_VAL(encod));
 	if (enc == mbfl_no_encoding_invalid)	{
 		zend_error(E_WARNING, "%s(): unknown encoding \"%s\"",
 				get_active_function_name(),
@@ -1041,7 +1041,7 @@ PHP_FUNCTION(mailparse_msg_parse)
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	if (FAILURE == php_mimepart_parse(part, data->val, data->len)) {
+	if (FAILURE == php_mimepart_parse(part, ZSTR_VAL(data), ZSTR_LEN(data))) {
 		RETURN_FALSE;
 	}
 	RETURN_TRUE;
@@ -1062,7 +1062,7 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 	}
 
 	/* open file and read it in */
-	stream = php_stream_open_wrapper(filename->val, "rb", REPORT_ERRORS, NULL);
+	stream = php_stream_open_wrapper(ZSTR_VAL(filename), "rb", REPORT_ERRORS, NULL);
 	if (stream == NULL)	{
 		RETURN_FALSE;
 	}
@@ -1375,7 +1375,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 		zend_hash_get_current_key_ex(Z_ARRVAL_P(&attr->attributes), &str_key, &num_index, &pos);
 
     if (str_key) {
-      spprintf(&newkey, 0, "%s%s", attrprefix, str_key->val);
+      spprintf(&newkey, 0, "%s%s", attrprefix, ZSTR_VAL(str_key));
     } else {
       spprintf(&newkey, 0, "%s%lu", attrprefix, num_index);
     }
@@ -1515,7 +1515,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-	foundpart = php_mimepart_find_by_name(part, mimesection->val);
+	foundpart = php_mimepart_find_by_name(part, ZSTR_VAL(mimesection));
 
 	if (!foundpart)	{
 		php_error_docref(NULL, E_WARNING, "cannot find section %s in message", mimesection);
