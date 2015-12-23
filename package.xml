@@ -24,10 +24,16 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>jawed@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-03-09</date>
+ <lead>
+  <name>Sean DuBois</name>
+  <user>seander</user>
+  <email>seander@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2015-11-22</date>
  <version>
-  <release>2.1.7</release>
-  <api>2.1.6</api>
+  <release>3.0.0</release>
+  <api>3.0.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -35,9 +41,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- fix mailparse_uudecode_all, return correct "filename", and don't delete them
-- fix test suite
-- update license version to 3.01 and add LICENSE file
+- PHP 7 Release
  </notes>
  <contents>
   <dir name="/">
@@ -63,6 +67,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="008.phpt" role="test" />
     <file name="009.phpt" role="test" />
     <file name="010.phpt" role="test" />
+    <file name="011.phpt" role="test" />
+    <file name="012.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
@@ -84,8 +90,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <dependencies>
   <required>
    <php>
-    <min>4.3.0</min>
-    <max>6.0.0</max>
+    <min>7.0.0</min>
    </php>
    <pearinstaller>
     <min>1.4.0a1</min>
