@@ -1097,7 +1097,7 @@ PHP_FUNCTION(mailparse_msg_free)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
-	zend_list_delete(Z_RES_P(arg));
+	zend_list_close(Z_RES_P(arg));
 	RETURN_TRUE;
 }
 /* }}} */

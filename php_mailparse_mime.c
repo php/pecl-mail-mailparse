@@ -325,7 +325,7 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 {
 	if (part->rsrc) {
-		zend_list_delete(part->rsrc);
+		zend_list_close(part->rsrc);
 		part->rsrc = NULL;
 	}
 
