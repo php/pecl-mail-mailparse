@@ -348,22 +348,22 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 PHP_FUNCTION(mailparse_mimemessage_get_child)
 {
 	php_mimepart *part, *foundpart;
-	zend_long item_to_find_int = 0;
-	zend_string *item_to_find_str;
+	zval *item_to_find;
 
-	part = mimemsg_get_object(getThis());
-
-	if (part == NULL)
-		RETURN_NULL();
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S|l", &item_to_find_str, &item_to_find_int) == FAILURE) {
+	if ((part = mimemsg_get_object(getThis())) == NULL) {
 		RETURN_NULL();
 	}
 
-	if (item_to_find_str) {
-		foundpart = php_mimepart_find_by_name(part, ZSTR_VAL(item_to_find_str));
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &item_to_find) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (Z_TYPE_P(item_to_find) == IS_STRING) {
+		foundpart = php_mimepart_find_by_name(part, Z_STRVAL_P(item_to_find));
+	} else if (Z_TYPE_P(item_to_find) == IS_LONG) {
+		foundpart = php_mimepart_find_child_by_position(part, Z_LVAL_P(item_to_find));
 	} else {
-		foundpart = php_mimepart_find_child_by_position(part, item_to_find_int);
+		RETURN_NULL();
 	}
 
 	if (!foundpart)	{

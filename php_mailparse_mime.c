@@ -858,17 +858,14 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 		if (FAILURE == zend_hash_move_forward_ex(&parent->children, &pos))
 			return NULL;
 
-	if ((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) == NULL) {
+	if ((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
 		mailparse_fetch_mimepart_resource(childpart, childpart_z);
-		return NULL;
+		if(childpart) {
+			return childpart;
+		}
 	}
 
-	if(childpart) {
-	  return childpart;
-	} else {
-		return NULL;
-	}
-
+	return NULL;
 }
 
 static int filter_into_work_buffer(int c, void *dat)
