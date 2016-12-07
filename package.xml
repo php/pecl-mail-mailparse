@@ -30,10 +30,10 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>seander@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-01-29</date>
+ <date>2016-12-06</date>
  <version>
-  <release>3.0.2-dev</release>
-  <api>3.0-dev</api>
+  <release>3.0.2</release>
+  <api>3.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -41,7 +41,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- Fix double free caused by mailparse_msg_free
+- Fix segfault in getChild
  </notes>
  <contents>
   <dir name="/">
