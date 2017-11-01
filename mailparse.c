@@ -30,7 +30,7 @@
 #include "php_open_temporary_file.h"
 
 /* just in case the config check doesn't enable mbstring automatically */
-#if !HAVE_MBSTRING
+#if !defined(MBFL_MBFILTER_H) && !defined(HAVE_MBSTRING)
 #error The mailparse extension requires the mbstring extension!
 #endif
 
