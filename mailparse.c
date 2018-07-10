@@ -1518,7 +1518,7 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	foundpart = php_mimepart_find_by_name(part, ZSTR_VAL(mimesection));
 
 	if (!foundpart)	{
-		php_error_docref(NULL, E_WARNING, "cannot find section %s in message", mimesection);
+		php_error_docref(NULL, E_WARNING, "cannot find section %s in message", ZSTR_VAL(mimesection));
 		RETURN_FALSE;
 	}
 	foundpart->rsrc->gc.refcount++;
