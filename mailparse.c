@@ -978,12 +978,21 @@ PHP_FUNCTION(mailparse_stream_encode)
 	buf = emalloc(bufsize);
 	RETVAL_TRUE;
 
+#if PHP_VERSION_ID >= 70300
+	conv = mbfl_convert_filter_new(mbfl_no2encoding(mbfl_no_encoding_8bit),
+			mbfl_no2encoding(enc),
+			mailparse_stream_output,
+			mailparse_stream_flush,
+			deststream
+			);
+#else
 	conv = mbfl_convert_filter_new(mbfl_no_encoding_8bit,
 			enc,
 			mailparse_stream_output,
 			mailparse_stream_flush,
 			deststream
 			);
+#endif
 
 	if (enc == mbfl_no_encoding_qprint) {
 		/* If the qp encoded section is going to be digitally signed,
@@ -1159,9 +1168,13 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
+#if PHP_VERSION_ID >= 70300
+	array_init(return_value);
+#else
 	if (array_init(return_value) == FAILURE)	{
 		RETURN_FALSE;
 	}
+#endif
 	php_mimepart_enum_parts(part, &get_structure_callback, return_value);
 }
 /* }}} */
