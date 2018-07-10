@@ -906,12 +906,21 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 		if (from == mbfl_no_encoding_8bit || from == mbfl_no_encoding_7bit) {
 			part->extract_filter = NULL;
 		} else {
+#if PHP_VERSION_ID >= 70300
+			part->extract_filter = mbfl_convert_filter_new(
+					mbfl_no2encoding(from), mbfl_no2encoding(mbfl_no_encoding_8bit),
+					filter_into_work_buffer,
+					NULL,
+					part
+					);
+#else
 			part->extract_filter = mbfl_convert_filter_new(
 					from, mbfl_no_encoding_8bit,
 					filter_into_work_buffer,
 					NULL,
 					part
 					);
+#endif
 		}
 	}
 
