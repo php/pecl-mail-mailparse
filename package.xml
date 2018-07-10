@@ -47,13 +47,18 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <dir name="/">
    <dir name="tests">
     <dir name="testdata">
+     <file name="m0001.txt" role="test" />
      <file name="mime.exp" role="test" />
      <file name="mime.txt" role="test" />
+     <file name="multimedia-demo.exp" role="test" />
+     <file name="multimedia-demo.txt.gz" role="test" />
      <file name="oeuue" role="test" />
      <file name="phpcvs1.exp" role="test" />
      <file name="phpcvs1.txt" role="test" />
      <file name="qp.exp" role="test" />
      <file name="qp.txt" role="test" />
+     <file name="rfc2231.exp" role="test" />
+     <file name="rfc2231.txt" role="test" />
      <file name="uue.exp" role="test" />
      <file name="uue.txt" role="test" />
     </dir> <!-- //tests/testdata -->
