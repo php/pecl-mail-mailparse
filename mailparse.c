@@ -1432,9 +1432,10 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 {
 	zval headers, *tmpval;
-	zend_string *hash_key;
 	off_t startpos, endpos, bodystart;
 	int nlines, nbodylines;
+	/* extract the address part of the content-id only */
+	zend_string *hash_key = zend_string_init("content-id", sizeof("content-id") - 1, 0);
 
 	array_init(return_value);
 
@@ -1481,8 +1482,6 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 	if (part->boundary)
 		add_assoc_string(return_value, "content-boundary", part->boundary);
 
-	/* extract the address part of the content-id only */
-	hash_key = zend_string_init("content-id", sizeof("content-id") - 1, 0);
 	if ((tmpval = zend_hash_find(Z_ARRVAL_P(&headers), hash_key)) != NULL) {
 		php_rfc822_tokenized_t *toks;
 		php_rfc822_addresses_t *addrs;
