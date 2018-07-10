@@ -157,6 +157,9 @@ $skip_keys = array("headers", "ending-pos-body");
 
 foreach ($messages as $name => $msgdata) {
 	$testname = $testdir . "/" . $msgdata["testfile"];
+	if (!isset($msgdata["expectfile"])) {
+		continue;
+	}
 	$expectname = $testdir . "/" . $msgdata["expectfile"];
 
 	$use_wrapper = substr($testname, -3) == ".gz" ? $wrapper : "";
