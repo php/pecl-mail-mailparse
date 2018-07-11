@@ -1,6 +1,3 @@
-dnl
-dnl $Id$
-dnl
 
 PHP_ARG_ENABLE(mailparse, whether to enable mailparse support,
 [  --enable-mailparse      Enable mailparse support.])
