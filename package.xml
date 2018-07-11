@@ -41,7 +41,10 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- Fix segfault in getChild
+- add missing files in archive
+- fix -Wformat warning
+- add dependency on mbstring extension
+- PHP 7.3 compatibility
  </notes>
  <contents>
   <dir name="/">
