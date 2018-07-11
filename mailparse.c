@@ -90,11 +90,18 @@ zend_function_entry mailparse_functions[] = {
 
 	PHP_FE(mailparse_test,	NULL)
 
-	{NULL, NULL, NULL}
+	PHP_FE_END
+};
+
+static const zend_module_dep mailparse_deps[] = {
+	ZEND_MOD_REQUIRED("mbstring")
+	ZEND_MOD_END
 };
 
 zend_module_entry mailparse_module_entry = {
-	STANDARD_MODULE_HEADER,
+	STANDARD_MODULE_HEADER_EX,
+	NULL,
+	mailparse_deps,
 	"mailparse",
 	mailparse_functions,
 	PHP_MINIT(mailparse),

@@ -8,8 +8,7 @@ if test "$PHP_MAILPARSE" != "no"; then
 	  enable_mbstring=yes
   fi
   PHP_NEW_EXTENSION(mailparse, 	mailparse.c php_mailparse_mime.c php_mailparse_rfc822.c, $ext_shared)
-
+  PHP_ADD_EXTENSION_DEP(mailparse, mbstring, true)
   PHP_ADD_MAKEFILE_FRAGMENT
-
 fi
 
