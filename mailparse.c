@@ -976,7 +976,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	if (enc == mbfl_no_encoding_invalid)	{
 		zend_error(E_WARNING, "%s(): unknown encoding \"%s\"",
 				get_active_function_name(),
-				encod->val
+				ZSTR_VAL(encod)
 				);
 		RETURN_FALSE;
 	}
