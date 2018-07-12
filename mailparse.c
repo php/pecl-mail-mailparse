@@ -1174,13 +1174,7 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 
 	mailparse_fetch_mimepart_resource(part, arg);
 
-#if PHP_VERSION_ID >= 70300
 	array_init(return_value);
-#else
-	if (array_init(return_value) == FAILURE)	{
-		RETURN_FALSE;
-	}
-#endif
 	php_mimepart_enum_parts(part, &get_structure_callback, return_value);
 }
 /* }}} */
