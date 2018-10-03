@@ -1,7 +1,7 @@
 --TEST--
 Multiple headers not parsed into arra bug #6862
 --SKIPIF--
-<?php 
+<?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
 if (!extension_loaded("mailparse")) print "skip"; ?>

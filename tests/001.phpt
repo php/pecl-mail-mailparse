@@ -9,7 +9,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 --POST--
 --GET--
 --FILE--
-<?php 
+<?php
 echo "mailparse extension is available";
 ?>
 --EXPECT--

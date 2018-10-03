@@ -1,7 +1,7 @@
 --TEST--
 Check extract_part_file
 --SKIPIF--
-<?php 
+<?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
 if (!extension_loaded("mailparse")) @dl("mailparse.so");

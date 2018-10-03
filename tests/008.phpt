@@ -1,7 +1,7 @@
 --TEST--
 OO API Segfault when opening a file is not possible
 --SKIPIF--
-<?php 
+<?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
 if (!extension_loaded("mailparse")) print "skip"; ?>

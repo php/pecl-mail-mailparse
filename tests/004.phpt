@@ -9,7 +9,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 --POST--
 --GET--
 --FILE--
-<?php 
+<?php
 if (!extension_loaded("mailparse")) @dl("mailparse.so");
 $text = <<<EOD
 To: fred@bloggs.com

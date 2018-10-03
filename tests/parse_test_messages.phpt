@@ -1,7 +1,7 @@
 --TEST--
 Parse messages in testdata dir
 --SKIPIF--
-<?php 
+<?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
 if (!extension_loaded("mailparse") || !extension_loaded("zlib")) print "skip"; ?>
