@@ -989,4 +989,3 @@ PHP_MAILPARSE_API void php_mimepart_add_child(php_mimepart *part, php_mimepart *
 {
 
 }
-

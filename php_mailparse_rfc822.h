@@ -65,4 +65,3 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 void php_rfc822_print_tokens(php_rfc822_tokenized_t *toks);
 
 #endif
-

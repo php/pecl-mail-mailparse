@@ -17,4 +17,3 @@ if (PHP_MAILPARSE != "no") {
 		ADD_EXTENSION_DEP('mailparse', 'mbstring');
 	}
 }
-

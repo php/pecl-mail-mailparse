@@ -11,4 +11,3 @@ if test "$PHP_MAILPARSE" != "no"; then
   PHP_ADD_EXTENSION_DEP(mailparse, mbstring, true)
   PHP_ADD_MAKEFILE_FRAGMENT
 fi
-
