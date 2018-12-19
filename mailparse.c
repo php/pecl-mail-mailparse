@@ -1417,7 +1417,6 @@ static void add_header_reference_to_zval(char *headerkey, zval *return_value, zv
 	hash_key = zend_string_init(headerkey, strlen(headerkey), 0);
 	if ((headerval = zend_hash_find(Z_ARRVAL_P(headers), hash_key)) != NULL) {
 		ZVAL_DUP(&newhdr, headerval);
-		Z_SET_REFCOUNT_P(&newhdr, 1);
 		add_assoc_zval(return_value, headerkey, &newhdr);
 	}
 	zend_string_release(hash_key);
@@ -1434,7 +1433,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 	array_init(return_value);
 
 	/* get headers for this section */
-	ZVAL_DUP(&headers, &part->headerhash);
+	ZVAL_COPY(&headers, &part->headerhash);
 
 	add_assoc_zval(return_value, "headers", &headers);
 
