@@ -10,3 +10,14 @@ if test "$PHP_MAILPARSE" != "no"; then
   PHP_ADD_EXTENSION_DEP(mailparse, mbstring, true)
   PHP_ADD_MAKEFILE_FRAGMENT
 fi
+
+AC_MSG_CHECKING(for installed php mbstring extension)
+php_ext_dir=$(php-config --extension-dir)
+required_ext=$php_ext_dir/mbstring.so
+
+if test -f "$required_ext"; then
+	CFLAGS="$CFLAGS -DHAVE_MBSTRING"
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_ERROR(no)
+fi
