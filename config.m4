@@ -18,6 +18,7 @@ required_ext=$php_ext_dir/mbstring.so
 if test -f "$required_ext"; then
 	CFLAGS="$CFLAGS -DHAVE_MBSTRING"
 	AC_MSG_RESULT(yes)
+	echo "extension=$required_ext" > $ext_builddir/php.ini.fragment
 else
 	AC_MSG_ERROR(no)
 fi
