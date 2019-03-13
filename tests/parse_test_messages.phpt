@@ -32,6 +32,7 @@ while (($f = readdir($dir)) !== false) {
 			break;
 	}
 }
+ksort($messages);
 
 if ($force_test !== null) {
 	$messages = array($force_test => $messages[$force_test]);
