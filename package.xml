@@ -30,10 +30,16 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>seander@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-12-06</date>
+ <lead>
+  <name>Remi Collet</name>
+  <user>remi</user>
+  <email>remi@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2019-03-20</date>
  <version>
-  <release>3.0.3dev</release>
-  <api>3.0dev</api>
+  <release>3.0.3</release>
+  <api>3.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -41,6 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
+QA Release:
 - add missing files in archive
 - fix -Wformat warning
 - add dependency on mbstring extension
@@ -103,7 +110,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <min>7.0.0</min>
    </php>
    <pearinstaller>
-    <min>1.4.0a1</min>
+    <min>1.10</min>
    </pearinstaller>
    <extension>
     <name>mbstring</name>
@@ -112,4 +119,51 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </dependencies>
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
+ <changelog>
+  <release>
+   <date>2016-12-07</date>
+   <version>
+    <release>3.0.2</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>
+- Fix segfault in getChild
+   </notes>
+  </release>
+  <release>
+   <date>2016-01-29</date>
+   <version>
+    <release>3.0.1</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>
+- Fix double free caused by mailparse_msg_free
+   </notes>
+  </release>
+  <release>
+   <date>2015-12-23</date>
+   <version>
+    <release>3.0.0</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>
+- PHP 7 Release
+   </notes>
+  </release>
+ </changelog>
 </package>
