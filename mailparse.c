@@ -1379,7 +1379,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 	HashPosition pos;
 	zval *val;
 	char *newkey;
-	ulong num_index;
+	zend_ulong num_index;
 	zend_string *str_key;
 
 	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(&attr->attributes), &pos);
@@ -1390,7 +1390,7 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
     if (str_key) {
       spprintf(&newkey, 0, "%s%s", attrprefix, ZSTR_VAL(str_key));
     } else {
-      spprintf(&newkey, 0, "%s%lu", attrprefix, num_index);
+      spprintf(&newkey, 0, "%s" ZEND_ULONG_FMT, attrprefix, num_index);
     }
     add_assoc_string(return_value, newkey, Z_STRVAL_P(val));
     efree(newkey);

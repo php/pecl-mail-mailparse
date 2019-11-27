@@ -975,7 +975,7 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part)
 		if ((childpart_z = zend_hash_get_current_data_ex(&parent->children, &pos)) != NULL) {
 			mailparse_fetch_mimepart_resource(childpart, childpart_z);
 			if (childpart == part) {
-				ulong h;
+				zend_ulong h;
 				zend_hash_get_current_key_ex(&parent->children, NULL, &h, &pos);
 				zend_hash_index_del(&parent->children, h);
 				break;
