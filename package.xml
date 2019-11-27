@@ -47,7 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
--
+- Replace ulong with zend_ulong, fix Windows build (cmb)
  </notes>
  <contents>
   <dir name="/">
