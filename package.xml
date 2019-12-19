@@ -38,7 +38,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2019-12-19</date>
  <version>
-  <release>3.0.4</release>
+  <release>3.0.5dev</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,7 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- Replace ulong with zend_ulong, fix Windows build (cmb)
+-
  </notes>
  <contents>
   <dir name="/">
@@ -116,6 +116,21 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <date>2019-12-19</date>
+   <version>
+    <release>3.0.4</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>
+- Replace ulong with zend_ulong, fix Windows build (cmb)
+   </notes>
+  </release>
   <release>
    <date>2019-03-20</date>
    <version>
