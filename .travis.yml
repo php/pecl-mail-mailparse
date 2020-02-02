@@ -4,7 +4,9 @@ php:
   - 7.3
   - 7.4
   - nightly
-sudo: false
+jobs:
+  allow_failures:
+    - php: nightly
 env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 install:
