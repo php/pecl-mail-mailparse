@@ -47,7 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
--
+- add arginfo to all functions
  </notes>
  <contents>
   <dir name="/">
@@ -90,6 +90,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
    <file name="CREDITS" role="doc" />
    <file name="mailparse.c" role="src" />
    <file name="Makefile.frag" role="src" />
+   <file name="arginfo.h" role="src" />
    <file name="php_mailparse.h" role="src" />
    <file name="php_mailparse_mime.c" role="src" />
    <file name="php_mailparse_mime.h" role="src" />

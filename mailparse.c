@@ -28,6 +28,8 @@
 #include "main/php_output.h"
 #include "php_open_temporary_file.h"
 
+#include "arginfo.h"
+
 /* just in case the config check doesn't enable mbstring automatically */
 #if !HAVE_MBSTRING
 #error The mailparse extension requires the mbstring extension!
@@ -56,39 +58,39 @@ static int le_mime_part;
 
 
 static zend_function_entry mimemessage_methods[] = {
-	PHP_NAMED_FE(mimemessage,			PHP_FN(mailparse_mimemessage),					NULL)
-	PHP_NAMED_FE(get_child,				PHP_FN(mailparse_mimemessage_get_child),		NULL)
-	PHP_NAMED_FE(get_child_count,		PHP_FN(mailparse_mimemessage_get_child_count),	NULL)
-	PHP_NAMED_FE(get_parent,			PHP_FN(mailparse_mimemessage_get_parent),		NULL)
-	PHP_NAMED_FE(extract_headers,		PHP_FN(mailparse_mimemessage_extract_headers),	NULL)
-	PHP_NAMED_FE(extract_body,			PHP_FN(mailparse_mimemessage_extract_body),		NULL)
-	PHP_NAMED_FE(enum_uue,				PHP_FN(mailparse_mimemessage_enum_uue),			NULL)
-	PHP_NAMED_FE(extract_uue,			PHP_FN(mailparse_mimemessage_extract_uue),		NULL)
-	PHP_NAMED_FE(remove,				PHP_FN(mailparse_mimemessage_remove),			NULL)
-	PHP_NAMED_FE(add_child,				PHP_FN(mailparse_mimemessage_add_child),		NULL)
+	PHP_NAMED_FE(mimemessage,			PHP_FN(mailparse_mimemessage),					arginfo_mailparse_mimemessage)
+	PHP_NAMED_FE(get_child,				PHP_FN(mailparse_mimemessage_get_child),		arginfo_mailparse_mimemessage_get_child)
+	PHP_NAMED_FE(get_child_count,		PHP_FN(mailparse_mimemessage_get_child_count),	arginfo_mailparse_mimemessage_get_child_count)
+	PHP_NAMED_FE(get_parent,			PHP_FN(mailparse_mimemessage_get_parent),		arginfo_mailparse_mimemessage_get_parent)
+	PHP_NAMED_FE(extract_headers,		PHP_FN(mailparse_mimemessage_extract_headers),	arginfo_mailparse_mimemessage_extract_headers)
+	PHP_NAMED_FE(extract_body,			PHP_FN(mailparse_mimemessage_extract_body),		arginfo_mailparse_mimemessage_extract_body)
+	PHP_NAMED_FE(enum_uue,				PHP_FN(mailparse_mimemessage_enum_uue),			arginfo_mailparse_mimemessage_enum_uue)
+	PHP_NAMED_FE(extract_uue,			PHP_FN(mailparse_mimemessage_extract_uue),		arginfo_mailparse_mimemessage_extract_uue)
+	PHP_NAMED_FE(remove,				PHP_FN(mailparse_mimemessage_remove),			arginfo_mailparse_mimemessage_remove)
+	PHP_NAMED_FE(add_child,				PHP_FN(mailparse_mimemessage_add_child),		arginfo_mailparse_mimemessage_add_child)
 	{NULL, NULL, NULL}
 };
 
 static zend_class_entry *mimemsg_class_entry;
 
 zend_function_entry mailparse_functions[] = {
-	PHP_FE(mailparse_msg_parse_file,			NULL)
-	PHP_FE(mailparse_msg_get_part,				NULL)
-	PHP_FE(mailparse_msg_get_structure,			NULL)
-	PHP_FE(mailparse_msg_get_part_data,			NULL)
-	PHP_FE(mailparse_msg_extract_part,			NULL)
-	PHP_FE(mailparse_msg_extract_part_file,		NULL)
-	PHP_FE(mailparse_msg_extract_whole_part_file,		NULL)
+	PHP_FE(mailparse_msg_parse_file,				arginfo_mailparse_msg_parse_file)
+	PHP_FE(mailparse_msg_get_part,					arginfo_mailparse_msg_get_part)
+	PHP_FE(mailparse_msg_get_structure,				arginfo_mailparse_msg_get_structure)
+	PHP_FE(mailparse_msg_get_part_data,				arginfo_mailparse_msg_get_part_data)
+	PHP_FE(mailparse_msg_extract_part,				arginfo_mailparse_msg_extract_part)
+	PHP_FE(mailparse_msg_extract_part_file,			arginfo_mailparse_msg_extract_part_file)
+	PHP_FE(mailparse_msg_extract_whole_part_file,	arginfo_mailparse_msg_extract_whole_part_file)
 
-	PHP_FE(mailparse_msg_create,				NULL)
-	PHP_FE(mailparse_msg_free,				NULL)
-	PHP_FE(mailparse_msg_parse,				NULL)
-	PHP_FE(mailparse_rfc822_parse_addresses,		NULL)
-	PHP_FE(mailparse_determine_best_xfer_encoding, NULL)
-	PHP_FE(mailparse_stream_encode,						NULL)
-	PHP_FE(mailparse_uudecode_all,					NULL)
+	PHP_FE(mailparse_msg_create,					arginfo_mailparse_msg_create)
+	PHP_FE(mailparse_msg_free,						arginfo_mailparse_msg_free)
+	PHP_FE(mailparse_msg_parse,						arginfo_mailparse_msg_parse)
+	PHP_FE(mailparse_rfc822_parse_addresses,		arginfo_mailparse_rfc822_parse_addresses)
+	PHP_FE(mailparse_determine_best_xfer_encoding, 	arginfo_mailparse_determine_best_xfer_encoding)
+	PHP_FE(mailparse_stream_encode,					arginfo_mailparse_stream_encode)
+	PHP_FE(mailparse_uudecode_all,					arginfo_mailparse_uudecode_all)
 
-	PHP_FE(mailparse_test,	NULL)
+	PHP_FE(mailparse_test,							arginfo_mailparse_test)
 
 	PHP_FE_END
 };
