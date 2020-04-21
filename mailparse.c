@@ -56,18 +56,17 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream)
 
 static int le_mime_part;
 
-
 static zend_function_entry mimemessage_methods[] = {
-	PHP_NAMED_FE(mimemessage,			PHP_FN(mailparse_mimemessage),					arginfo_mailparse_mimemessage)
-	PHP_NAMED_FE(get_child,				PHP_FN(mailparse_mimemessage_get_child),		arginfo_mailparse_mimemessage_get_child)
-	PHP_NAMED_FE(get_child_count,		PHP_FN(mailparse_mimemessage_get_child_count),	arginfo_mailparse_mimemessage_get_child_count)
-	PHP_NAMED_FE(get_parent,			PHP_FN(mailparse_mimemessage_get_parent),		arginfo_mailparse_mimemessage_get_parent)
-	PHP_NAMED_FE(extract_headers,		PHP_FN(mailparse_mimemessage_extract_headers),	arginfo_mailparse_mimemessage_extract_headers)
-	PHP_NAMED_FE(extract_body,			PHP_FN(mailparse_mimemessage_extract_body),		arginfo_mailparse_mimemessage_extract_body)
-	PHP_NAMED_FE(enum_uue,				PHP_FN(mailparse_mimemessage_enum_uue),			arginfo_mailparse_mimemessage_enum_uue)
-	PHP_NAMED_FE(extract_uue,			PHP_FN(mailparse_mimemessage_extract_uue),		arginfo_mailparse_mimemessage_extract_uue)
-	PHP_NAMED_FE(remove,				PHP_FN(mailparse_mimemessage_remove),			arginfo_mailparse_mimemessage_remove)
-	PHP_NAMED_FE(add_child,				PHP_FN(mailparse_mimemessage_add_child),		arginfo_mailparse_mimemessage_add_child)
+	PHP_ME(mimemessage, __construct,     arginfo_mailparse_mimemessage_construct,       ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+	PHP_ME(mimemessage, get_child,       arginfo_mailparse_mimemessage_get_child,       ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, get_child_count, arginfo_mailparse_mimemessage_get_child_count, ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, get_parent,      arginfo_mailparse_mimemessage_get_parent,      ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_headers, arginfo_mailparse_mimemessage_extract_headers, ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_body,    arginfo_mailparse_mimemessage_extract_body,    ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, enum_uue,        arginfo_mailparse_mimemessage_enum_uue,        ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_uue,     arginfo_mailparse_mimemessage_extract_uue,     ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, remove,          arginfo_mailparse_mimemessage_remove,          ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, add_child,       arginfo_mailparse_mimemessage_add_child,       ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -232,7 +231,7 @@ static int mailparse_mimemessage_export(php_mimepart *part, zval *object)
 	return SUCCESS;
 }
 
-PHP_FUNCTION(mailparse_mimemessage)
+PHP_METHOD(mimemessage, __construct)
 {
 	zval *object = getThis();
 	php_mimepart *part;
@@ -306,7 +305,7 @@ PHP_FUNCTION(mailparse_mimemessage)
 	mailparse_mimemessage_populate(part, object);
 }
 
-PHP_FUNCTION(mailparse_mimemessage_remove)
+PHP_METHOD(mimemessage, remove)
 {
 	php_mimepart *part;
 
@@ -317,7 +316,7 @@ PHP_FUNCTION(mailparse_mimemessage_remove)
 	php_mimepart_remove_from_parent(part);
 }
 
-PHP_FUNCTION(mailparse_mimemessage_add_child)
+PHP_METHOD(mimemessage, add_child)
 {
 	php_mimepart *part;
 
@@ -329,7 +328,7 @@ PHP_FUNCTION(mailparse_mimemessage_add_child)
 }
 
 
-PHP_FUNCTION(mailparse_mimemessage_get_child_count)
+PHP_METHOD(mimemessage, get_child_count)
 {
 	php_mimepart *part;
 
@@ -340,7 +339,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_child_count)
 	RETURN_LONG(zend_hash_num_elements(&part->children));
 }
 
-PHP_FUNCTION(mailparse_mimemessage_get_parent)
+PHP_METHOD(mimemessage, get_parent)
 {
 	php_mimepart *part;
 
@@ -353,7 +352,7 @@ PHP_FUNCTION(mailparse_mimemessage_get_parent)
 	}
 }
 
-PHP_FUNCTION(mailparse_mimemessage_get_child)
+PHP_METHOD(mimemessage, get_child)
 {
 	php_mimepart *part, *foundpart;
 	zval *item_to_find;
@@ -453,17 +452,17 @@ cleanup:
 
 }
 
-PHP_FUNCTION(mailparse_mimemessage_extract_headers)
+PHP_METHOD(mimemessage, extract_headers)
 {
 	mailparse_mimemessage_extract(MAILPARSE_DECODE_NOBODY, INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
-PHP_FUNCTION(mailparse_mimemessage_extract_body)
+PHP_METHOD(mimemessage, extract_body)
 {
 	mailparse_mimemessage_extract(MAILPARSE_DECODE_NOHEADERS | MAILPARSE_DECODE_8BIT, INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
-PHP_FUNCTION(mailparse_mimemessage_extract_uue)
+PHP_METHOD(mimemessage, extract_uue)
 {
 	php_mimepart *part;
 	zval *zarg = NULL;
@@ -479,11 +478,13 @@ PHP_FUNCTION(mailparse_mimemessage_extract_uue)
 
 	RETVAL_NULL();
 
-	if (part == NULL)
+	if (part == NULL) {
 		return;
+	}
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|lz!", &index, &mode, &zarg))
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|lz", &index, &mode, &zarg)) {
 		return;
+	}
 
 	switch(mode) {
 		case MAILPARSE_EXTRACT_STREAM:
@@ -566,7 +567,7 @@ cleanup:
 
 }
 
-PHP_FUNCTION(mailparse_mimemessage_enum_uue)
+PHP_METHOD(mimemessage, enum_uue)
 {
 	php_stream *instream;
 	php_mimepart *part;

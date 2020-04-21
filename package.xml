@@ -48,6 +48,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
 - add arginfo to all functions
+- fix MimeMessage constructor name
  </notes>
  <contents>
   <dir name="/">

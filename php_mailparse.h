@@ -67,16 +67,16 @@ PHP_MAILPARSE_API int php_mailparse_le_mime_part(void);
 PHP_MAILPARSE_API char* php_mailparse_msg_name(void);
 
 /* mimemessage object */
-PHP_FUNCTION(mailparse_mimemessage);
-PHP_FUNCTION(mailparse_mimemessage_get_parent);
-PHP_FUNCTION(mailparse_mimemessage_get_child);
-PHP_FUNCTION(mailparse_mimemessage_get_child_count);
-PHP_FUNCTION(mailparse_mimemessage_extract_headers);
-PHP_FUNCTION(mailparse_mimemessage_extract_body);
-PHP_FUNCTION(mailparse_mimemessage_enum_uue);
-PHP_FUNCTION(mailparse_mimemessage_extract_uue);
-PHP_FUNCTION(mailparse_mimemessage_remove);
-PHP_FUNCTION(mailparse_mimemessage_add_child);
+PHP_METHOD(mimemessage, __construct);
+PHP_METHOD(mimemessage, get_child);
+PHP_METHOD(mimemessage, get_child_count);
+PHP_METHOD(mimemessage, get_parent);
+PHP_METHOD(mimemessage, extract_headers);
+PHP_METHOD(mimemessage, extract_body);
+PHP_METHOD(mimemessage, enum_uue);
+PHP_METHOD(mimemessage, extract_uue);
+PHP_METHOD(mimemessage, remove);
+PHP_METHOD(mimemessage, add_child);
 
 # include "ext/mbstring/libmbfl/mbfl/mbfilter.h"
 

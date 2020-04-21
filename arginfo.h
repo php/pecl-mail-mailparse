@@ -6,7 +6,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_test, 0, 0, 1)
         ZEND_ARG_INFO(0, header)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_mimemessage, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_mimemessage_construct, 0, 0, 2)
         ZEND_ARG_INFO(0, mode)
         ZEND_ARG_INFO(0, source)
 ZEND_END_ARG_INFO()
@@ -30,7 +30,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_mailparse_mimemessage_extract_body arginfo_mailparse_mimemessage_extract_headers
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_mimemessage_extract_uue, 0, 0, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_mimemessage_extract_uue, 0, 0, 1)
         ZEND_ARG_INFO(0, index)
         ZEND_ARG_INFO(0, mode)
         ZEND_ARG_INFO(0, arg)
