@@ -38,7 +38,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2020-04-22</date>
  <version>
-  <release>3.1.0</release>
+  <release>3.1.1dev</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,8 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- add arginfo to all functions
-- fix MimeMessage constructor name
+-
  </notes>
  <contents>
   <dir name="/">
@@ -118,6 +117,22 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <date>2020-04-22</date>
+   <version>
+    <release>3.1.0</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>
+- add arginfo to all functions
+- fix MimeMessage constructor name
+   </notes>
+  </release>
   <release>
    <date>2019-12-19</date>
    <version>
