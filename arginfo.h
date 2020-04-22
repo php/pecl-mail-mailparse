@@ -1,3 +1,23 @@
+/*
+   +----------------------------------------------------------------------+
+   | Copyright (c) The PHP Group                                          |
+   +----------------------------------------------------------------------+
+   | This source file is subject to version 3.01 of the PHP license,      |
+   | that is bundled with this package in the file LICENSE, and is        |
+   | available at through the world-wide-web at                           |
+   | http://www.php.net/license/3_01.txt.                                 |
+   | If you did not receive a copy of the PHP license and are unable to   |
+   | obtain it through the world-wide-web, please send a note to          |
+   | license@php.net so we can mail you a copy immediately.               |
+   +----------------------------------------------------------------------+
+   | Author: Wez Furlong <wez@thebrainroom.com>                           |
+   | Credit also given to Double Precision Inc. who wrote the code that   |
+   | the support routines for this extension were based upon.             |
+   +----------------------------------------------------------------------+
+ */
+
+#ifndef PHP_MAILPARSE_ARGINFO_H
+#define PHP_MAILPARSE_ARGINFO_H
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -89,4 +109,4 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_mailparse_msg_get_part arginfo_mailparse_msg_parse
 
-
+#endif

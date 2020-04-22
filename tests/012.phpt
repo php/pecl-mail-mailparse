@@ -8,7 +8,7 @@ if (!extension_loaded("mailparse")) print "skip"; ?>
 --FILE--
 <?php
 $msg = new MimeMessage("file", dirname(__FILE__) . "/testdata/oeuue");
-var_dump( $msg->extract_uue(0, 2));
+var_dump( $msg->extract_uue(0, MAILPARSE_EXTRACT_RETURN));
 ?>
 --EXPECT--
 string(88) "FooBar - Baaaaa

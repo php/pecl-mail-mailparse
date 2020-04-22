@@ -1,8 +1,6 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Version 7                                                        |
-   +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2019 The PHP Group                                |
+   | Copyright (c) The PHP Group                                          |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -301,7 +299,7 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 static void parse_address_tokens(php_rfc822_tokenized_t *toks,
 	php_rfc822_addresses_t *addrs, int *naddrs)
 {
-	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start, group_lbl_end;
+	int start_tok = 0, iaddr = 0, i, in_group = 0, group_lbl_start = 0, group_lbl_end = 0;
 	int a_start, a_count; /* position and count for address part of a name */
 	smart_string group_addrs = { 0, };
 	char *address_value = NULL;

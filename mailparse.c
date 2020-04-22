@@ -1,8 +1,6 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Version 7                                                        |
-   +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2019 The PHP Group                                |
+   | Copyright (c) The PHP Group                                          |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -661,7 +659,6 @@ PHP_MINFO_FUNCTION(mailparse)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "mailparse support", "enabled");
 	php_info_print_table_row(2, "Extension Version", PHP_MAILPARSE_VERSION);
-	php_info_print_table_row(2, "Revision", "$Revision$");
 	php_info_print_table_end();
 
 	DISPLAY_INI_ENTRIES();

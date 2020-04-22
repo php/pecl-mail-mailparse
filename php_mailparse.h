@@ -1,8 +1,6 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Version 7                                                        |
-   +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2019 The PHP Group                                |
+   | Copyright (c) The PHP Group                                          |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -24,7 +22,7 @@
 extern zend_module_entry mailparse_module_entry;
 #define phpext_mailparse_ptr &mailparse_module_entry
 
-#define PHP_MAILPARSE_VERSION "3.0.5-dev"
+#define PHP_MAILPARSE_VERSION "3.1.0"
 
 #ifdef PHP_WIN32
 #define PHP_MAILPARSE_API __declspec(dllexport)
