@@ -17,7 +17,7 @@ $dir = opendir($testdir) or die("unable to open test dir!");
 $messages = array();
 
 while (($f = readdir($dir)) !== false) {
-	if ($f == "CVS" || $f == "." || $f == "..")
+	if ($f == "CVS" || $f == "." || $f == ".." || !strpos($f, '.'))
 		continue;
 		
 	list($name, $suffix) = explode(".", $f, 2);
