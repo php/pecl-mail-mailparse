@@ -54,6 +54,15 @@ mailparse_msg_extract_part_file($mime, $fp, "callbackfunc");
 echo "callback data is:\n";
 var_dump($cbdata);
 
+echo "\nExtract via Closure\n";
+$cbdata = "";
+$callbackfunc = function ($data) {
+	$GLOBALS["cbdata"] .= $data;
+};
+mailparse_msg_extract_part_file($mime, $fp, $callbackfunc);
+echo "callback data is:\n";
+var_dump($cbdata);
+
 echo "\nExtract whole part to output\n";
 mailparse_msg_extract_whole_part_file($mime, $fp);
 
@@ -79,6 +88,12 @@ hello, this is some text hello.
 blah blah blah.
 
 Extract via user function
+callback data is:
+string(48) "hello, this is some text hello.
+blah blah blah.
+"
+
+Extract via Closure
 callback data is:
 string(48) "hello, this is some text hello.
 blah blah blah.

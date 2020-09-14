@@ -1183,16 +1183,25 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const char *p, size_t n)
 {
 	zval retval, arg;
-
-	ZVAL_FALSE(&retval);
+	zend_fcall_info fci;
+	zend_fcall_info_cache fcc;
 
 	ZVAL_STRINGL(&arg, (char*)p, (int)n);
 
-	/* TODO: use zend_is_callable */
-
-	if (call_user_function(EG(function_table), NULL, userfunc, &retval, 1, &arg) == FAILURE)
+	if (zend_fcall_info_init(userfunc, 0, &fci, &fcc, NULL, NULL) == FAILURE) {
 		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name());
+		return 0;
+	}
 
+	zend_fcall_info_argn(&fci, 1, &arg);
+	fci.retval = &retval;
+	if (zend_call_function(&fci, &fcc)) {
+		zend_fcall_info_args_clear(&fci, 1);
+		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name());
+		return 0;
+	}
+
+	zend_fcall_info_args_clear(&fci, 1);
 	zval_ptr_dtor(&retval);
 	zval_ptr_dtor(&arg);
 
@@ -1317,8 +1326,6 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 			cbdata = deststream;
 			deststream = NULL; /* don't free this one */
 		} else {
-			if (Z_TYPE_P(callbackfunc) != IS_ARRAY)
-				convert_to_string_ex(callbackfunc);
 			cbfunc = (php_mimepart_extract_func_t)&extract_callback_user_func;
 			cbdata = callbackfunc;
 		}
