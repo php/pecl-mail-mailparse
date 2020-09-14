@@ -299,7 +299,11 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 
 static void php_mimepart_free_child(zval *childpart_z)
 {
-      php_mimepart_free((php_mimepart *)zend_fetch_resource(Z_RES_P(childpart_z), php_mailparse_msg_name(), php_mailparse_le_mime_part()));
+	php_mimepart *part = (php_mimepart *)zend_fetch_resource(Z_RES_P(childpart_z), php_mailparse_msg_name(), php_mailparse_le_mime_part());
+	if (part != NULL) {
+		part->parent = NULL;
+		zend_list_delete(part->rsrc);
+	}
 }
 
 PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
@@ -323,11 +327,6 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
 
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 {
-	if (part->rsrc) {
-		zend_list_close(part->rsrc);
-		part->rsrc = NULL;
-	}
-
 	/* free contained parts */
 
 	zend_hash_destroy(&part->children);
