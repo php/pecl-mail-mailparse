@@ -1020,7 +1020,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				}
 
 				for (; i<len; i++)
-					MBFL_CONVERT_FILTER_FEED(buf[i], conv);
+					mbfl_convert_filter_feed(buf[i], conv);
 			}
 		}
 
@@ -1031,7 +1031,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 			{
 				size_t i;
 				for (i=0; i<len; i++)
-					MBFL_CONVERT_FILTER_FEED(buf[i], conv);
+					mbfl_convert_filter_feed(buf[i], conv);
 			}
 		}
 	}

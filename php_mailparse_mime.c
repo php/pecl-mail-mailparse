@@ -966,7 +966,7 @@ PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *
 
 		if (part->extract_filter) {
 			for (i = 0; i < bufsize; i++) {
-				if (MBFL_CONVERT_FILTER_FEED(buf[i], part->extract_filter) < 0) {
+				if (mbfl_convert_filter_feed(buf[i], part->extract_filter) < 0) {
 					zend_error(E_WARNING, "%s() - filter conversion failed. Input message is probably incorrectly encoded\n",
 							get_active_function_name());
 					return -1;

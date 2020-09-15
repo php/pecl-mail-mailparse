@@ -47,7 +47,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
--
+- Fixed bug #74215: Memory leaks with mailparse (cmb)
+- Fixed bug #76498: Unable to use callable as callback (cmb)
+- Compatibility with 8.0.0beta4
  </notes>
  <contents>
   <dir name="/">

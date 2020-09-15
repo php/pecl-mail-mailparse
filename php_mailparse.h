@@ -95,13 +95,6 @@ extern ZEND_DECLARE_MODULE_GLOBALS(mailparse);
 #define MAILPARSEG(v) (mailparse_globals.v)
 #endif
 
-#if PHP_VERSION_ID < 80000
-#define MBFL_CONVERT_FILTER_FEED(c, filter) mbfl_convert_filter_feed((c), (filter))
-#else
-/* helper removed from 8.0.0beta3 */
-#define MBFL_CONVERT_FILTER_FEED(c, filter) (*(filter)->filter_function)((c), (filter))
-#endif
-
 #endif
 
 
