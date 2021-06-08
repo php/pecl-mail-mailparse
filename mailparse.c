@@ -413,7 +413,11 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 
 
 	if (part->source.kind == mpSTRING)
+#if PHP_VERSION_ID < 80100
 		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
+#else
+		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STR(part->source.zval));
+#endif
 	else
 		php_stream_from_zval(srcstream, &part->source.zval);
 
@@ -430,11 +434,15 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 	if (SUCCESS == extract_part(part, flags, srcstream, callback_data, callback)) {
 
 		if (mode == MAILPARSE_EXTRACT_RETURN) {
+#if PHP_VERSION_ID < 80100
 			size_t len;
 			char *buf;
 
 			buf = php_stream_memory_get_buffer(deststream, &len);
 			RETVAL_STRINGL(buf, len);
+#else
+			RETVAL_STR(php_stream_memory_get_buffer(deststream));
+#endif
 		} else {
 			RETVAL_TRUE;
 		}
@@ -502,7 +510,11 @@ PHP_METHOD(mimemessage, extract_uue)
 	}
 
 	if (part->source.kind == mpSTRING)
+#if PHP_VERSION_ID < 80100
 		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
+#else
+		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STR(part->source.zval));
+#endif
 	else
 		php_stream_from_zval(srcstream, &part->source.zval);
 
@@ -535,11 +547,15 @@ PHP_METHOD(mimemessage, extract_uue)
 			if (nparts == index) {
 				mailparse_do_uudecode(srcstream, deststream);
 				if (mode == MAILPARSE_EXTRACT_RETURN) {
+#if PHP_VERSION_ID < 80100
 					size_t len;
 					char *buf;
 
 					buf = php_stream_memory_get_buffer(deststream, &len);
 					RETVAL_STRINGL(buf, len);
+#else
+					RETVAL_STR(php_stream_memory_get_buffer(deststream));
+#endif
 				} else {
 					RETVAL_TRUE;
 				}
@@ -584,7 +600,11 @@ PHP_METHOD(mimemessage, enum_uue)
 		return;
 
 	if (part->source.kind == mpSTRING)
+#if PHP_VERSION_ID < 80100
 		instream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
+#else
+		instream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STR(part->source.zval));
+#endif
 	else
 		php_stream_from_zval(instream, &part->source.zval);
 
@@ -1308,7 +1328,11 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 		close_src_stream = 1;
 	} else {
 		/* filename is the actual data */
+#if PHP_VERSION_ID < 80100
 		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STRVAL_P(filename), Z_STRLEN_P(filename));
+#else
+		srcstream = php_stream_memory_open(TEMP_STREAM_READONLY, Z_STR_P(filename));
+#endif
 		close_src_stream = 1;
 	}
 
@@ -1339,12 +1363,15 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 	if (SUCCESS == extract_part(part, decode, srcstream, cbdata, cbfunc)) {
 
 		if (deststream != NULL) {
+#if PHP_VERSION_ID < 80100
 			/* return it's contents as a string */
 			char *membuf = NULL;
 			size_t memlen = 0;
 			membuf = php_stream_memory_get_buffer(deststream, &memlen);
 			RETVAL_STRINGL(membuf, memlen);
-
+#else
+			RETVAL_STR(php_stream_memory_get_buffer(deststream));
+#endif
 		} else {
 			RETVAL_TRUE;
 		}
