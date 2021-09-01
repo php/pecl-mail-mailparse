@@ -1,0 +1,68 @@
+name: Build and Test
+on: [push, pull_request]
+jobs:
+  ubuntu:
+    strategy:
+      matrix:
+          version: ['7.3', '7.4', '8.0', '8.1']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install re2c
+        run: sudo apt-get install -y re2c
+      - name: Checkout mailparse
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.version}}
+          extensions: mbstring
+          tool: phpize, php-config
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: ./configure --enable-mailparse
+      - name: hack 1
+        run: echo '#define HAVE_MBSTRING 1' >> config.h
+      - name: make
+        run: make
+      - name: hack 2
+        run: cp `php-config --extension-dir`/mbstring.so modules
+      - name: hack 3
+        run: sed -i 's/-d extension_dir/ -d extension=mbstring.so -d extension_dir/' Makefile
+      - name: test
+        run: make test TESTS="--show-diff tests"
+  windows:
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      matrix:
+          version: ["7.4", "8.0"]
+          arch: [x64, x86]
+          ts: [ts]
+    runs-on: windows-latest
+    steps:
+      - name: Configure Git
+        run: git config --global core.autocrlf false
+      - name: Checkout mailparse
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        id: setup-php
+        uses: cmb69/setup-php-sdk@v0.1
+        with:
+          version: ${{matrix.version}}
+          arch: ${{matrix.arch}}
+          ts: ${{matrix.ts}}
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: configure --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: make
+        run: nmake
+      - name: test
+        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
