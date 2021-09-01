@@ -36,9 +36,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2020-09-16</date>
+ <date>2021-09-01</date>
  <version>
-  <release>3.1.2dev</release>
+  <release>3.1.2</release>
   <api>3.0</api>
  </version>
  <stability>
