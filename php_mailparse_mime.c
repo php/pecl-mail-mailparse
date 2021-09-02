@@ -495,6 +495,10 @@ static int php_mimepart_process_header(php_mimepart *part)
 			}
 		}
 		if (strcmp(header_key, "content-disposition") == 0) {
+			if (part->content_disposition) {
+				php_mimeheader_free(part->content_disposition);
+				part->content_disposition = NULL;
+			}
 			part->content_disposition = php_mimeheader_alloc_from_tok(toks);
 		}
 
