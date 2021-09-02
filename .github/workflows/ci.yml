@@ -21,16 +21,14 @@ jobs:
         run: phpize
       - name: configure
         run: ./configure --enable-mailparse
-      - name: hack 1
+      - name: work around missing HAVE_MBSTRING in main/php_config.h
         run: echo '#define HAVE_MBSTRING 1' >> config.h
       - name: make
         run: make
-      - name: hack 2
-        run: cp `php-config --extension-dir`/mbstring.so modules
-      - name: hack 3
-        run: sed -i 's/-d extension_dir/ -d extension=mbstring.so -d extension_dir/' Makefile
       - name: test
-        run: make test TESTS="--show-diff tests"
+        run: |
+          export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
+          php run-tests.php -P --show-diff tests
   windows:
     defaults:
       run:
