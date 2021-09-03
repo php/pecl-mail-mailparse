@@ -703,13 +703,17 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream)
 	int x, A, B, C, D, n;
 	size_t file_size = 0;
 	char line[128];
+	int backtick_line = 0;
 
 	if (outstream) {
 		/* write to outstream */
 		while(!php_stream_eof(instream))	{
-			if (!php_stream_gets(instream, line, sizeof(line))) {
+			if (!php_stream_gets(instream, line, sizeof(line))
+			 	|| backtick_line && strncmp(line, "end", 3) == 0 && (line[3] == '\r' || line[3] == '\n')
+			) {
 				break;
 			}
+			backtick_line = line[0] == '`' && (line[1] == '\r' || line[1] == '\n');
 			x = 0;
 
 			UU_NEXT(n);
