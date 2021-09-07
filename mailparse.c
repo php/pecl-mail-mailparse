@@ -831,13 +831,13 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				array_init(&item);
 				add_assoc_string(&item, "filename", ZSTR_VAL(outpath));
 				add_next_index_zval(return_value, &item);
+				zend_string_release(outpath);
 			}
 
 			/* add an item */
 			array_init(&item);
 			add_assoc_string(&item, "origfilename", origfilename);
 
-			zend_string_release(outpath);
 			/* create a temp file for the data */
 			partstream = _mailparse_create_stream(&outpath);
 			if (partstream)	{
@@ -848,8 +848,8 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				/* decode it */
 				mailparse_do_uudecode(instream, partstream);
 				php_stream_close(partstream);
+				zend_string_release(outpath);
 			}
-			zend_string_release(outpath);
 		} else {
 			/* write to the output file */
 			php_stream_write_string(outstream, buffer);
