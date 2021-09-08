@@ -660,8 +660,12 @@ static int php_mimepart_process_line(php_mimepart *workpart)
 			--workpart->nbodylines;
 
 			/* some broken mailers include the content-type header but not a mime-version header.
+			 * some others may use a MIME version other than 1.0.
 			 * Let's relax and pretend they said they were mime 1.0 compatible */
-			if (workpart->mime_version == NULL && workpart->content_type != NULL) {
+			if (!IS_MIME_1(workpart) && workpart->content_type != NULL) {
+				if (workpart->mime_version != NULL) {
+					efree(workpart->mime_version);
+				}
 				workpart->mime_version = estrdup("1.0");
 			}
 
