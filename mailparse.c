@@ -557,7 +557,10 @@ PHP_METHOD(mimemessage, extract_uue)
 					buf = php_stream_memory_get_buffer(deststream, &len);
 					RETVAL_STRINGL(buf, len);
 #else
-					RETVAL_STR(php_stream_memory_get_buffer(deststream));
+					zend_string *buf;
+
+					buf = php_stream_memory_get_buffer(deststream);
+					RETVAL_STRINGL(ZSTR_VAL(buf), ZSTR_LEN(buf));
 #endif
 				} else {
 					RETVAL_TRUE;
@@ -1377,7 +1380,10 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 			membuf = php_stream_memory_get_buffer(deststream, &memlen);
 			RETVAL_STRINGL(membuf, memlen);
 #else
-			RETVAL_STR(php_stream_memory_get_buffer(deststream));
+			zend_string *buf;
+
+			buf = php_stream_memory_get_buffer(deststream);
+			RETVAL_STRINGL(ZSTR_VAL(buf), ZSTR_LEN(buf));
 #endif
 		} else {
 			RETVAL_TRUE;
