@@ -47,7 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
--
+- Fix gh#19 Segmentation fault with PHP 8.1 in extract_body using MAILPARSE_EXTRACT_RETURN
  </notes>
  <contents>
   <dir name="/">
@@ -82,6 +82,11 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="012.phpt" role="test" />
     <file name="013.phpt" role="test" />
     <file name="bug001.phpt" role="test" />
+    <file name="bug73110.phpt" role="test" />
+    <file name="bug74223.phpt" role="test" />
+    <file name="bug75825.phpt" role="test" />
+    <file name="bug81422.phpt" role="test" />
+    <file name="gh19.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />

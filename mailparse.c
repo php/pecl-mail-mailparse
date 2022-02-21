@@ -441,7 +441,10 @@ static void mailparse_mimemessage_extract(int flags, INTERNAL_FUNCTION_PARAMETER
 			buf = php_stream_memory_get_buffer(deststream, &len);
 			RETVAL_STRINGL(buf, len);
 #else
-			RETVAL_STR(php_stream_memory_get_buffer(deststream));
+			zend_string *buf;
+
+			buf = php_stream_memory_get_buffer(deststream);
+			RETVAL_STRINGL(ZSTR_VAL(buf), ZSTR_LEN(buf));
 #endif
 		} else {
 			RETVAL_TRUE;
@@ -709,7 +712,7 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream)
 		/* write to outstream */
 		while(!php_stream_eof(instream))	{
 			if (!php_stream_gets(instream, line, sizeof(line))
-			 	|| backtick_line && strncmp(line, "end", 3) == 0 && (line[3] == '\r' || line[3] == '\n')
+				|| (backtick_line && strncmp(line, "end", 3) == 0 && (line[3] == '\r' || line[3] == '\n'))
 			) {
 				break;
 			}

@@ -38,6 +38,7 @@ yaml.loT
 .#*
 *.
 *.slo
+*.dep
 *.mk
 *.mem
 *.gcda
