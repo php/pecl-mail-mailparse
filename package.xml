@@ -47,7 +47,11 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- Fix gh#19 Segmentation fault with PHP 8.1 in extract_body using MAILPARSE_EXTRACT_RETURN
+- Fix #73110: Mails with unknown MIME version are treated as plain/text. (cmb)
+- Fix #74233: Parsing multi Content-Disposition causes memory leak. (cmb)
+- Fix #75825: mailparse_uudecode_all doesn't parse multiple files. (cmb)
+- Fix #81422: Potential double-free in mailparse_uudecode_all(). (cmb)
+- Fix gh#19 Segmentation fault with PHP 8.1 in extract_body using MAILPARSE_EXTRACT_RETURN. (Remi)
  </notes>
  <contents>
   <dir name="/">
