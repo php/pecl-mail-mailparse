@@ -160,6 +160,7 @@ PHP_MINIT_FUNCTION(mailparse)
 	INIT_CLASS_ENTRY(mmce, "mimemessage", mimemessage_methods);
 	mimemsg_class_entry = zend_register_internal_class(&mmce);
 
+	zend_declare_property_null(mimemsg_class_entry, "data", sizeof("data")-1, ZEND_ACC_PUBLIC);
 
 	le_mime_part = zend_register_list_destructors_ex(mimepart_dtor, NULL, mailparse_msg_name, module_number);
 
