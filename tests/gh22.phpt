@@ -64,10 +64,8 @@ EOF;
 
 $resource = mailparse_msg_create();
 
-$r = mailparse_msg_parse($resource, $data);
+$r = @mailparse_msg_parse($resource, $data);
 echo 'ok', PHP_EOL;
-
-var_dump($r);
 
 exit(0);
 ?>
