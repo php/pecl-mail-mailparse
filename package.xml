@@ -36,9 +36,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2022-02-21</date>
+ <date>2022-09-15</date>
  <version>
-  <release>3.1.4dev</release>
+  <release>3.1.4</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,7 +47,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
--
+- declare mimemessage::data property
+- drop support for PHP older than 7.3
  </notes>
  <contents>
   <dir name="/">
@@ -109,7 +110,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <dependencies>
   <required>
    <php>
-    <min>7.0.0</min>
+    <min>7.3.0</min>
    </php>
    <pearinstaller>
     <min>1.10</min>
