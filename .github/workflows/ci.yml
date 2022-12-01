@@ -1,0 +1,66 @@
+name: Build and Test
+on: [push, pull_request]
+jobs:
+  ubuntu:
+    strategy:
+      matrix:
+          version: ['7.3', '7.4', '8.0', '8.1']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install re2c
+        run: sudo apt-get install -y re2c
+      - name: Checkout mailparse
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.version}}
+          extensions: mbstring
+          tool: phpize, php-config
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: ./configure --enable-mailparse
+      - name: work around missing HAVE_MBSTRING in main/php_config.h
+        run: echo '#define HAVE_MBSTRING 1' >> config.h
+      - name: make
+        run: make
+      - name: test
+        run: |
+          export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
+          php run-tests.php -P --show-diff tests
+  windows:
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      matrix:
+          version: ["7.4", "8.0"]
+          arch: [x64, x86]
+          ts: [ts]
+    runs-on: windows-latest
+    steps:
+      - name: Configure Git
+        run: git config --global core.autocrlf false
+      - name: Checkout mailparse
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        id: setup-php
+        uses: cmb69/setup-php-sdk@v0.2
+        with:
+          version: ${{matrix.version}}
+          arch: ${{matrix.arch}}
+          ts: ${{matrix.ts}}
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: configure --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: make
+        run: nmake
+      - name: test
+        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
