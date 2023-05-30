@@ -942,17 +942,15 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 		else if (++linelen > 200)
 			longline = 1;
 	}
-	if (longline)
+	if (longline) {
 		bestenc = mbfl_no_encoding_qprint;
+	}
 	php_stream_rewind(stream);
 
-	name = (char *)mbfl_no2preferred_mime_name(bestenc);
-	if (name)
-	{
+	name = mbfl_encoding_preferred_mime_name(mbfl_no2encoding(bestenc));
+	if (name) {
 		RETVAL_STRING(name);
-	}
-	else
-	{
+	} else {
 		RETVAL_FALSE;
 	}
 }
@@ -980,6 +978,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	char *buf;
 	size_t len;
 	size_t bufsize = 2048;
+	const mbfl_encoding *encoding;
 	enum mbfl_no_encoding enc;
 	mbfl_convert_filter *conv = NULL;
 
@@ -997,8 +996,10 @@ PHP_FUNCTION(mailparse_stream_encode)
 	php_stream_from_zval(srcstream, srcfile);
 	php_stream_from_zval(deststream, destfile);
 
-	enc = mbfl_name2no_encoding(ZSTR_VAL(encod));
-	if (enc == mbfl_no_encoding_invalid)	{
+	encoding = mbfl_name2encoding(ZSTR_VAL(encod));
+	if (encoding) {
+		enc = encoding->no_encoding;
+	} else	{
 		zend_error(E_WARNING, "%s(): unknown encoding \"%s\"",
 				get_active_function_name(),
 				ZSTR_VAL(encod)

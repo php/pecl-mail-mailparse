@@ -913,11 +913,14 @@ static int filter_into_work_buffer(int c, void *dat)
 
 PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr)
 {
+	const mbfl_encoding *encoding;
 	enum mbfl_no_encoding from = mbfl_no_encoding_8bit;
 
 	if (do_decode && part->content_transfer_encoding) {
-		from = mbfl_name2no_encoding(part->content_transfer_encoding);
-		if (from == mbfl_no_encoding_invalid) {
+		encoding = mbfl_name2encoding(part->content_transfer_encoding);
+		if (encoding) {
+			from = encoding->no_encoding;
+		} else {
 			if (strcasecmp("binary", part->content_transfer_encoding) != 0) {
 				zend_error(E_WARNING, "%s(): mbstring doesn't know how to decode %s transfer encoding!",
 						get_active_function_name(),
