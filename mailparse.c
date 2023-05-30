@@ -947,7 +947,11 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 	}
 	php_stream_rewind(stream);
 
-	name = mbfl_encoding_preferred_mime_name(mbfl_no2encoding(bestenc));
+#if PHP_VERSION_ID < 80100
+	name = (char *)mbfl_no2preferred_mime_name(bestenc);
+#else
+	name = (char *)mbfl_encoding_preferred_mime_name(mbfl_no2encoding(bestenc));
+#endif
 	if (name) {
 		RETVAL_STRING(name);
 	} else {
