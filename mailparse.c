@@ -249,11 +249,13 @@ PHP_METHOD(mimemessage, __construct)
 
 	/* now check the args */
 
-	if (zend_string_equals_literal(mode, "new"))
+	if (zend_string_equals_literal(mode, "new")) {
 		RETURN_TRUE;
+	}
 
-	if (source == NULL)
+	if (source == NULL) {
 		RETURN_FALSE;
+	}
 
 	if (zend_string_equals_literal(mode, "var") && Z_TYPE_P(source) == IS_STRING) {
 		/* source is the actual message */
@@ -261,9 +263,8 @@ PHP_METHOD(mimemessage, __construct)
 
 		ZVAL_DUP(&part->source.zval, source);
 		convert_to_string_ex(&part->source.zval);
-	}
 
-	if (zend_string_equals_literal(mode, "file")) {
+	} else if (zend_string_equals_literal(mode, "file")) {
 		/* source is the name of a file */
 		php_stream *srcstream;
 
@@ -276,23 +277,23 @@ PHP_METHOD(mimemessage, __construct)
 		}
 
 		php_stream_to_zval(srcstream, &part->source.zval);
-	}
-	if (zend_string_equals_literal(mode, "stream")) {
+
+	} else if (zend_string_equals_literal(mode, "stream")) {
+
 		part->source.kind = mpSTREAM;
 
 		ZVAL_DUP(&part->source.zval, source);
-		convert_to_string_ex(&part->source.zval);
 	}
 
 	/* parse the data from the source */
 	if (part->source.kind == mpSTRING) {
 		php_mimepart_parse(part, Z_STRVAL_P(&part->source.zval), Z_STRLEN_P(&part->source.zval));
+
 	} else if (part->source.kind == mpSTREAM) {
 		php_stream *srcstream;
 		char buf[1024];
 
 		php_stream_from_zval(srcstream, &part->source.zval);
-
 		php_stream_rewind(srcstream);
 		while(!php_stream_eof(srcstream)) {
 			size_t n = php_stream_read(srcstream, buf, sizeof(buf));

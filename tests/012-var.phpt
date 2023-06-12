@@ -1,5 +1,5 @@
 --TEST--
-Check mailparse_mimemessage_extract_uue (file mode)
+Check mailparse_mimemessage_extract_uue (var mode)
 --SKIPIF--
 <?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
@@ -7,7 +7,8 @@ Check mailparse_mimemessage_extract_uue (file mode)
 if (!extension_loaded("mailparse")) print "skip"; ?>
 --FILE--
 <?php
-$msg = new MimeMessage("file", dirname(__FILE__) . "/testdata/oeuue");
+$var = file_get_contents(dirname(__FILE__) . "/testdata/oeuue");
+$msg = new MimeMessage("var", $var);
 var_dump( $msg->extract_uue(0, MAILPARSE_EXTRACT_RETURN));
 ?>
 --EXPECT--

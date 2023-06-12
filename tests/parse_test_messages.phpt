@@ -4,7 +4,7 @@ Parse messages in testdata dir
 <?php
 /* vim600: sw=4 ts=4 fdm=marker syn=php
 */
-if (!extension_loaded("mailparse") || !extension_loaded("zlib")) print "skip"; ?>
+if (!extension_loaded("mailparse") || !extension_loaded("zlib")) print "skip missing mailparse or zlib"; ?>
 --FILE--
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
