@@ -50,6 +50,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
 - drop usage of removed mbfl APIs in PHP 8.3
 - fix GH-27 MimeMessage::__construct() throws TypeError with $mode=stream
 - fix GH-21, GH-22, GH-24 segfault in mailparse_msg_parse without mime-version
+- fix #81403 mailparse_rfc822_parse_addresses drops escaped quotes
  </notes>
  <contents>
   <dir name="/">
@@ -89,6 +90,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="bug73110.phpt" role="test" />
     <file name="bug74223.phpt" role="test" />
     <file name="bug75825.phpt" role="test" />
+    <file name="bug81403.phpt" role="test" />
     <file name="bug81422.phpt" role="test" />
     <file name="gh19.phpt" role="test" />
     <file name="gh21.phpt" role="test" />
