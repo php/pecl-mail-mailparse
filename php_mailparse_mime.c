@@ -612,7 +612,9 @@ static int php_mimepart_process_line(php_mimepart *workpart)
 
 			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
-			newpart->mime_version = estrdup(workpart->mime_version);
+			if (workpart->mime_version) {
+				newpart->mime_version = estrdup(workpart->mime_version);
+			}
 			newpart->parsedata.in_header = 1;
 			return SUCCESS;
 		}
