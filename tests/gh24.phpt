@@ -32,7 +32,6 @@ $resource = mailparse_msg_create();
 $r = @mailparse_msg_parse($resource, $data);
 echo 'ok', PHP_EOL;
 
-mailparse_msg_free($resource);
 exit(0);
 ?>
 --EXPECTF--

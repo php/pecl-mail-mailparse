@@ -297,22 +297,13 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 	return attr;
 }
 
-static void php_mimepart_free_child(zval *childpart_z)
-{
-	php_mimepart *part = (php_mimepart *)zend_fetch_resource(Z_RES_P(childpart_z), php_mailparse_msg_name(), php_mailparse_le_mime_part());
-	if (part != NULL) {
-		part->parent = NULL;
-		zend_list_delete(part->rsrc);
-	}
-}
-
 PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
 {
 	php_mimepart *part = ecalloc(1, sizeof(php_mimepart));
 
 	part->part_index = 1;
 
-	zend_hash_init(&part->children, 0, NULL, (dtor_func_t)php_mimepart_free_child, 0);
+	zend_hash_init(&part->children, 0, NULL, NULL, 0);
 
 	array_init(&part->headerhash);
 
