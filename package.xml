@@ -45,7 +45,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <release>stable</release>
   <api>stable</api>
  </stability>
- <license uri="http://www.php.net/license">PHP</license>
+ <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
 - drop usage of removed mbfl APIs in PHP 8.3
 - fix GH-27 MimeMessage::__construct() throws TypeError with $mode=stream
