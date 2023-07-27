@@ -38,7 +38,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2023-07-27</date>
  <version>
-  <release>3.1.5</release>
+  <release>3.1.6dev</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,10 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
-- drop usage of removed mbfl APIs in PHP 8.3
-- fix GH-27 MimeMessage::__construct() throws TypeError with $mode=stream
-- fix GH-21, GH-22, GH-24 segfault in mailparse_msg_parse without mime-version
-- fix #81403 mailparse_rfc822_parse_addresses drops escaped quotes
+-
  </notes>
  <contents>
   <dir name="/">
@@ -131,6 +128,24 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <date>2023-07-27</date>
+   <version>
+    <release>3.1.5</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
+   <notes>
+- drop usage of removed mbfl APIs in PHP 8.3
+- fix GH-27 MimeMessage::__construct() throws TypeError with $mode=stream
+- fix GH-21, GH-22, GH-24 segfault in mailparse_msg_parse without mime-version
+- fix #81403 mailparse_rfc822_parse_addresses drops escaped quotes
+   </notes>
+  </release>
   <release>
    <date>2022-09-15</date>
    <version>
