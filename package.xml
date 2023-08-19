@@ -95,6 +95,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="gh21.phpt" role="test" />
     <file name="gh22.phpt" role="test" />
     <file name="gh24.phpt" role="test" />
+    <file name="gh29.phpt" role="test" />
+    <file name="gh30.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
