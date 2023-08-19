@@ -4,6 +4,8 @@ Bug #81403 (mailparse_rfc822_parse_addresses drops escaped quotes)
 <?php
 if (!extension_loaded("mailparse")) die("skip mailparse extension not available");
 ?>
+--XFAIL--
+Fix reverted see GH-29 and GH-30
 --FILE--
 <?php
 $address = '"Smith, Robert \"Bob\"" <user@domain.org>';

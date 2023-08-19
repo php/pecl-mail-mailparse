@@ -47,7 +47,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
--
+- fix #29 Segmentation fault with ISO-2022-JP Subject header
+- fix #30 Segmentation fault with UTF-8 encoded X-MS-Iris-MetaData header
+- revert fix #81403 mailparse_rfc822_parse_addresses drops escaped quotes
  </notes>
  <contents>
   <dir name="/">

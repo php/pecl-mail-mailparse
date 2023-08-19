@@ -66,7 +66,6 @@ other = any\allspecials;
 static void tokenize(const char *header, php_rfc822_token_t *tokens, int *ntokens, int report_errors)
 {
 	register const char *p, *q, *start;
-	const char *r = NULL;
 	int in_bracket = 0;
 
 /* NB: parser assumes that the header has two bytes of NUL terminator */
@@ -95,7 +94,7 @@ printf("ground: start=%p limit=%p cursor=%p: [%d] %s\n", start, YYLIMIT, YYCURSO
 							}
 							goto state_comment;
 						}
-	["] (any\["]|"\\\"")* ["]	{ 	DBG_STATE("QUOTE STRING");
+	["] (any\["])* ["]	{ 	DBG_STATE("QUOTE STRING");
 							if (tokens) {
 								tokens->token = '"';
 								tokens->value = start + 1;
