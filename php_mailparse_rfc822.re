@@ -350,7 +350,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 	/* the stuff from start_tok to i - 1 is the display name part */
 	if (addrs && !in_group && i - start_tok > 0) {
 		int j, has_comments = 0, has_strings = 0;
-		switch(toks->tokens[i].token) {
+		switch(i < toks->ntokens ? toks->tokens[i].token : 0) {
 			case ';': case ',': case '<':
 				addrs->addrs[iaddr].name = php_rfc822_recombine_tokens(toks, start_tok, i - start_tok,
 						PHP_RFC822_RECOMBINE_SPACE_ATOMS);
