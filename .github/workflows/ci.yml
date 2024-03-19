@@ -30,23 +30,24 @@ jobs:
           export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
           php run-tests.php -P --show-diff tests
   windows:
-    defaults:
-      run:
-        shell: cmd
-    strategy:
-      matrix:
-          version: ["7.4", "8.0"]
-          arch: [x64, x86]
-          ts: [ts]
     runs-on: windows-latest
+    continue-on-error: false
+    strategy:
+      fail-fast: false
+      matrix:
+          version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
+          arch: [x64, x86]
+          ts: [nts, ts]
     steps:
       - name: Configure Git
         run: git config --global core.autocrlf false
       - name: Checkout mailparse
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        id: setup-php
-        uses: cmb69/setup-php-sdk@v0.2
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup PHP ${{ matrix.version }}
+        id: setup-php-sdk
+        uses: php/setup-php-sdk@v0.8
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
@@ -55,12 +56,20 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{matrix.arch}}
-          toolset: ${{steps.setup-php.outputs.toolset}}
-      - name: phpize
-        run: phpize
-      - name: configure
-        run: configure --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
-      - name: make
-        run: nmake
+          toolset: ${{steps.setup-php-sdk.outputs.toolset}}
+      - name: Build mailparse for Windows
+        run: |
+          phpize
+          ./configure --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
+          nmake
+      - name: package
+        run: |
+          md binaries
+          Get-ChildItem -Recurse -Filter "php_mailparse.dll" | ForEach-Object {Copy-Item -Path $_.FullName -Destination "binaries"}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mailparse-${{matrix.version}}-${{matrix.arch}}-${{matrix.ts}}
+          path: binaries
       - name: test
-        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+        run: nmake test TESTS="-d extension=${{steps.setup-php-sdk.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
