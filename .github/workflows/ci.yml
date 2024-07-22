@@ -10,7 +10,7 @@ jobs:
       - name: Install re2c
         run: sudo apt-get install -y re2c
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -35,18 +35,18 @@ jobs:
         shell: cmd
     strategy:
       matrix:
-          version: ["7.4", "8.0"]
+          version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
           arch: [x64, x86]
           ts: [ts]
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Configure Git
         run: git config --global core.autocrlf false
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         id: setup-php
-        uses: cmb69/setup-php-sdk@v0.2
+        uses: php/setup-php-sdk@v0.8
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
