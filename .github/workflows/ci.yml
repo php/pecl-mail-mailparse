@@ -16,7 +16,7 @@ jobs:
         with:
           php-version: ${{matrix.version}}
           extensions: mbstring
-          tool: phpize, php-config
+          tools: phpize, php-config
       - name: phpize
         run: phpize
       - name: configure
