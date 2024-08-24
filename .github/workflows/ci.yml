@@ -10,7 +10,7 @@ jobs:
       - name: Install re2c
         run: sudo apt-get install -y re2c
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -30,7 +30,7 @@ jobs:
           export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
           php run-tests.php -P --show-diff tests
   windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     continue-on-error: false
     strategy:
       fail-fast: false
@@ -60,8 +60,18 @@ jobs:
       - name: Build mailparse for Windows
         run: |
           phpize
-          ./configure --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
+          ./configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
           nmake
+      - name: patch test ini
+        run: |
+          if "${{matrix.arch}}"=="x64" (
+            set my_ini_file=x64\Release_TS\tmp-php.ini
+          ) else (
+            set my_ini_file=Release_TS\tmp-php.ini
+          )
+          set mbstring=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll
+          sed -i "1s/^/extension=%mbstring:\=\\\%\n/" %my_ini_file%
+          type %my_ini_file%
       - name: package
         run: |
           md binaries
@@ -72,4 +82,4 @@ jobs:
           name: mailparse-${{matrix.version}}-${{matrix.arch}}-${{matrix.ts}}
           path: binaries
       - name: test
-        run: nmake test TESTS="-d extension=${{steps.setup-php-sdk.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+        run: nmake test TESTS="--show-diff tests"
