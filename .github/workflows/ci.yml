@@ -64,11 +64,7 @@ jobs:
           nmake
       - name: patch test ini
         run: |
-          if "${{matrix.arch}}"=="x64" (
-            set my_ini_file=x64\Release_TS\tmp-php.ini
-          ) else (
-            set my_ini_file=Release_TS\tmp-php.ini
-          )
+          if "${{matrix.arch}}"=="x64" (set my_ini_file=x64\Release_TS\tmp-php.ini) else (set my_ini_file=Release_TS\tmp-php.ini)
           set mbstring=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll
           sed -i "1s/^/extension=%mbstring:\=\\\%\n/" %my_ini_file%
           type %my_ini_file%
