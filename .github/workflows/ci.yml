@@ -65,18 +65,15 @@ jobs:
           nmake
       - name: patch test ini
         run: |
-          # Get-ChildItem -Recurse
           if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\Release_TS\tmp-php.ini"} else {$my_ini_file = "Release_TS\tmp-php.ini"}
-          # $mbstring = "mbstring"
           # $mbstring = "${{steps.setup-php.outputs.prefix}}\ext\mbstring.dll"
-          $mbstring = "D:\a\pecl-mail-mailparse\pecl-mail-mailparse\php-bin\ext\php_mbstring.dll"
+          $currentDir = pwd
+          $mbstring = "$currentDir\php-bin\ext\php_mbstring.dll"
           $content = [System.IO.File]::ReadAllText($my_ini_file)
           $pattern = [regex]"\nextension="
           $content = $pattern.replace($content, "`nextension=$mbstring`nextension=", 1)
           [System.IO.File]::WriteAllText($my_ini_file, $content)
           type $my_ini_file
-          Write-Output "${{steps.setup-php.outputs.prefix}}"
-          Write-Output "${{steps.setup-php.outputs}}"
       - name: package
         run: |
           md binaries
