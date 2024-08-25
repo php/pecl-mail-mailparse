@@ -65,9 +65,8 @@ jobs:
           nmake
       - name: patch test ini
         run: |
-          ls -l x64\Release_TS\
           if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\Release_TS\tmp-php.ini"} else {$my_ini_file = "Release_TS\tmp-php.ini"}
-          $mbstring = "${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll"
+          $mbstring = "mbstring"
           $content = [System.IO.File]::ReadAllText($my_ini_file)
           $pattern = [regex]"\nextension="
           $content = $pattern.replace($content, "`nextension=$mbstring`nextension=", 1)
