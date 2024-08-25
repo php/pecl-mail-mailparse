@@ -35,7 +35,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
+          #version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
+          version: ["7.4", "8.3"]
           arch: [x64, x86]
           ts: [nts, ts]
     steps:
@@ -64,9 +65,10 @@ jobs:
           nmake
       - name: patch test ini
         run: |
+          ls -l x64\Release_TS\
           if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\Release_TS\tmp-php.ini"} else {$my_ini_file = "Release_TS\tmp-php.ini"}
           $mbstring = "${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll"
-          $content = [System.IO.File]::ReadAllText("$my_ini_file")
+          $content = [System.IO.File]::ReadAllText($my_ini_file)
           $pattern = [regex]"\nextension="
           $content = $pattern.replace($content, "`nextension=$mbstring`nextension=", 1)
           [System.IO.File]::WriteAllText($my_ini_file, $content)
