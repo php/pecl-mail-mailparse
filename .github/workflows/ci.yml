@@ -68,6 +68,7 @@ jobs:
           Get-ChildItem -Recurse
           if ("${{matrix.ts}}" -eq "ts") {$releaseDir = "Release_TS"} else {$releaseDir = "Release"}
           if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\$releaseDir\tmp-php.ini"} else {$my_ini_file = "$releaseDir\tmp-php.ini"}
+          if ("${{matrix.version}}" -eq "7.4") {$my_ini_file = "php-sdk\bin\php\php.ini"}
           # $mbstring = "${{steps.setup-php.outputs.prefix}}\ext\mbstring.dll"
           $currentDir = pwd
           $mbstring = "$currentDir\php-bin\ext\php_mbstring.dll"
