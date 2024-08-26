@@ -65,7 +65,8 @@ jobs:
           nmake
       - name: patch test ini
         run: |
-          if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\Release_TS\tmp-php.ini"} else {$my_ini_file = "Release_TS\tmp-php.ini"}
+          if ("${{matrix.ts}}" -eq "ts") {$releaseDir = "Release_TS"} else {$releaseDir = "Release"}
+          if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\$releaseDir\tmp-php.ini"} else {$my_ini_file = "$releaseDir\tmp-php.ini"}
           # $mbstring = "${{steps.setup-php.outputs.prefix}}\ext\mbstring.dll"
           $currentDir = pwd
           $mbstring = "$currentDir\php-bin\ext\php_mbstring.dll"
