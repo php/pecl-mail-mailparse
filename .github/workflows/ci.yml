@@ -57,11 +57,10 @@ jobs:
         with:
           arch: ${{matrix.arch}}
           toolset: ${{steps.setup-php-sdk.outputs.toolset}}
-      - name: Build mailparse for Windows
-        run: |
-          phpize
-          ./configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
-          nmake
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
       - name: patch test ini
         run: |
           if ("${{matrix.ts}}" -eq "ts") {$releaseDir = "Release_TS"} else {$releaseDir = "Release"}
