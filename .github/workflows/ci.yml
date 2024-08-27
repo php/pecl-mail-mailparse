@@ -4,7 +4,7 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
     runs-on: ubuntu-latest
     steps:
       - name: Install re2c
@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
+          version: ["8.2", "8.3", "8.4"]
           arch: [x64, x86]
           ts: [nts, ts]
     steps:
@@ -57,10 +57,11 @@ jobs:
         with:
           arch: ${{matrix.arch}}
           toolset: ${{steps.setup-php-sdk.outputs.toolset}}
-      - name: phpize
-        run: phpize
-      - name: configure
-        run: ./configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: Build mailparse for Windows
+        run: |
+          phpize
+          ./configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
+          nmake
       - name: patch test ini
         run: |
           if ("${{matrix.ts}}" -eq "ts") {$releaseDir = "Release_TS"} else {$releaseDir = "Release"}
