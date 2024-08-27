@@ -4,19 +4,19 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
     runs-on: ubuntu-latest
     steps:
       - name: Install re2c
         run: sudo apt-get install -y re2c
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{matrix.version}}
           extensions: mbstring
-          tool: phpize, php-config
+          tools: phpize, php-config
       - name: phpize
         run: phpize
       - name: configure
@@ -30,23 +30,24 @@ jobs:
           export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
           php run-tests.php -P --show-diff tests
   windows:
-    defaults:
-      run:
-        shell: cmd
+    runs-on: windows-2019
+    continue-on-error: false
     strategy:
+      fail-fast: false
       matrix:
-          version: ["7.4", "8.0"]
-          arch: [x64, x86]
-          ts: [ts]
-    runs-on: windows-latest
+        version: ["8.2", "8.3"]
+        arch: [x64, x86]
+        ts: [nts, ts]
     steps:
       - name: Configure Git
         run: git config --global core.autocrlf false
       - name: Checkout mailparse
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        id: setup-php
-        uses: cmb69/setup-php-sdk@v0.2
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup PHP ${{ matrix.version }}
+        id: setup-php-sdk
+        uses: php/setup-php-sdk@v0.8
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
@@ -55,12 +56,31 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{matrix.arch}}
-          toolset: ${{steps.setup-php.outputs.toolset}}
-      - name: phpize
-        run: phpize
-      - name: configure
-        run: configure --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
-      - name: make
-        run: nmake
+          toolset: ${{steps.setup-php-sdk.outputs.toolset}}
+      - name: Build mailparse for Windows
+        run: |
+          phpize
+          ./configure --enable-test-ini --enable-mailparse --with-prefix=${{steps.setup-php-sdk.outputs.prefix}}
+          nmake
+      - name: patch test ini
+        run: |
+          if ("${{matrix.ts}}" -eq "ts") {$releaseDir = "Release_TS"} else {$releaseDir = "Release"}
+          if ("${{matrix.arch}}" -eq "x64") {$my_ini_file = "x64\$releaseDir\tmp-php.ini"} else {$my_ini_file = "$releaseDir\tmp-php.ini"}
+          $currentDir = pwd
+          $mbstring = "$currentDir\php-bin\ext\php_mbstring.dll"
+          $content = [System.IO.File]::ReadAllText($my_ini_file)
+          $pattern = [regex]"\nextension="
+          $content = $pattern.replace($content, "`nextension=$mbstring`nextension=", 1)
+          [System.IO.File]::WriteAllText($my_ini_file, $content)
+          type $my_ini_file
+      - name: package
+        run: |
+          md binaries
+          Get-ChildItem -Recurse -Filter "php_mailparse.dll" | ForEach-Object {Copy-Item -Path $_.FullName -Destination "binaries"}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mailparse-${{matrix.version}}-${{matrix.arch}}-${{matrix.ts}}
+          path: binaries
       - name: test
-        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+        run: nmake test TESTS="--show-diff tests"
