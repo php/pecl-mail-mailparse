@@ -70,3 +70,4 @@ tests/*.sh
 # coverage
 /coverage.info
 /reports
+.idea/
