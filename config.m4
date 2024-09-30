@@ -11,9 +11,11 @@ if test "$PHP_MAILPARSE" != "no"; then
   if test -f $abs_srcdir/ext/mbstring/libmbfl/mbfl/mbfilter.h; then
      dnl build in php-src tree
      AC_MSG_RESULT(found in $abs_srcdir/ext/mbstring)
+     AC_DEFINE(HAVE_MBSTRING, 1, [Define to 1 if mbstring is available])
   elif test -f $phpincludedir/ext/mbstring/libmbfl/mbfl/mbfilter.h; then
      dnl build alone
      AC_MSG_RESULT(found in $phpincludedir/ext/mbstring)
+     AC_DEFINE(HAVE_MBSTRING, 1, [Define to 1 if mbstring is available])
   else
      AC_MSG_ERROR(mbstring extension with libmbfl is missing)
   fi
