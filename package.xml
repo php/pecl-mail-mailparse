@@ -38,7 +38,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2024-10-04</date>
  <version>
-  <release>3.1.8dev</release>
+  <release>3.1.8</release>
   <api>3.0</api>
  </version>
  <stability>
