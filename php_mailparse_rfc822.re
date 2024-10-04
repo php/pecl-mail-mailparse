@@ -291,7 +291,7 @@ PHP_MAILPARSE_API char *php_rfc822_recombine_tokens(php_rfc822_tokenized_t *toks
 	ret[len] = 0;
 
 	if (flags & PHP_RFC822_RECOMBINE_STRTOLOWER)
-		php_strtolower(ret, len);
+		zend_str_tolower(ret, len);
 
 	return ret;
 }
