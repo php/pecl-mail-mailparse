@@ -1,0 +1,14 @@
+{
+    "name": "pecl/mailparse",
+    "type": "php-ext",
+    "license": "PHP-3.01",
+    "description": "Email message manipulation",
+    "require": {
+        "php": ">= 7.3.0",
+        "ext-mbstring": "*"
+    },
+    "php-ext": {
+        "extension-name": "mailparse",
+        "configure-options": []
+    }
+}
