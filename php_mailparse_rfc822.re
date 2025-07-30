@@ -18,7 +18,7 @@
 #include "php_mailparse.h"
 #include "php_mailparse_rfc822.h"
 #include "ext/standard/php_string.h"
-#include "ext/standard/php_smart_string.h"
+#include "Zend/zend_smart_string.h"
 /*!re2c
 CHAR = [\000-\177];
 ALPHA = [\101-\132]|[\141-\172];

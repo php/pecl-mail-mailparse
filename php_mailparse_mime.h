@@ -17,7 +17,7 @@
 #ifndef php_mailparse_mime_h
 #define php_mailparse_mime_h
 
-#include "ext/standard/php_smart_string.h"
+#include "Zend/zend_smart_string.h"
 
 typedef struct _php_mimepart php_mimepart;
 
