@@ -318,7 +318,15 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_alloc()
 
 PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 {
+	zval *childpart_z;
+	HashPosition pos;
+
 	/* free contained parts */
+	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
+	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
+		zval_ptr_dtor(childpart_z);
+		zend_hash_move_forward_ex(&part->children, &pos);
+	}
 
 	zend_hash_destroy(&part->children);
 

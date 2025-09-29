@@ -48,6 +48,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
 - use Zend/zend_smart_string.h for PHP 8.5
+- Fix memory leak
  </notes>
  <contents>
   <dir name="/">
