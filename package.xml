@@ -36,9 +36,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2024-10-04</date>
+ <date>2025-09-30</date>
  <version>
-  <release>3.1.9dev</release>
+  <release>3.1.9</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -96,6 +96,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="gh24.phpt" role="test" />
     <file name="gh29.phpt" role="test" />
     <file name="gh30.phpt" role="test" />
+    <file name="gh43.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
