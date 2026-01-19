@@ -76,8 +76,7 @@ PHP_METHOD(mimemessage, extract_uue);
 PHP_METHOD(mimemessage, remove);
 PHP_METHOD(mimemessage, add_child);
 
-# include "ext/mbstring/libmbfl/mbfl/mbfilter.h"
-
+#include "mailparse_encoding.h"
 #include "php_mailparse_rfc822.h"
 #include "php_mailparse_mime.h"
 

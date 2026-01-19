@@ -914,20 +914,20 @@ static int filter_into_work_buffer(int c, void *dat)
 
 PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr)
 {
-	const mbfl_encoding *encoding;
-	enum mbfl_no_encoding from = mbfl_no_encoding_8bit;
+	const mb_encoding *encoding;
+	enum mb_no_encoding from = mb_no_encoding_8bit;
 
 	if (do_decode && part->content_transfer_encoding) {
-		encoding = mbfl_name2encoding(part->content_transfer_encoding);
+		encoding = mb_name2encoding(part->content_transfer_encoding);
 		if (encoding) {
 			from = encoding->no_encoding;
 		} else {
 			if (strcasecmp("binary", part->content_transfer_encoding) != 0) {
-				zend_error(E_WARNING, "%s(): mbstring doesn't know how to decode %s transfer encoding!",
+				zend_error(E_WARNING, "%s(): unknown transfer encoding %s!",
 						get_active_function_name(),
 						part->content_transfer_encoding);
 			}
-			from = mbfl_no_encoding_8bit;
+			from = mb_no_encoding_8bit;
 		}
 	}
 
@@ -936,11 +936,11 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 	part->parsedata.workbuf.len = 0;
 
 	if (do_decode) {
-		if (from == mbfl_no_encoding_8bit || from == mbfl_no_encoding_7bit) {
+		if (from == mb_no_encoding_8bit || from == mb_no_encoding_7bit) {
 			part->extract_filter = NULL;
 		} else {
-			part->extract_filter = mbfl_convert_filter_new(
-					mbfl_no2encoding(from), mbfl_no2encoding(mbfl_no_encoding_8bit),
+			part->extract_filter = mb_convert_filter_new(
+					mb_no2encoding(from), mb_no2encoding(mb_no_encoding_8bit),
 					filter_into_work_buffer,
 					NULL,
 					part
@@ -953,8 +953,8 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part)
 {
 	if (part->extract_filter) {
-		mbfl_convert_filter_flush(part->extract_filter);
-		mbfl_convert_filter_delete(part->extract_filter);
+		mb_convert_filter_flush(part->extract_filter);
+		mb_convert_filter_delete(part->extract_filter);
 	}
 	if (part->extract_func && part->parsedata.workbuf.len > 0) {
 		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
@@ -969,7 +969,7 @@ PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *
 
 		if (part->extract_filter) {
 			for (i = 0; i < bufsize; i++) {
-				if (mbfl_convert_filter_feed(buf[i], part->extract_filter) < 0) {
+				if (mb_convert_filter_feed(buf[i], part->extract_filter) < 0) {
 					zend_error(E_WARNING, "%s() - filter conversion failed. Input message is probably incorrectly encoded\n",
 							get_active_function_name());
 					return -1;
