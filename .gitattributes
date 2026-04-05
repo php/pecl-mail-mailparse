@@ -1,0 +1,4 @@
+# Keep test files and test data with LF line endings on all platforms
+# to ensure byte offsets and string lengths match expected values.
+*.phpt text eol=lf
+tests/testdata/* -text

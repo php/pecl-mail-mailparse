@@ -4,13 +4,13 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
     runs-on: ubuntu-latest
     steps:
       - name: Install re2c
         run: sudo apt-get install -y re2c
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -34,19 +34,18 @@ jobs:
       run:
         shell: cmd
     strategy:
+      fail-fast: false
       matrix:
-          version: ["7.4", "8.0"]
+          version: ["8.1", "8.2", "8.3", "8.4", "8.5"]
           arch: [x64, x86]
           ts: [ts]
     runs-on: windows-latest
     steps:
-      - name: Configure Git
-        run: git config --global core.autocrlf false
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         id: setup-php
-        uses: cmb69/setup-php-sdk@v0.2
+        uses: php/setup-php-sdk@fix/invoke-webrequest-tls
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
@@ -63,4 +62,6 @@ jobs:
       - name: make
         run: nmake
       - name: test
-        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+        run: |
+          set PATH=%PATH%;${{steps.setup-php.outputs.prefix}}\ext
+          nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"

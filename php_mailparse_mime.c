@@ -321,7 +321,16 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 	zval *childpart_z;
 	HashPosition pos;
 
-	/* free contained parts */
+	/* Prevent the resource destructor from freeing this part again */
+	if (part->rsrc && part->rsrc->ptr == part) {
+		part->rsrc->ptr = NULL;
+	}
+
+	/* Release child resources via zval_ptr_dtor, which respects refcounts:
+	 * children with no external references are freed immediately, while
+	 * children held by userland (e.g. via mailparse_msg_get_part) stay
+	 * alive until their own refcount reaches zero. The idempotent
+	 * mimepart_dtor (res->ptr NULL guard) prevents double-free at shutdown. */
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
 	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
 		zval_ptr_dtor(childpart_z);
