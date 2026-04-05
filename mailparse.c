@@ -28,11 +28,6 @@
 
 #include "arginfo.h"
 
-/* just in case the config check doesn't enable mbstring automatically */
-#if !HAVE_MBSTRING
-#error The mailparse extension requires the mbstring extension!
-#endif
-
 #define MAILPARSE_DECODE_NONE		0		/* include headers and leave section untouched */
 #define MAILPARSE_DECODE_8BIT		1		/* decode body into 8-bit */
 #define MAILPARSE_DECODE_NOHEADERS	2		/* don't include the headers */
@@ -92,15 +87,8 @@ zend_function_entry mailparse_functions[] = {
 	PHP_FE_END
 };
 
-static const zend_module_dep mailparse_deps[] = {
-	ZEND_MOD_REQUIRED("mbstring")
-	ZEND_MOD_END
-};
-
 zend_module_entry mailparse_module_entry = {
-	STANDARD_MODULE_HEADER_EX,
-	NULL,
-	mailparse_deps,
+	STANDARD_MODULE_HEADER,
 	"mailparse",
 	mailparse_functions,
 	PHP_MINIT(mailparse),
@@ -914,7 +902,7 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 	int longline = 0;
 	int linelen = 0;
 	int c;
-	enum mbfl_no_encoding bestenc = mbfl_no_encoding_7bit;
+	enum mb_no_encoding bestenc = mb_no_encoding_7bit;
 	php_stream *stream;
 	char * name;
 
@@ -930,9 +918,9 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 		if (c == EOF)
 			break;
 		if (c > 0x80)
-			bestenc = mbfl_no_encoding_8bit;
+			bestenc = mb_no_encoding_8bit;
 		else if (c == 0)	{
-			bestenc = mbfl_no_encoding_base64;
+			bestenc = mb_no_encoding_base64;
 			longline = 0;
 			break;
 		}
@@ -942,20 +930,28 @@ PHP_FUNCTION(mailparse_determine_best_xfer_encoding)
 			longline = 1;
 	}
 	if (longline) {
-		bestenc = mbfl_no_encoding_qprint;
+		bestenc = mb_no_encoding_qprint;
 	}
 	php_stream_rewind(stream);
 
-#if PHP_VERSION_ID < 80100
-	name = (char *)mbfl_no2preferred_mime_name(bestenc);
-#else
-	name = (char *)mbfl_encoding_preferred_mime_name(mbfl_no2encoding(bestenc));
-#endif
-	if (name) {
-		RETVAL_STRING(name);
-	} else {
-		RETVAL_FALSE;
+	/* Get the MIME name for the encoding */
+	switch (bestenc) {
+		case mb_no_encoding_7bit:
+			name = "7bit";
+			break;
+		case mb_no_encoding_8bit:
+			name = "8bit";
+			break;
+		case mb_no_encoding_base64:
+			name = "BASE64";
+			break;
+		case mb_no_encoding_qprint:
+			name = "quoted-printable";
+			break;
+		default:
+			RETURN_FALSE;
 	}
+	RETVAL_STRING(name);
 }
 /* }}} */
 
@@ -981,9 +977,9 @@ PHP_FUNCTION(mailparse_stream_encode)
 	char *buf;
 	size_t len;
 	size_t bufsize = 2048;
-	const mbfl_encoding *encoding;
-	enum mbfl_no_encoding enc;
-	mbfl_convert_filter *conv = NULL;
+	const mb_encoding *encoding;
+	enum mb_no_encoding enc;
+	mb_convert_filter *conv = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rrS", &srcfile, &destfile, &encod) == FAILURE)	{
 		RETURN_FALSE;
@@ -999,7 +995,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 	php_stream_from_zval(srcstream, srcfile);
 	php_stream_from_zval(deststream, destfile);
 
-	encoding = mbfl_name2encoding(ZSTR_VAL(encod));
+	encoding = mb_name2encoding(ZSTR_VAL(encod));
 	if (encoding) {
 		enc = encoding->no_encoding;
 	} else	{
@@ -1013,14 +1009,14 @@ PHP_FUNCTION(mailparse_stream_encode)
 	buf = emalloc(bufsize);
 	RETVAL_TRUE;
 
-	conv = mbfl_convert_filter_new(mbfl_no2encoding(mbfl_no_encoding_8bit),
-			mbfl_no2encoding(enc),
+	conv = mb_convert_filter_new(mb_no2encoding(mb_no_encoding_8bit),
+			mb_no2encoding(enc),
 			mailparse_stream_output,
 			mailparse_stream_flush,
 			deststream
 			);
 
-	if (enc == mbfl_no_encoding_qprint) {
+	if (enc == mb_no_encoding_qprint) {
 		/* If the qp encoded section is going to be digitally signed,
 		 * it is a good idea to make sure that lines that begin "From "
 		 * have the letter F encoded, so that MTAs do not stick a > character
@@ -1032,7 +1028,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				len = strlen(buf);
 
 				if (strncmp(buf, "From ", 5) == 0) {
-					mbfl_convert_filter_flush(conv);
+					mb_convert_filter_flush(conv);
 					php_stream_write(deststream, "=46rom ", 7);
 					i = 5;
 				} else {
@@ -1040,7 +1036,7 @@ PHP_FUNCTION(mailparse_stream_encode)
 				}
 
 				for (; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv);
+					mb_convert_filter_feed(buf[i], conv);
 			}
 		}
 
@@ -1051,13 +1047,13 @@ PHP_FUNCTION(mailparse_stream_encode)
 			{
 				size_t i;
 				for (i=0; i<len; i++)
-					mbfl_convert_filter_feed(buf[i], conv);
+					mb_convert_filter_feed(buf[i], conv);
 			}
 		}
 	}
 
-	mbfl_convert_filter_flush(conv);
-	mbfl_convert_filter_delete(conv);
+	mb_convert_filter_flush(conv);
+	mb_convert_filter_delete(conv);
 	efree(buf);
 }
 /* }}} */

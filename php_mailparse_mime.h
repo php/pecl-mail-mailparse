@@ -62,7 +62,7 @@ struct _php_mimepart {
 
 	/* these are used during part extraction */
 	php_mimepart_extract_func_t extract_func;
-	mbfl_convert_filter *extract_filter;
+	mb_convert_filter *extract_filter;
 	void *extract_context;
 
 	/* these are used during parsing */
