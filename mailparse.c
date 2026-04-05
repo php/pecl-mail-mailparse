@@ -122,7 +122,10 @@ ZEND_RSRC_DTOR_FUNC(mimepart_dtor)
 {
 	php_mimepart *part = res->ptr;
 
-	php_mimepart_free(part);
+	if (part != NULL) {
+		res->ptr = NULL;
+		php_mimepart_free(part);
+	}
 }
 
 PHP_INI_BEGIN()

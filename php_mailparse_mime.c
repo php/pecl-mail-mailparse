@@ -321,10 +321,16 @@ PHP_MAILPARSE_API void php_mimepart_free(php_mimepart *part)
 	zval *childpart_z;
 	HashPosition pos;
 
-	/* free contained parts */
+	/* Recursively free children, NULLing their resource pointers
+	 * to prevent double-free from the resource list cleanup */
 	zend_hash_internal_pointer_reset_ex(&part->children, &pos);
 	while ((childpart_z = zend_hash_get_current_data_ex(&part->children, &pos)) != NULL) {
-		zval_ptr_dtor(childpart_z);
+		zend_resource *child_res = Z_RES_P(childpart_z);
+		php_mimepart *child = (php_mimepart *)child_res->ptr;
+		if (child != NULL) {
+			child_res->ptr = NULL;
+			php_mimepart_free(child);
+		}
 		zend_hash_move_forward_ex(&part->children, &pos);
 	}
 
