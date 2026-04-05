@@ -1510,15 +1510,19 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 		add_assoc_string(return_value, "content-boundary", part->boundary);
 
 	if ((tmpval = zend_hash_find(Z_ARRVAL_P(&headers), hash_key)) != NULL) {
-		php_rfc822_tokenized_t *toks;
-		php_rfc822_addresses_t *addrs;
+		/* Extract content-id value directly instead of parsing it as an
+		 * RFC 822 address, which incorrectly strips parenthesized text
+		 * as comments (GH-20). Just strip angle brackets if present. */
+		char *id = Z_STRVAL_P(tmpval);
+		size_t len = Z_STRLEN_P(tmpval);
 
-		toks = php_mailparse_rfc822_tokenize(Z_STRVAL_P(tmpval), 1);
-		addrs = php_rfc822_parse_address_tokens(toks);
-		if (addrs->naddrs > 0)
-			add_assoc_string(return_value, "content-id", addrs->addrs[0].address);
-		php_rfc822_free_addresses(addrs);
-		php_rfc822_tokenize_free(toks);
+		while (len > 0 && (id[0] == ' ' || id[0] == '\t')) { id++; len--; }
+		while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) { len--; }
+		if (len >= 2 && id[0] == '<' && id[len-1] == '>') {
+			add_assoc_stringl(return_value, "content-id", id + 1, len - 2);
+		} else {
+			add_assoc_stringl(return_value, "content-id", id, len);
+		}
 	}
 	zend_string_release(hash_key);
 
