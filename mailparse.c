@@ -1461,7 +1461,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 	zval headers, *tmpval;
 	off_t startpos, endpos, bodystart;
 	int nlines, nbodylines;
-	/* extract the address part of the content-id only */
+	/* extract the content-id value */
 	zend_string *hash_key = zend_string_init("content-id", sizeof("content-id") - 1, 0);
 
 	array_init(return_value);
@@ -1520,10 +1520,10 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 		}
 
 		if (content_id != NULL && Z_TYPE_P(content_id) == IS_STRING) {
-			/* Extract content-id value directly instead of parsing it as an
-			 * RFC 822 address, which incorrectly strips parenthesized text
-			 * as comments (GH-20). Trim whitespace, then strip angle brackets
-			 * only when '<' is the first character; otherwise return as-is. */
+			/* Extract the Content-ID value directly. Trim surrounding
+			 * horizontal whitespace, and if the first non-whitespace
+			 * character is '<', return the text up to the first '>';
+			 * otherwise return the trimmed value unchanged (GH-20). */
 			id = Z_STRVAL_P(content_id);
 			len = Z_STRLEN_P(content_id);
 
