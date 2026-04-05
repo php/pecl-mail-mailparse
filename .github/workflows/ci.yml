@@ -16,7 +16,7 @@ jobs:
         with:
           php-version: ${{matrix.version}}
           extensions: mbstring
-          tool: phpize, php-config
+          tools: phpize, php-config
       - name: phpize
         run: phpize
       - name: configure
@@ -38,7 +38,7 @@ jobs:
       matrix:
           version: ["8.1", "8.2", "8.3", "8.4", "8.5"]
           arch: [x64, x86]
-          ts: [ts]
+          ts: [ts, nts]
     runs-on: windows-latest
     steps:
       - name: Checkout mailparse
@@ -65,3 +65,8 @@ jobs:
         run: |
           set PATH=%PATH%;${{steps.setup-php.outputs.prefix}}\ext
           nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: php_mailparse-${{matrix.version}}-${{matrix.arch}}-${{matrix.ts}}
+          path: "**\\php_mailparse.dll"
