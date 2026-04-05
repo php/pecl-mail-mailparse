@@ -4,13 +4,13 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+          version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
     runs-on: ubuntu-latest
     steps:
       - name: Install re2c
         run: sudo apt-get install -y re2c
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -34,19 +34,18 @@ jobs:
       run:
         shell: cmd
     strategy:
+      fail-fast: false
       matrix:
-          version: ["7.4", "8.0"]
+          version: ["8.1", "8.2", "8.3", "8.4", "8.5"]
           arch: [x64, x86]
           ts: [ts]
     runs-on: windows-latest
     steps:
-      - name: Configure Git
-        run: git config --global core.autocrlf false
       - name: Checkout mailparse
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup PHP
         id: setup-php
-        uses: php/setup-php-sdk@c391923f79202e73f64b8cb15844fee60cbc6c94
+        uses: php/setup-php-sdk@fix/invoke-webrequest-tls
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
