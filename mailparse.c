@@ -1460,7 +1460,7 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 	zval headers, *tmpval;
 	off_t startpos, endpos, bodystart;
 	int nlines, nbodylines;
-	/* extract the address part of the content-id only */
+	/* extract the content-id value */
 	zend_string *hash_key = zend_string_init("content-id", sizeof("content-id") - 1, 0);
 
 	array_init(return_value);
@@ -1509,15 +1509,52 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 		add_assoc_string(return_value, "content-boundary", part->boundary);
 
 	if ((tmpval = zend_hash_find(Z_ARRVAL_P(&headers), hash_key)) != NULL) {
-		php_rfc822_tokenized_t *toks;
-		php_rfc822_addresses_t *addrs;
+		zval *content_id = tmpval;
+		char *id, *close;
+		size_t len;
 
-		toks = php_mailparse_rfc822_tokenize(Z_STRVAL_P(tmpval), 1);
-		addrs = php_rfc822_parse_address_tokens(toks);
-		if (addrs->naddrs > 0)
-			add_assoc_string(return_value, "content-id", addrs->addrs[0].address);
-		php_rfc822_free_addresses(addrs);
-		php_rfc822_tokenize_free(toks);
+		/* Handle multiple Content-ID headers (stored as array) */
+		if (Z_TYPE_P(content_id) == IS_ARRAY) {
+			content_id = zend_hash_index_find(Z_ARRVAL_P(content_id), 0);
+		}
+
+		if (content_id != NULL && Z_TYPE_P(content_id) == IS_STRING) {
+			/* Extract the Content-ID value directly. Trim surrounding
+			 * horizontal whitespace, and if the first non-whitespace
+			 * character is '<', return the text up to the first '>';
+			 * otherwise return the trimmed value unchanged (GH-20). */
+			id = Z_STRVAL_P(content_id);
+			len = Z_STRLEN_P(content_id);
+
+			while (len > 0 && (id[0] == ' ' || id[0] == '\t')) {
+				id++;
+				len--;
+			}
+			while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) {
+				len--;
+			}
+
+			if (len >= 2 && id[0] == '<') {
+				close = memchr(id + 1, '>', len - 1);
+				if (close) {
+					add_assoc_stringl(return_value, "content-id", id + 1, close - id - 1);
+				} else {
+					/* Malformed: '<' without '>' — skip the '<' and trim */
+					id++;
+					len--;
+					while (len > 0 && (id[0] == ' ' || id[0] == '\t')) {
+						id++;
+						len--;
+					}
+					while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) {
+						len--;
+					}
+					add_assoc_stringl(return_value, "content-id", id, len);
+				}
+			} else {
+				add_assoc_stringl(return_value, "content-id", id, len);
+			}
+		}
 	}
 	zend_string_release(hash_key);
 
