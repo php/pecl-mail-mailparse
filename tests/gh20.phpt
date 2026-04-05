@@ -63,6 +63,21 @@ $data4 = mailparse_msg_get_part_data($part4);
 
 echo "content-id trailing comment: " . $data4['content-id'] . "\n";
 
+/* Duplicate Content-ID headers (stored as array internally) */
+$mime5 = "Content-Type: image/png\r\n" .
+    "Content-ID: <first@example.com>\r\n" .
+    "Content-ID: <second@example.com>\r\n" .
+    "\r\n" .
+    "iVBOR\r\n";
+
+$resource5 = mailparse_msg_create();
+mailparse_msg_parse($resource5, $mime5);
+
+$part5 = mailparse_msg_get_part($resource5, 1);
+$data5 = mailparse_msg_get_part_data($part5);
+
+echo "content-id duplicate: " . $data5['content-id'] . "\n";
+
 echo "ok\n";
 ?>
 --EXPECT--
@@ -70,4 +85,5 @@ content-id: Facebook_32x32(1)_aa284ba9-f148-4698-9c1f-c8e92bdb842e.png
 content-id bare: Facebook_32x32(1)_test.png
 content-id rfc: part1@example.com
 content-id trailing comment: part1@example.com
+content-id duplicate: first@example.com
 ok
