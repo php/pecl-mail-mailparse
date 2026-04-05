@@ -49,10 +49,25 @@ $data3 = mailparse_msg_get_part_data($part3);
 
 echo "content-id rfc: " . $data3['content-id'] . "\n";
 
+/* RFC-compliant content-id with trailing comment */
+$mime4 = "Content-Type: image/png\r\n" .
+    "Content-ID: <part1@example.com> (comment)\r\n" .
+    "\r\n" .
+    "iVBOR\r\n";
+
+$resource4 = mailparse_msg_create();
+mailparse_msg_parse($resource4, $mime4);
+
+$part4 = mailparse_msg_get_part($resource4, 1);
+$data4 = mailparse_msg_get_part_data($part4);
+
+echo "content-id trailing comment: " . $data4['content-id'] . "\n";
+
 echo "ok\n";
 ?>
 --EXPECT--
 content-id: Facebook_32x32(1)_aa284ba9-f148-4698-9c1f-c8e92bdb842e.png
 content-id bare: Facebook_32x32(1)_test.png
 content-id rfc: part1@example.com
+content-id trailing comment: part1@example.com
 ok

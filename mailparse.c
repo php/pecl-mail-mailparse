@@ -1510,18 +1510,37 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 		add_assoc_string(return_value, "content-boundary", part->boundary);
 
 	if ((tmpval = zend_hash_find(Z_ARRVAL_P(&headers), hash_key)) != NULL) {
-		/* Extract content-id value directly instead of parsing it as an
-		 * RFC 822 address, which incorrectly strips parenthesized text
-		 * as comments (GH-20). Just strip angle brackets if present. */
-		char *id = Z_STRVAL_P(tmpval);
-		size_t len = Z_STRLEN_P(tmpval);
+		zval *content_id = tmpval;
+		char *id, *open, *close;
+		size_t len;
 
-		while (len > 0 && (id[0] == ' ' || id[0] == '\t')) { id++; len--; }
-		while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) { len--; }
-		if (len >= 2 && id[0] == '<' && id[len-1] == '>') {
-			add_assoc_stringl(return_value, "content-id", id + 1, len - 2);
-		} else {
-			add_assoc_stringl(return_value, "content-id", id, len);
+		/* Handle multiple Content-ID headers (stored as array) */
+		if (Z_TYPE_P(content_id) == IS_ARRAY) {
+			content_id = zend_hash_index_find(Z_ARRVAL_P(content_id), 0);
+		}
+
+		if (content_id != NULL && Z_TYPE_P(content_id) == IS_STRING) {
+			/* Extract content-id value directly instead of parsing it as an
+			 * RFC 822 address, which incorrectly strips parenthesized text
+			 * as comments (GH-20). Extract the msg-id between '<' and '>'
+			 * if present, otherwise return the trimmed value as-is. */
+			id = Z_STRVAL_P(content_id);
+			len = Z_STRLEN_P(content_id);
+
+			open = memchr(id, '<', len);
+			if (open) {
+				close = memchr(open + 1, '>', len - (open - id) - 1);
+				if (close) {
+					add_assoc_stringl(return_value, "content-id", open + 1, close - open - 1);
+				} else {
+					add_assoc_stringl(return_value, "content-id", id, len);
+				}
+			} else {
+				/* No angle brackets — trim whitespace and return as-is */
+				while (len > 0 && (id[0] == ' ' || id[0] == '\t')) { id++; len--; }
+				while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) { len--; }
+				add_assoc_stringl(return_value, "content-id", id, len);
+			}
 		}
 	}
 	zend_string_release(hash_key);
