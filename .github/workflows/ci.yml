@@ -62,4 +62,6 @@ jobs:
       - name: make
         run: nmake
       - name: test
-        run: nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
+        run: |
+          set PATH=%PATH%;${{steps.setup-php.outputs.prefix}}\ext
+          nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"

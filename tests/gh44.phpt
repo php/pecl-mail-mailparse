@@ -6,54 +6,51 @@ if (!extension_loaded("mailparse")) die("skip mailparse extension not available"
 ?>
 --FILE--
 <?php
-$mime = "Content-Type: multipart/mixed; boundary=\"outer\"\r\n" .
-    "\r\n" .
-    "--outer\r\n" .
-    "Content-Type: multipart/alternative; boundary=\"inner\"\r\n" .
-    "\r\n" .
-    "--inner\r\n" .
-    "Content-Type: text/plain\r\n" .
-    "\r\n" .
-    "Hello plain\r\n" .
-    "--inner\r\n" .
-    "Content-Type: text/html\r\n" .
-    "\r\n" .
-    "<b>Hello html</b>\r\n" .
-    "--inner--\r\n" .
-    "--outer\r\n" .
-    "Content-Type: application/octet-stream\r\n" .
-    "Content-Transfer-Encoding: base64\r\n" .
-    "\r\n" .
-    "SGVsbG8=\r\n" .
-    "--outer--\r\n";
+/* Generate a multipart message with >300 parts to trigger MAXPARTS.
+ * This exercises the mailparse_msg_parse_file error path which calls
+ * php_mimepart_free() directly, leaving child resources in the resource
+ * list. Without the fix, these dangling resources cause a use-after-free
+ * during shutdown in zend_close_rsrc_list. */
 
-/* Test 1: Parse multipart message, let resource cleanup happen at shutdown */
-$msg1 = mailparse_msg_create();
-mailparse_msg_parse($msg1, $mime);
-$struct = mailparse_msg_get_structure($msg1);
+$boundary = "test_boundary";
+$mime = "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n\r\n";
+for ($i = 0; $i < 302; $i++) {
+    $mime .= "--$boundary\r\nContent-Type: text/plain\r\n\r\npart $i\r\n";
+}
+$mime .= "--$boundary--\r\n";
+
+$tmpfile = tempnam(sys_get_temp_dir(), 'mp_gh44_');
+file_put_contents($tmpfile, $mime);
+
+/* Parse the oversized message - triggers "MIME message too complex" warning
+ * and the error path calls php_mimepart_free(part) directly, freeing the
+ * mimepart struct but leaving child zend_resource entries in the list */
+$result = @mailparse_msg_parse_file($tmpfile);
+echo "parse_file returned: " . var_export($result, true) . "\n";
+
+/* Allocate many messages to reuse freed memory from the failed parse above.
+ * This increases the chance that the dangling resource pointers from the
+ * failed parse will reference reused/corrupted memory at shutdown. */
+$msgs = [];
+for ($i = 0; $i < 50; $i++) {
+    $m = mailparse_msg_create();
+    mailparse_msg_parse($m, "Content-Type: multipart/mixed; boundary=\"b\"\r\n\r\n" .
+        "--b\r\nContent-Type: text/plain\r\n\r\nhello\r\n" .
+        "--b\r\nContent-Type: text/html\r\n\r\n<b>hi</b>\r\n--b--\r\n");
+    $msgs[] = $m;
+}
+
+/* Also test normal multipart parsing and cleanup */
+$msg = mailparse_msg_create();
+mailparse_msg_parse($msg, "Content-Type: multipart/mixed; boundary=\"x\"\r\n\r\n" .
+    "--x\r\nContent-Type: text/plain\r\n\r\nhello\r\n--x--\r\n");
+$struct = mailparse_msg_get_structure($msg);
 echo "structure: " . implode(", ", $struct) . "\n";
 
-/* Test 2: Parse and explicitly free */
-$msg2 = mailparse_msg_create();
-mailparse_msg_parse($msg2, $mime);
-mailparse_msg_free($msg2);
-
-/* Test 3: Get child parts (adds refcount), then let shutdown clean up */
-$msg3 = mailparse_msg_create();
-mailparse_msg_parse($msg3, $mime);
-$parts = [];
-foreach (mailparse_msg_get_structure($msg3) as $part_id) {
-    $parts[] = mailparse_msg_get_part($msg3, $part_id);
-}
-
-/* Test 4: Multiple messages with interleaved resource handles */
-for ($i = 0; $i < 5; $i++) {
-    $m = mailparse_msg_create();
-    mailparse_msg_parse($m, $mime);
-}
-
+unlink($tmpfile);
 echo "ok\n";
 ?>
 --EXPECT--
-structure: 1, 1.1, 1.1.1, 1.1.2, 1.2
+parse_file returned: false
+structure: 1, 1.1
 ok
