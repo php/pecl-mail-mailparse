@@ -1527,8 +1527,13 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 			id = Z_STRVAL_P(content_id);
 			len = Z_STRLEN_P(content_id);
 
-			while (len > 0 && (id[0] == ' ' || id[0] == '\t')) { id++; len--; }
-			while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) { len--; }
+			while (len > 0 && (id[0] == ' ' || id[0] == '\t')) {
+				id++;
+				len--;
+			}
+			while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) {
+				len--;
+			}
 
 			if (len >= 2 && id[0] == '<') {
 				close = memchr(id + 1, '>', len - 1);
@@ -1538,8 +1543,13 @@ static int mailparse_get_part_data(php_mimepart *part, zval *return_value)
 					/* Malformed: '<' without '>' — skip the '<' and trim */
 					id++;
 					len--;
-					while (len > 0 && (id[0] == ' ' || id[0] == '\t')) { id++; len--; }
-					while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) { len--; }
+					while (len > 0 && (id[0] == ' ' || id[0] == '\t')) {
+						id++;
+						len--;
+					}
+					while (len > 0 && (id[len-1] == ' ' || id[len-1] == '\t')) {
+						len--;
+					}
 					add_assoc_stringl(return_value, "content-id", id, len);
 				}
 			} else {
