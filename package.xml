@@ -114,6 +114,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
    <file name="php_mailparse_rfc822.h" role="src" />
    <file name="php_mailparse_rfc822.re" role="src" />
    <file name="README.md" role="doc" />
+   <file name="CHANGELOG.md" role="doc" />
    <file name="try.php" role="doc" />
   </dir> <!-- / -->
  </contents>
