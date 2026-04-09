@@ -36,9 +36,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2025-09-30</date>
+ <date>2026-04-09</date>
  <version>
-  <release>3.2.0dev</release>
+  <release>3.2.0</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -92,12 +92,14 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="bug81403.phpt" role="test" />
     <file name="bug81422.phpt" role="test" />
     <file name="gh19.phpt" role="test" />
+    <file name="gh20.phpt" role="test" />
     <file name="gh21.phpt" role="test" />
     <file name="gh22.phpt" role="test" />
     <file name="gh24.phpt" role="test" />
     <file name="gh29.phpt" role="test" />
     <file name="gh30.phpt" role="test" />
     <file name="gh43.phpt" role="test" />
+    <file name="gh44.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
@@ -105,6 +107,8 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
    <file name="LICENSE" role="doc" />
    <file name="CREDITS" role="doc" />
    <file name="mailparse.c" role="src" />
+   <file name="mailparse_encoding.c" role="src" />
+   <file name="mailparse_encoding.h" role="src" />
    <file name="Makefile.frag" role="src" />
    <file name="arginfo.h" role="src" />
    <file name="php_mailparse.h" role="src" />

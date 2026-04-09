@@ -1,4 +1,4 @@
-# Version 3.2.0 - Unreleased
+# Version 3.2.0 - 2026-04-09
 
 - Vendor encoding conversion code from mbstring. (alexdowad)
 - Fix #44 Segmentation fault. (rlerdorf)
