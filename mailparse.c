@@ -1282,7 +1282,7 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 
 		if (n == 0)
 		{
-			zend_error(E_WARNING, "%s(): error reading from file at offset %ld", get_active_function_name(), start_pos);
+			zend_error(E_WARNING, "%s(): error reading from file at offset" ZEND_LONG_FMT, get_active_function_name(), start_pos);
 			goto cleanup;
 		}
 
