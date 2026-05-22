@@ -67,9 +67,9 @@ struct _php_mimepart {
 
 	/* these are used during parsing */
 	struct {
-		int in_header:1;
-		int is_dummy:1;
-		int completed:1;
+		zend_bool in_header:1;
+		zend_bool is_dummy:1;
+		zend_bool completed:1;
 
 		smart_string workbuf;
 		smart_string headerbuf;
