@@ -1,5 +1,5 @@
 /* This is a generated file, edit mailparse.stub.php instead.
- * Stub hash: 18206ab89b6338dec9095881b1ee865e207ad57b */
+ * Stub hash: d974a9413c71c08320826a22c4991eac04fd9caf */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_test, 0, 1, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, header, IS_MIXED, 0)
@@ -46,13 +46,13 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_mailparse_msg_extract_part, 0, 2, MAY_BE_STRING|MAY_BE_BOOL)
 	ZEND_ARG_INFO(0, fp)
 	ZEND_ARG_TYPE_INFO(0, msgbody, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_MIXED, 0, "null")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_mailparse_msg_extract_whole_part_file, 0, 2, MAY_BE_STRING|MAY_BE_BOOL)
 	ZEND_ARG_INFO(0, fp)
-	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO(0, filename, IS_MIXED, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_MIXED, 0, "null")
 ZEND_END_ARG_INFO()
 
 #define arginfo_mailparse_msg_extract_part_file arginfo_mailparse_msg_extract_whole_part_file
