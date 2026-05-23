@@ -26,8 +26,6 @@
 #include "main/php_output.h"
 #include "php_open_temporary_file.h"
 
-#include "arginfo.h"
-
 #define MAILPARSE_DECODE_NONE		0		/* include headers and leave section untouched */
 #define MAILPARSE_DECODE_8BIT		1		/* decode body into 8-bit */
 #define MAILPARSE_DECODE_NOHEADERS	2		/* don't include the headers */
@@ -36,6 +34,12 @@
 #define MAILPARSE_EXTRACT_OUTPUT	0		/* extract to output buffer */
 #define MAILPARSE_EXTRACT_STREAM	1		/* extract to a stream (caller supplies) */
 #define MAILPARSE_EXTRACT_RETURN	2		/* return extracted data as a string */
+
+#if PHP_VERSION_ID >= 80000
+# include "mailparse_arginfo.h"
+#else
+# include "mailparse_legacy_arginfo.h"
+#endif
 
 static int extract_part(php_mimepart *part, int decode, php_stream *src, void *callbackdata,
 		php_mimepart_extract_func_t callback);
@@ -110,16 +114,12 @@ PHP_MINIT_FUNCTION(mailparse)
 	mailparse_globals = ts_resource(mailparse_globals_id);
 #endif
 
-	INIT_CLASS_ENTRY(mmce, "mimemessage", class_mimemessage_methods);
-	mimemsg_class_entry = zend_register_internal_class(&mmce);
+	mimemsg_class_entry = register_class_mimemessage();
 
 	zend_declare_property_null(mimemsg_class_entry, "data", sizeof("data")-1, ZEND_ACC_PUBLIC);
 
 	le_mime_part = zend_register_list_destructors_ex(mimepart_dtor, NULL, mailparse_msg_name, module_number);
-
-	REGISTER_LONG_CONSTANT("MAILPARSE_EXTRACT_OUTPUT", MAILPARSE_EXTRACT_OUTPUT, CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("MAILPARSE_EXTRACT_STREAM", MAILPARSE_EXTRACT_STREAM, CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("MAILPARSE_EXTRACT_RETURN", MAILPARSE_EXTRACT_RETURN, CONST_CS | CONST_PERSISTENT);
+	register_mailparse_symbols(module_number);
 
 	REGISTER_INI_ENTRIES();
 
