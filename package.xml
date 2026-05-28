@@ -36,9 +36,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2026-04-09</date>
+ <date>2026-05-28</date>
  <version>
-  <release>3.2.0</release>
+  <release>3.2.1dev</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,9 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
-- Vendor encoding conversion code from mbstring. (alexdowad)
-- Fix #44 Segmentation fault. (rlerdorf)
-- Fix #20 Unexpected parsed value of content-id. (rlerdorf)
+-
  </notes>
  <contents>
   <dir name="/">
@@ -138,6 +136,23 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <date>2026-04-09</date>
+   <version>
+    <release>3.2.0</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
+   <notes>
+- Vendor encoding conversion code from mbstring. (alexdowad)
+- Fix #44 Segmentation fault. (rlerdorf)
+- Fix #20 Unexpected parsed value of content-id. (rlerdorf)
+   </notes>
+  </release>
   <release>
    <date>2025-09-30</date>
    <version>
