@@ -1,7 +1,7 @@
 # Version 3.2.1 - 2026-05-28
 
 - Add type hinting and return types
-- Fix bit-field type warnings by using zend_bool for parser flags 
+- Fix bit-field type warnings by using zend_bool for parser flags
 
 # Version 3.2.0 - 2026-04-09
 
