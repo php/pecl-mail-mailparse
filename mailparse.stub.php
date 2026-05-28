@@ -96,7 +96,7 @@ function mailparse_msg_get_part_data($fp): array {}
  */
 function mailparse_msg_get_part($fp, string $data){}
 
-class mailparse_mimemessage
+class mimemessage
 {
     public function __construct(mixed $mode, mixed $source) {}
 
