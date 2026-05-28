@@ -26,7 +26,11 @@
 #include "main/php_output.h"
 #include "php_open_temporary_file.h"
 
-#include "arginfo.h"
+#if PHP_VERSION_ID >= 80000
+# include "mailparse_arginfo.h"
+#else
+# include "mailparse_legacy_arginfo.h"
+#endif
 
 #define MAILPARSE_DECODE_NONE		0		/* include headers and leave section untouched */
 #define MAILPARSE_DECODE_8BIT		1		/* decode body into 8-bit */
@@ -50,16 +54,16 @@ static size_t mailparse_do_uudecode(php_stream *instream, php_stream *outstream)
 static int le_mime_part;
 
 static zend_function_entry mimemessage_methods[] = {
-	PHP_ME(mimemessage, __construct,     arginfo_mailparse_mimemessage_construct,       ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-	PHP_ME(mimemessage, get_child,       arginfo_mailparse_mimemessage_get_child,       ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, get_child_count, arginfo_mailparse_mimemessage_get_child_count, ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, get_parent,      arginfo_mailparse_mimemessage_get_parent,      ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, extract_headers, arginfo_mailparse_mimemessage_extract_headers, ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, extract_body,    arginfo_mailparse_mimemessage_extract_body,    ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, enum_uue,        arginfo_mailparse_mimemessage_enum_uue,        ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, extract_uue,     arginfo_mailparse_mimemessage_extract_uue,     ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, remove,          arginfo_mailparse_mimemessage_remove,          ZEND_ACC_PUBLIC)
-	PHP_ME(mimemessage, add_child,       arginfo_mailparse_mimemessage_add_child,       ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, __construct,     arginfo_class_mimemessage___construct,       ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+	PHP_ME(mimemessage, get_child,       arginfo_class_mimemessage_get_child,       ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, get_child_count, arginfo_class_mimemessage_get_child_count, ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, get_parent,      arginfo_class_mimemessage_get_parent,      ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_headers, arginfo_class_mimemessage_extract_headers, ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_body,    arginfo_class_mimemessage_extract_body,    ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, enum_uue,        arginfo_class_mimemessage_enum_uue,        ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, extract_uue,     arginfo_class_mimemessage_extract_uue,     ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, remove,          arginfo_class_mimemessage_remove,          ZEND_ACC_PUBLIC)
+	PHP_ME(mimemessage, add_child,       arginfo_class_mimemessage_add_child,       ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
