@@ -1,3 +1,10 @@
+# Version 3.2.2 - 2026-05-28
+
+- Add type hinting and return types
+# Version 3.2.1 - 2026-05-28
+
+- Fix bit-field type warnings by using zend_bool for parser flags 
+
 # Version 3.2.0 - 2026-04-09
 
 - Vendor encoding conversion code from mbstring. (alexdowad)

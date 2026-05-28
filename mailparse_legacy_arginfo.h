@@ -1,104 +1,91 @@
 /* This is a generated file, edit the .stub.php file instead.
  * Stub hash: cb23e924e605e8912068900f25878d86e6a55e13 */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_test, 0, 1, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, header, IS_MIXED, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_test, 0, 0, 1)
+	ZEND_ARG_INFO(0, header)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_uudecode_all, 0, 1, IS_MIXED, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_uudecode_all, 0, 0, 1)
 	ZEND_ARG_INFO(0, fp)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_rfc822_parse_addresses, 0, 1, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, addresses, IS_STRING, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_rfc822_parse_addresses, 0, 0, 1)
+	ZEND_ARG_INFO(0, addresses)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_determine_best_xfer_encoding, 0, 1, IS_STRING, 0)
-	ZEND_ARG_INFO(0, fp)
-ZEND_END_ARG_INFO()
+#define arginfo_mailparse_determine_best_xfer_encoding arginfo_mailparse_uudecode_all
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_stream_encode, 0, 3, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_stream_encode, 0, 0, 3)
 	ZEND_ARG_INFO(0, source_fp)
 	ZEND_ARG_INFO(0, dest_fp)
-	ZEND_ARG_TYPE_INFO(0, encoding, IS_STRING, 0)
+	ZEND_ARG_INFO(0, encoding)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_msg_parse, 0, 2, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_parse, 0, 0, 2)
 	ZEND_ARG_INFO(0, fp)
-	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+	ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_parse_file, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 0)
+	ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_msg_free, 0, 1, _IS_BOOL, 0)
-	ZEND_ARG_INFO(0, fp)
-ZEND_END_ARG_INFO()
+#define arginfo_mailparse_msg_free arginfo_mailparse_uudecode_all
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_create, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mailparse_msg_get_structure, 0, 1, IS_ARRAY, 0)
+#define arginfo_mailparse_msg_get_structure arginfo_mailparse_uudecode_all
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_extract_part, 0, 0, 2)
 	ZEND_ARG_INFO(0, fp)
+	ZEND_ARG_INFO(0, msgbody)
+	ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_mailparse_msg_extract_part, 0, 2, MAY_BE_STRING|MAY_BE_BOOL)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_extract_whole_part_file, 0, 0, 2)
 	ZEND_ARG_INFO(0, fp)
-	ZEND_ARG_TYPE_INFO(0, msgbody, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_MIXED, 0, "null")
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_mailparse_msg_extract_whole_part_file, 0, 2, MAY_BE_STRING|MAY_BE_BOOL)
-	ZEND_ARG_INFO(0, fp)
-	ZEND_ARG_TYPE_INFO(0, filename, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_MIXED, 0, "null")
+	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO()
 
 #define arginfo_mailparse_msg_extract_part_file arginfo_mailparse_msg_extract_whole_part_file
 
-#define arginfo_mailparse_msg_get_part_data arginfo_mailparse_msg_get_structure
+#define arginfo_mailparse_msg_get_part_data arginfo_mailparse_uudecode_all
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_mailparse_msg_get_part, 0, 0, 2)
-	ZEND_ARG_INFO(0, fp)
-	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_mailparse_msg_get_part arginfo_mailparse_msg_parse
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_mailparse_mimemessage___construct, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, mode, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, source, IS_MIXED, 0)
+	ZEND_ARG_INFO(0, mode)
+	ZEND_ARG_INFO(0, source)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_mailparse_mimemessage_remove, 0, 0, _IS_BOOL, 0)
+#define arginfo_class_mailparse_mimemessage_remove arginfo_mailparse_msg_create
+
+#define arginfo_class_mailparse_mimemessage_add_child arginfo_mailparse_msg_create
+
+#define arginfo_class_mailparse_mimemessage_get_child_count arginfo_mailparse_msg_create
+
+#define arginfo_class_mailparse_mimemessage_get_parent arginfo_mailparse_msg_create
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_mailparse_mimemessage_get_child, 0, 0, 1)
+	ZEND_ARG_INFO(0, item_to_find)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_mailparse_mimemessage_add_child arginfo_class_mailparse_mimemessage_remove
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_mailparse_mimemessage_get_child_count, 0, 0, IS_LONG, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_mailparse_mimemessage_get_parent, 0, 0, mailparse_mimemessage, 1)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_mailparse_mimemessage_get_child, 0, 1, mailparse_mimemessage, 1)
-	ZEND_ARG_TYPE_INFO(0, item_to_find, IS_MIXED, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_mailparse_mimemessage_extract_headers, 0, 0, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_MIXED, 0, "null")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, arg, IS_MIXED, 0, "null")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_mailparse_mimemessage_extract_headers, 0, 0, 0)
+	ZEND_ARG_INFO(0, mode)
+	ZEND_ARG_INFO(0, arg)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_mailparse_mimemessage_extract_body arginfo_class_mailparse_mimemessage_extract_headers
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_mailparse_mimemessage_extract_uue, 0, 1, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, index, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_MIXED, 0, "null")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, arg, IS_MIXED, 0, "null")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_mailparse_mimemessage_extract_uue, 0, 0, 1)
+	ZEND_ARG_INFO(0, index)
+	ZEND_ARG_INFO(0, mode)
+	ZEND_ARG_INFO(0, arg)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_mailparse_mimemessage_enum_uue, 0, 0, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_mailparse_mimemessage_enum_uue arginfo_mailparse_msg_create
 
 ZEND_FUNCTION(mailparse_test);
 ZEND_FUNCTION(mailparse_uudecode_all);

@@ -2,6 +2,7 @@
 
 /**
  * @generate-class-entries
+ * @generate-legacy-arginfo
  */
 
 function mailparse_test(mixed $header): mixed {}
