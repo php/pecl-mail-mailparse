@@ -6,6 +6,8 @@
 - Reject non-mimepart resources in `mailparse_msg_*` instead of crashing
 - Fix memory leaks
 - Fix `MimeMessage::extract_uue()` ignoring index greater than zero
+- Add type hinting and return types 
+- Fix bit-field type warnings by using zend_bool for parser flags
 
 # Version 3.2.0 - 2026-04-09
 
