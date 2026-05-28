@@ -30,44 +30,22 @@ jobs:
           export TEST_PHP_ARGS="-n -d extension=mbstring.so -d extension=modules/mailparse.so"
           php run-tests.php -P --show-diff tests
   windows:
-    defaults:
-      run:
-        shell: cmd
     strategy:
-      fail-fast: false
       matrix:
-          version: ["8.1", "8.2", "8.3", "8.4", "8.5"]
-          arch: [x64, x86]
-          ts: [ts, nts]
-    runs-on: windows-latest
+        php-version: ["8.1", "8.2", "8.3", "8.4", "8.5"]
+        arch: [x64, x86]
+        ts: [nts, ts]
+    runs-on: windows-2022
     steps:
       - name: Checkout mailparse
-        uses: actions/checkout@v4
-      - name: Setup PHP
-        id: setup-php
-        uses: php/setup-php-sdk@fix/invoke-webrequest-tls
+        uses: actions/checkout@v6
+      # The builder handles building, testing and artifact packaging/upload automatically
+      - name: Build and test the extension
+        uses: php/php-windows-builder/extension@v1
         with:
-          version: ${{matrix.version}}
-          arch: ${{matrix.arch}}
-          ts: ${{matrix.ts}}
-      - name: Enable Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{matrix.arch}}
-          toolset: ${{steps.setup-php.outputs.toolset}}
-      - name: phpize
-        run: phpize
-      - name: configure
-        run: configure --enable-mailparse --with-prefix=${{steps.setup-php.outputs.prefix}}
-      - name: make
-        run: nmake
-      - name: test
-        run: |
-          set PATH=%PATH%;${{steps.setup-php.outputs.prefix}}\ext
-          nmake test TESTS="-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_mbstring.dll --show-diff tests"
-      - name: Upload DLL
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: php_mailparse-${{matrix.version}}-${{matrix.arch}}-${{matrix.ts}}
-          path: "**/php_mailparse.dll"
+          php-version: ${{ matrix.php-version }}
+          arch: ${{ matrix.arch }}
+          ts: ${{ matrix.ts }}
+          args: --enable-mailparse --enable-debug-pack
+          run-tests: true
+          test-runner-args: "--show-diff tests"
