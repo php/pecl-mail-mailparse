@@ -1149,34 +1149,19 @@ PHP_FUNCTION(mailparse_msg_create)
 static int get_structure_callback(php_mimepart *part, php_mimepart_enumerator *id, void *ptr)
 {
 	zval *return_value = (zval *)ptr;
-	char intbuf[16];
-	char *buf;
-	int buf_size;
-	int len, i = 0;
+	smart_string buf = {0};
 
-	buf_size = 1024;
-	buf = emalloc(buf_size);
-	while(id && i < buf_size)	{
-		sprintf(intbuf, "%d", id->id);
-		len = strlen(intbuf);
-		if (len > (buf_size-i))	{
-			/* too many sections: bail */
-			zend_error(E_WARNING, "%s(): too many nested sections in message", get_active_function_name());
-			return FAILURE;
+	while (id) {
+		smart_string_append_long(&buf, id->id);
+		if (id->next) {
+			smart_string_appendc(&buf, '.');
 		}
-		if ((i + len + 1) >= buf_size) {
-			buf_size = buf_size << 1;
-			buf = erealloc(buf, buf_size);
-			if (!buf) {
-				zend_error(E_ERROR, "The structure buffer has been exceeded (%d).  Please try decreasing the nesting depth of messages and report this to the developers.", buf_size);
-			}
-		}
-		sprintf(&buf[i], "%s%c", intbuf, id->next ? '.' : '\0');
-		i += len + (id->next ? 1 : 0);
 		id = id->next;
 	}
-	add_next_index_string(return_value, buf);
-	efree(buf);
+	smart_string_0(&buf);
+
+	add_next_index_string(return_value, buf.c ? buf.c : "");
+	smart_string_free(&buf);
 	return SUCCESS;
 }
 
