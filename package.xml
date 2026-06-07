@@ -99,8 +99,9 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="gh30.phpt" role="test" />
     <file name="gh43.phpt" role="test" />
     <file name="gh44.phpt" role="test" />
-    <file name="parse_test_messages.phpt" role="test" />
     <file name="mime_nesting_depth.phpt" role="test" />
+    <file name="parse_test_messages.phpt" role="test" />
+    <file name="rfc2231_plain_after_encoded.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
