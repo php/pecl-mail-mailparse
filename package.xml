@@ -83,6 +83,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="012-stream.phpt" role="test" />
     <file name="012-var.phpt" role="test" />
     <file name="013.phpt" role="test" />
+    <file name="addr_trailing_delim_oob.phpt" role="test" />
     <file name="bug001.phpt" role="test" />
     <file name="bug73110.phpt" role="test" />
     <file name="bug74223.phpt" role="test" />
