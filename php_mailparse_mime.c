@@ -743,12 +743,9 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 
 	while(bufsize > 0) {
 		/* look for EOL */
-		for (len = 0; len < bufsize; len++)
-			if (buf[len] == '\n') {
-				break;
-			}
-		if (len < bufsize && buf[len] == '\n') {
-			++len;
+		const char *eol = memchr(buf, '\n', bufsize);
+		if (eol != NULL) {
+			len = (size_t)(eol - buf) + 1; /* include the '\n' */
 			smart_string_appendl(&part->parsedata.workbuf, buf, len);
 			if (php_mimepart_process_line(part) == FAILURE) {
 				/* php_mimepart_process_line() only returns FAILURE in case the count of children
@@ -765,6 +762,8 @@ PHP_MAILPARSE_API int php_mimepart_parse(php_mimepart *part, const char *buf, si
 			};
 			part->parsedata.workbuf.len = 0;
 		} else {
+			/* no EOL in this chunk: buffer the remainder for the next call */
+			len = bufsize;
 			smart_string_appendl(&part->parsedata.workbuf, buf, len);
 		}
 
