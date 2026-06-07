@@ -1417,13 +1417,13 @@ static void add_attr_header_to_zval(char *valuelabel, char *attrprefix, zval *re
 
 		zend_hash_get_current_key_ex(Z_ARRVAL_P(&attr->attributes), &str_key, &num_index, &pos);
 
-    if (str_key) {
-      spprintf(&newkey, 0, "%s%s", attrprefix, ZSTR_VAL(str_key));
-    } else {
-      spprintf(&newkey, 0, "%s" ZEND_ULONG_FMT, attrprefix, num_index);
-    }
-    add_assoc_string(return_value, newkey, Z_STRVAL_P(val));
-    efree(newkey);
+		if (str_key) {
+			spprintf(&newkey, 0, "%s%s", attrprefix, ZSTR_VAL(str_key));
+		} else {
+			spprintf(&newkey, 0, "%s" ZEND_ULONG_FMT, attrprefix, num_index);
+		}
+		add_assoc_string(return_value, newkey, Z_STRVAL_P(val));
+		efree(newkey);
 
 		zend_hash_move_forward_ex(Z_ARRVAL_P(&attr->attributes), &pos);
 	}

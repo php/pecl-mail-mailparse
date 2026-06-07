@@ -447,21 +447,21 @@ static int php_mimepart_process_header(php_mimepart *part)
 			add_assoc_str(&part->headerhash, header_key, joined);
 		} else {
 			if((zheaderval = zend_hash_find(Z_ARRVAL_P(&part->headerhash), header_zstring)) != NULL) {
-			      if(Z_TYPE_P(zheaderval) == IS_ARRAY) {
-          add_next_index_string(zheaderval, header_val);
-        } else {
-          /* Create a nested array if there is more than one of the same header */
-          zval zarr;
-          array_init(&zarr);
-          Z_ADDREF_P(zheaderval);
+				if (Z_TYPE_P(zheaderval) == IS_ARRAY) {
+					add_next_index_string(zheaderval, header_val);
+				} else {
+					/* Create a nested array if there is more than one of the same header */
+					zval zarr;
+					array_init(&zarr);
+					Z_ADDREF_P(zheaderval);
 
-          add_next_index_zval(&zarr, zheaderval);
-          add_next_index_string(&zarr, header_val);
-          add_assoc_zval(&part->headerhash, header_key, &zarr);
-        }
-      } else {
-        add_assoc_string(&part->headerhash, header_key, header_val);
-      }
+					add_next_index_zval(&zarr, zheaderval);
+					add_next_index_string(&zarr, header_val);
+					add_assoc_zval(&part->headerhash, header_key, &zarr);
+				}
+			} else {
+				add_assoc_string(&part->headerhash, header_key, header_val);
+			}
 		}
 		zend_string_release(header_zstring);
 		/* if it is useful, keep a pointer to it in the mime part */
