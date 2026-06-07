@@ -528,10 +528,14 @@ PHP_METHOD(mimemessage, extract_uue)
 
 			/* parse out the file name.
 			 * The next 4 bytes are an octal number for perms; ignore it */
-			origfilename = &buffer[10];
+			/* The filename starts after "begin <mode> ". Guard against
+			 * a short "begin" line so we don't index past the NUL
+			 * terminator into stack garbage. */
+			len = strlen(buffer);
+			origfilename = &buffer[len > 10 ? 10 : len];
 			/* NUL terminate the filename */
 			len = strlen(origfilename);
-			while(isspace(origfilename[len-1]))
+			while (len > 0 && isspace((unsigned char)origfilename[len-1]))
 				origfilename[--len] = '\0';
 
 			/* make the return an array */
@@ -618,10 +622,14 @@ PHP_METHOD(mimemessage, enum_uue)
 
 			/* parse out the file name.
 			 * The next 4 bytes are an octal number for perms; ignore it */
-			origfilename = &buffer[10];
+			/* The filename starts after "begin <mode> ". Guard against
+			 * a short "begin" line so we don't index past the NUL
+			 * terminator into stack garbage. */
+			len = strlen(buffer);
+			origfilename = &buffer[len > 10 ? 10 : len];
 			/* NUL terminate the filename */
 			len = strlen(origfilename);
-			while(isspace(origfilename[len-1]))
+			while (len > 0 && isspace((unsigned char)origfilename[len-1]))
 				origfilename[--len] = '\0';
 
 			/* make the return an array */
@@ -812,10 +820,14 @@ PHP_FUNCTION(mailparse_uudecode_all)
 
 			/* parse out the file name.
 			 * The next 4 bytes are an octal number for perms; ignore it */
-			origfilename = &buffer[10];
+			/* The filename starts after "begin <mode> ". Guard against
+			 * a short "begin" line so we don't index past the NUL
+			 * terminator into stack garbage. */
+			len = strlen(buffer);
+			origfilename = &buffer[len > 10 ? 10 : len];
 			/* NUL terminate the filename */
 			len = strlen(origfilename);
-			while(isspace(origfilename[len-1]))
+			while (len > 0 && isspace((unsigned char)origfilename[len-1]))
 				origfilename[--len] = '\0';
 
 			/* make the return an array */
