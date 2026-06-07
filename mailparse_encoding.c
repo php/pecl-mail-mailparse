@@ -491,6 +491,180 @@ int mb_convert_filter_flush(mb_convert_filter *filter)
 }
 
 /* =============================================================================
+ * Bulk (buffer-at-a-time) decoders
+ *
+ * These decode a whole input block in one tight loop, appending decoded bytes
+ * straight to the output smart_string. They reuse the filter's status/cache as
+ * the carry state between blocks, so the result is byte-for-byte identical to
+ * feeding the same bytes through mb_convert_filter_feed() one at a time -- but
+ * without a function-pointer call per input and per output byte, which is the
+ * dominant cost when decoding large base64/quoted-printable bodies. Only the
+ * decode directions used during MIME extraction are handled.
+ * ============================================================================= */
+
+static void mb_base64_decode_block(mb_convert_filter *filter, const char *in, size_t len, smart_string *out)
+{
+	int status = filter->status;
+	int cache = filter->cache;
+	size_t i;
+
+	for (i = 0; i < len; i++) {
+		int c = (unsigned char) in[i];
+		int n;
+
+		if (c == 0x0d || c == 0x0a || c == 0x20 || c == 0x09 || c == 0x3d) {
+			continue;	/* CR, LF, SPACE, HTAB or '=' */
+		}
+		if (c >= 0x41 && c <= 0x5a) {		/* A - Z */
+			n = c - 65;
+		} else if (c >= 0x61 && c <= 0x7a) {	/* a - z */
+			n = c - 71;
+		} else if (c >= 0x30 && c <= 0x39) {	/* 0 - 9 */
+			n = c + 4;
+		} else if (c == 0x2b) {			/* '+' */
+			n = 62;
+		} else if (c == 0x2f) {			/* '/' */
+			n = 63;
+		} else {
+			continue;			/* invalid character, ignored */
+		}
+		n &= 0x3f;
+
+		switch (status) {
+			case 0:
+				status = 1;
+				cache = n << 18;
+				break;
+			case 1:
+				status = 2;
+				cache |= n << 12;
+				break;
+			case 2:
+				status = 3;
+				cache |= n << 6;
+				break;
+			default:
+				status = 0;
+				n |= cache;
+				smart_string_appendc(out, (n >> 16) & 0xff);
+				smart_string_appendc(out, (n >> 8) & 0xff);
+				smart_string_appendc(out, n & 0xff);
+				break;
+		}
+	}
+
+	filter->status = status;
+	filter->cache = cache;
+}
+
+static void mb_base64_flush_block(mb_convert_filter *filter, smart_string *out)
+{
+	int status = filter->status;
+	int cache = filter->cache;
+
+	filter->status = 0;
+	filter->cache = 0;
+
+	if (status >= 2) {
+		smart_string_appendc(out, (cache >> 16) & 0xff);
+		if (status >= 3) {
+			smart_string_appendc(out, (cache >> 8) & 0xff);
+		}
+	}
+}
+
+static void mb_qprint_decode_block(mb_convert_filter *filter, const char *in, size_t len, smart_string *out)
+{
+	int status = filter->status;
+	int cache = filter->cache;
+	size_t i;
+
+	for (i = 0; i < len; i++) {
+		int c = (unsigned char) in[i];
+		int n, m;
+
+		switch (status) {
+			case 1:
+				if (hex2code_map[c] >= 0) {
+					cache = c;
+					status = 2;
+				} else if (c == 0x0d) {		/* soft line feed */
+					status = 3;
+				} else if (c == 0x0a) {		/* soft line feed */
+					status = 0;
+				} else {
+					smart_string_appendc(out, 0x3d);	/* '=' */
+					smart_string_appendc(out, c);
+					status = 0;
+				}
+				break;
+			case 2:
+				m = hex2code_map[c];
+				if (m < 0) {
+					smart_string_appendc(out, 0x3d);	/* '=' */
+					smart_string_appendc(out, cache);
+					n = c;
+				} else {
+					n = hex2code_map[cache] << 4 | m;
+				}
+				smart_string_appendc(out, n);
+				status = 0;
+				break;
+			case 3:
+				if (c != 0x0a) {		/* LF */
+					smart_string_appendc(out, c);
+				}
+				status = 0;
+				break;
+			default:
+				if (c == 0x3d) {		/* '=' */
+					status = 1;
+				} else {
+					smart_string_appendc(out, c);
+				}
+				break;
+		}
+	}
+
+	filter->status = status;
+	filter->cache = cache;
+}
+
+static void mb_qprint_flush_block(mb_convert_filter *filter, smart_string *out)
+{
+	int status = filter->status;
+	int cache = filter->cache;
+
+	filter->status = 0;
+	filter->cache = 0;
+
+	if (status == 1) {
+		smart_string_appendc(out, 0x3d);	/* '=' */
+	} else if (status == 2) {
+		smart_string_appendc(out, 0x3d);	/* '=' */
+		smart_string_appendc(out, cache);
+	}
+}
+
+void mb_convert_filter_feed_block(mb_convert_filter *filter, const char *in, size_t len, smart_string *out)
+{
+	if (filter->from->no_encoding == mb_no_encoding_base64) {
+		mb_base64_decode_block(filter, in, len, out);
+	} else if (filter->from->no_encoding == mb_no_encoding_qprint) {
+		mb_qprint_decode_block(filter, in, len, out);
+	}
+}
+
+void mb_convert_filter_flush_block(mb_convert_filter *filter, smart_string *out)
+{
+	if (filter->from->no_encoding == mb_no_encoding_base64) {
+		mb_base64_flush_block(filter, out);
+	} else if (filter->from->no_encoding == mb_no_encoding_qprint) {
+		mb_qprint_flush_block(filter, out);
+	}
+}
+
+/* =============================================================================
  * Encoding lookup functions
  * ============================================================================= */
 

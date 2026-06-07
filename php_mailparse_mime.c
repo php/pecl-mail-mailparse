@@ -926,21 +926,6 @@ PHP_MAILPARSE_API php_mimepart *php_mimepart_find_child_by_position(php_mimepart
 	return NULL;
 }
 
-static int filter_into_work_buffer(int c, void *dat)
-{
-	php_mimepart *part = dat;
-
-	smart_string_appendc(&part->parsedata.workbuf, c);
-
-	if (part->parsedata.workbuf.len >= 4096) {
-
-		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
-		part->parsedata.workbuf.len = 0;
-	}
-
-	return c;
-}
-
 PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_decode, php_mimepart_extract_func_t decoder, void *ptr)
 {
 	const mb_encoding *encoding;
@@ -970,7 +955,7 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 		} else {
 			part->extract_filter = mb_convert_filter_new(
 					mb_no2encoding(from), mb_no2encoding(mb_no_encoding_8bit),
-					filter_into_work_buffer,
+					NULL,
 					NULL,
 					part
 					);
@@ -982,8 +967,9 @@ PHP_MAILPARSE_API void php_mimepart_decoder_prepare(php_mimepart *part, int do_d
 PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part)
 {
 	if (part->extract_filter) {
-		mb_convert_filter_flush(part->extract_filter);
+		mb_convert_filter_flush_block(part->extract_filter, &part->parsedata.workbuf);
 		mb_convert_filter_delete(part->extract_filter);
+		part->extract_filter = NULL;
 	}
 	if (part->extract_func && part->parsedata.workbuf.len > 0) {
 		part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
@@ -994,15 +980,11 @@ PHP_MAILPARSE_API void php_mimepart_decoder_finish(php_mimepart *part)
 PHP_MAILPARSE_API int php_mimepart_decoder_feed(php_mimepart *part, const char *buf, size_t bufsize)
 {
 	if (buf && bufsize) {
-		size_t i;
-
 		if (part->extract_filter) {
-			for (i = 0; i < bufsize; i++) {
-				if (mb_convert_filter_feed(buf[i], part->extract_filter) < 0) {
-					zend_error(E_WARNING, "%s() - filter conversion failed. Input message is probably incorrectly encoded\n",
-							get_active_function_name());
-					return -1;
-				}
+			mb_convert_filter_feed_block(part->extract_filter, buf, bufsize, &part->parsedata.workbuf);
+			if (part->parsedata.workbuf.len >= MAILPARSE_BUFSIZ) {
+				part->extract_func(part, part->extract_context, part->parsedata.workbuf.c, part->parsedata.workbuf.len);
+				part->parsedata.workbuf.len = 0;
 			}
 		} else {
 			return part->extract_func(part, part->extract_context, buf, bufsize);
