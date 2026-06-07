@@ -435,17 +435,16 @@ static int php_mimepart_process_header(php_mimepart *part)
 		 * join multiple To: or Cc: lines together */
 		header_zstring = zend_string_init(header_key, strlen(header_key), 0);
 		if ((strcmp(header_key, "to") == 0 || strcmp(header_key, "cc") == 0) && (zheaderval = zend_hash_find(Z_ARRVAL_P(&part->headerhash), header_zstring)) != NULL) {
-			int newlen;
-			char *newstr;
+			zend_string *existing = Z_STR_P(zheaderval);
+			size_t existing_len = ZSTR_LEN(existing);
+			size_t add_len = strlen(header_val);
+			zend_string *joined = zend_string_alloc(existing_len + 2 + add_len, 0);
 
-			newlen = strlen(header_val) + Z_STRLEN_P(zheaderval) + 3;
-			newstr = emalloc(newlen);
-
-			strcpy(newstr, Z_STRVAL_P(zheaderval));
-			strcat(newstr, ", ");
-			strcat(newstr, header_val);
-			add_assoc_string(&part->headerhash, header_key, newstr);
-			efree(newstr);
+			memcpy(ZSTR_VAL(joined), ZSTR_VAL(existing), existing_len);
+			memcpy(ZSTR_VAL(joined) + existing_len, ", ", 2);
+			memcpy(ZSTR_VAL(joined) + existing_len + 2, header_val, add_len);
+			ZSTR_VAL(joined)[existing_len + 2 + add_len] = '\0';
+			add_assoc_str(&part->headerhash, header_key, joined);
 		} else {
 			if((zheaderval = zend_hash_find(Z_ARRVAL_P(&part->headerhash), header_zstring)) != NULL) {
 			      if(Z_TYPE_P(zheaderval) == IS_ARRAY) {
