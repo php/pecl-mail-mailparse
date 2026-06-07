@@ -1206,19 +1206,19 @@ static int extract_callback_user_func(php_mimepart *part, zval *userfunc, const 
 
 	if (zend_fcall_info_init(userfunc, 0, &fci, &fcc, NULL, NULL) == FAILURE) {
 		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name());
+		zval_ptr_dtor(&arg);
 		return 0;
 	}
 
 	zend_fcall_info_argn(&fci, 1, &arg);
 	fci.retval = &retval;
-	if (zend_call_function(&fci, &fcc)) {
-		zend_fcall_info_args_clear(&fci, 1);
+	if (zend_call_function(&fci, &fcc) == SUCCESS) {
+		zval_ptr_dtor(&retval);
+	} else {
 		zend_error(E_WARNING, "%s(): unable to call user function", get_active_function_name());
-		return 0;
 	}
 
 	zend_fcall_info_args_clear(&fci, 1);
-	zval_ptr_dtor(&retval);
 	zval_ptr_dtor(&arg);
 
 	return 0;
