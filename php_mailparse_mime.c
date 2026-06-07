@@ -523,8 +523,18 @@ static int php_mimepart_process_header(php_mimepart *part)
 
 static php_mimepart *alloc_new_child_part(php_mimepart *parentpart, size_t startpos, int inherit)
 {
-	php_mimepart *child = php_mimepart_alloc();
+	php_mimepart *child;
+	php_mimepart *ancestor;
 	zval child_z;
+	int depth = 0;
+
+	for (ancestor = parentpart; ancestor != NULL; ancestor = ancestor->parent) {
+		if (++depth >= MAXLEVELS) {
+			return NULL;
+		}
+	}
+
+	child = php_mimepart_alloc();
 
 	parentpart->parsedata.lastpart = child;
 	child->parent = parentpart;
@@ -619,6 +629,10 @@ static int php_mimepart_process_line(php_mimepart *workpart)
 			}
 
 			newpart = alloc_new_child_part(workpart, workpart->endpos + origcount, 1);
+			if (newpart == NULL) {
+				php_error_docref(NULL, E_WARNING, "MIME message too deeply nested");
+				return FAILURE;
+			}
 			php_mimepart_update_positions(workpart, workpart->endpos + origcount, workpart->endpos + linelen, 1);
 			if (workpart->mime_version) {
 				newpart->mime_version = estrdup(workpart->mime_version);
@@ -716,6 +730,10 @@ static int php_mimepart_process_line(php_mimepart *workpart)
 
 			if (CONTENT_TYPE_IS(workpart, "message/rfc822")) {
 				workpart = alloc_new_child_part(workpart, workpart->bodystart, 0);
+				if (workpart == NULL) {
+					php_error_docref(NULL, E_WARNING, "MIME message too deeply nested");
+					return FAILURE;
+				}
 				workpart->parsedata.in_header = 1;
 				return SUCCESS;
 
@@ -724,6 +742,10 @@ static int php_mimepart_process_line(php_mimepart *workpart)
 			/* create a section for the preamble that precedes the first boundary */
 			if (workpart->boundary) {
 				workpart = alloc_new_child_part(workpart, workpart->bodystart, 1);
+				if (workpart == NULL) {
+					php_error_docref(NULL, E_WARNING, "MIME message too deeply nested");
+					return FAILURE;
+				}
 				workpart->parsedata.in_header = 0;
 				workpart->parsedata.is_dummy = 1;
 				return SUCCESS;
