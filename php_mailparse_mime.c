@@ -442,8 +442,7 @@ static int php_mimepart_process_header(php_mimepart *part)
 
 			memcpy(ZSTR_VAL(joined), ZSTR_VAL(existing), existing_len);
 			memcpy(ZSTR_VAL(joined) + existing_len, ", ", 2);
-			memcpy(ZSTR_VAL(joined) + existing_len + 2, header_val, add_len);
-			ZSTR_VAL(joined)[existing_len + 2 + add_len] = '\0';
+			memcpy(ZSTR_VAL(joined) + existing_len + 2, header_val, add_len + 1);
 			add_assoc_str(&part->headerhash, header_key, joined);
 		} else {
 			if((zheaderval = zend_hash_find(Z_ARRVAL_P(&part->headerhash), header_zstring)) != NULL) {
