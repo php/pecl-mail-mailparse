@@ -26,6 +26,7 @@
 #define MAILPARSE_ENCODING_H
 
 #include "php.h"
+#include "Zend/zend_smart_string.h"
 
 /* Encoding identifiers */
 enum mb_no_encoding {
@@ -91,6 +92,13 @@ mb_convert_filter* mb_convert_filter_new(
 void mb_convert_filter_delete(mb_convert_filter *filter);
 int mb_convert_filter_feed(int c, mb_convert_filter *filter);
 int mb_convert_filter_flush(mb_convert_filter *filter);
+
+/* Buffer-at-a-time decoders (BASE64 / Quoted-Printable -> 8bit). They use the
+ * filter's status/cache as carry state between blocks, so the output is
+ * identical to feeding the bytes through mb_convert_filter_feed() one at a
+ * time, without a per-byte function-pointer dispatch. */
+void mb_convert_filter_feed_block(mb_convert_filter *filter, const char *in, size_t len, smart_string *out);
+void mb_convert_filter_flush_block(mb_convert_filter *filter, smart_string *out);
 
 const mb_encoding* mb_name2encoding(const char *name);
 const mb_encoding* mb_no2encoding(enum mb_no_encoding no_encoding);
