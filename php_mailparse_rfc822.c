@@ -547,7 +547,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 			a_count = i - start_tok;
 			/* if an address is enclosed in <>, leave them out of the the
 			 * address value that we return */
-			if (toks->tokens[a_start].token == '<') {
+			if (a_count > 0 && toks->tokens[a_start].token == '<') {
 				a_start++;
 				a_count--;
 			}
