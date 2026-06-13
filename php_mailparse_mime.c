@@ -198,6 +198,7 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 				 *
 				 * Original rfc2231 support by IceWarp Ltd. <info@icewarp.com>
 				 */
+				currentencoded = 0;
 				check_name = strchr(name, '*');
 				if (check_name) {
 				  currentencoded = 1;
