@@ -189,7 +189,7 @@ static int mb_filt_conv_base64dec(int c, mb_convert_filter *filter)
 	} else if (c == 0x2f) {			/* '/' */
 		n = 63;
 	} else {
-		/* Invalid character - output a marker but continue */
+		/* invalid character, ignored */
 		return 0;
 	}
 	n &= 0x3f;
@@ -246,7 +246,7 @@ static int mb_filt_conv_base64dec_flush(mb_convert_filter *filter)
  * Quoted-Printable encoding/decoding
  * ============================================================================= */
 
-static int hex2code_map[] = {
+static const int hex2code_map[] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,

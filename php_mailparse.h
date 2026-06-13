@@ -47,13 +47,7 @@ PHP_FUNCTION(mailparse_msg_extract_whole_part_file);
 PHP_FUNCTION(mailparse_msg_create);
 PHP_FUNCTION(mailparse_msg_free);
 PHP_FUNCTION(mailparse_msg_parse);
-PHP_FUNCTION(mailparse_msg_parse_file);
 
-PHP_FUNCTION(mailparse_msg_find);
-PHP_FUNCTION(mailparse_msg_getstructure);
-PHP_FUNCTION(mailparse_msg_getinfo);
-PHP_FUNCTION(mailparse_msg_extract);
-PHP_FUNCTION(mailparse_msg_extract_file);
 PHP_FUNCTION(mailparse_rfc822_parse_addresses);
 PHP_FUNCTION(mailparse_determine_best_xfer_encoding);
 PHP_FUNCTION(mailparse_stream_encode);
