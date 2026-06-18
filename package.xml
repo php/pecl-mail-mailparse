@@ -47,7 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
--
+- Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
  </notes>
  <contents>
   <dir name="/">
@@ -99,6 +99,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="gh43.phpt" role="test" />
     <file name="gh44.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
+    <file name="mime_nesting_depth.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />

@@ -1,3 +1,7 @@
+# Unreleased
+
+- Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
+
 # Version 3.2.0 - 2026-04-09
 
 - Vendor encoding conversion code from mbstring. (alexdowad)
