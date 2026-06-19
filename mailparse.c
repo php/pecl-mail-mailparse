@@ -794,7 +794,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 {
 	zval *file, item;
 	char *buffer = NULL;
-	zend_string *outpath;
+	zend_string *outpath, *partpath = NULL;
 	int nparts = 0;
 	php_stream *instream, *outstream = NULL, *partstream = NULL;
 
@@ -839,6 +839,7 @@ PHP_FUNCTION(mailparse_uudecode_all)
 				add_assoc_string(&item, "filename", ZSTR_VAL(outpath));
 				add_next_index_zval(return_value, &item);
 				zend_string_release(outpath);
+				outpath = NULL;
 			}
 
 			/* add an item */
@@ -846,16 +847,19 @@ PHP_FUNCTION(mailparse_uudecode_all)
 			add_assoc_string(&item, "origfilename", origfilename);
 
 			/* create a temp file for the data */
-			partstream = _mailparse_create_stream(&outpath);
+			partstream = _mailparse_create_stream(&partpath);
 			if (partstream)	{
 				nparts++;
-				add_assoc_string(&item, "filename", ZSTR_VAL(outpath));
+				add_assoc_string(&item, "filename", ZSTR_VAL(partpath));
 				add_next_index_zval(return_value, &item);
 
 				/* decode it */
 				mailparse_do_uudecode(instream, partstream);
 				php_stream_close(partstream);
-				zend_string_release(outpath);
+				zend_string_release(partpath);
+			} else {
+				/* temp-file creation failed: drop the half-built item */
+				zval_ptr_dtor(&item);
 			}
 		} else {
 			/* write to the output file */
@@ -867,7 +871,14 @@ PHP_FUNCTION(mailparse_uudecode_all)
 	efree(buffer);
 
 	if (nparts == 0) {
-		/* delete temporary file */
+		/* no uuencoded part decoded: release the unused initial temp-file
+		 * path, or discard the partially-built array if a begin line was seen
+		 * but every part failed to decode */
+		if (outpath) {
+			zend_string_release(outpath);
+		} else {
+			zval_ptr_dtor(return_value);
+		}
 		RETURN_FALSE;
 	}
 }
