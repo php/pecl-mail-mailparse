@@ -485,7 +485,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 		;
 
 	/* the stuff from start_tok to i - 1 is the display name part */
-	if (addrs && !in_group && i - start_tok > 0) {
+	if (addrs && !in_group && i - start_tok > 0 && iaddr < addrs->naddrs) {
 		int j, has_comments = 0, has_strings = 0;
 		switch(i < toks->ntokens ? toks->tokens[i].token : 0) {
 			case ';': case ',': case '<':
@@ -561,9 +561,10 @@ mailbox:	/* addr-spec / phrase route-addr */
 	}
 
 	if (addrs && address_value) {
+		int slot_ok = iaddr < addrs->naddrs;
 
 		/* if no display name has been given, use the address */
-		if (addrs->addrs[iaddr].name == NULL) {
+		if (slot_ok && addrs->addrs[iaddr].name == NULL) {
 			addrs->addrs[iaddr].name = estrdup(address_value);
 		}
 
@@ -572,8 +573,10 @@ mailbox:	/* addr-spec / phrase route-addr */
 				smart_string_appendl(&group_addrs, ",", 1);
 			smart_string_appends(&group_addrs, address_value);
 			efree(address_value);
-		} else {
+		} else if (slot_ok) {
 			addrs->addrs[iaddr].address = address_value;
+		} else {
+			efree(address_value);
 		}
 		address_value = NULL;
 	}
@@ -586,7 +589,7 @@ mailbox:	/* addr-spec / phrase route-addr */
 	if ((start_tok < toks->ntokens && toks->tokens[start_tok].token == ';') || start_tok == toks->ntokens) {
 		/* end of group */
 
-		if (addrs) {
+		if (addrs && iaddr < addrs->naddrs) {
 			smart_string_appendl(&group_addrs, ";", 1);
 			smart_string_0(&group_addrs);
 			addrs->addrs[iaddr].address = estrdup(group_addrs.c);
