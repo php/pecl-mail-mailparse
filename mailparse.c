@@ -559,6 +559,7 @@ PHP_METHOD(mimemessage, extract_uue)
 			} else {
 				/* skip that part */
 				mailparse_do_uudecode(srcstream, NULL);
+				nparts++;
 			}
 		} else {
 			if (php_stream_tell(srcstream) >= end)
