@@ -267,6 +267,11 @@ static struct php_mimeheader_with_attributes *php_mimeheader_alloc_from_tok(php_
 						}
 
 						namechanged = 0;
+					} else if (name && name != name_buf) {
+						/* plain parameter repeating the active RFC2231 name
+						 * (a separate allocation from name_buf): free the name
+						 * that would otherwise leak */
+						efree(name);
 					}
 				} else {
 					add_assoc_string(&attr->attributes, name, value);
