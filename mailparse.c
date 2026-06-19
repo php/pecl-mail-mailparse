@@ -1086,6 +1086,9 @@ PHP_FUNCTION(mailparse_msg_parse)
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
 
 	if (FAILURE == php_mimepart_parse(part, ZSTR_VAL(data), ZSTR_LEN(data))) {
 		RETURN_FALSE;
@@ -1189,6 +1192,9 @@ PHP_FUNCTION(mailparse_msg_get_structure)
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
 
 	array_init(return_value);
 	php_mimepart_enum_parts(part, &get_structure_callback, return_value);
@@ -1314,6 +1320,9 @@ static void mailparse_do_extract(INTERNAL_FUNCTION_PARAMETERS, int decode, int i
 	}
 
 	mailparse_fetch_mimepart_resource(part, zpart);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
 
 	/* filename can be a filename or a stream */
 	if (Z_TYPE_P(filename) == IS_RESOURCE) {
@@ -1574,6 +1583,9 @@ PHP_FUNCTION(mailparse_msg_get_part_data)
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
 
 	mailparse_get_part_data(part, return_value);
 }
@@ -1592,6 +1604,9 @@ PHP_FUNCTION(mailparse_msg_get_part)
 	}
 
 	mailparse_fetch_mimepart_resource(part, arg);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
 
 	foundpart = php_mimepart_find_by_name(part, ZSTR_VAL(mimesection));
 
