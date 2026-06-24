@@ -109,6 +109,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="rfc2231_duplicate_plain_name.phpt" role="test" />
     <file name="rfc2231_plain_after_encoded.phpt" role="test" />
     <file name="rfc822_group_routeaddr_oob.phpt" role="test" />
+    <file name="uudecode_all_no_begin.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
