@@ -5,6 +5,7 @@
 - Fix out-of-bounds read in RFC822 group/route-addr address parsing
 - Reject non-mimepart resources in `mailparse_msg_*` instead of crashing
 - Fix memory leaks
+- Fix `MimeMessage::extract_uue()` ignoring index greater than zero
 
 # Version 3.2.0 - 2026-04-09
 

@@ -52,6 +52,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
 - Fix out-of-bounds read in RFC822 group/route-addr address parsing
 - Reject non-mimepart resources in mailparse_msg_* instead of crashing
 - Fix memory leaks
+- Fix MimeMessage::extract_uue() ignoring index greater than zero
  </notes>
  <contents>
   <dir name="/">
@@ -94,6 +95,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="bug75825.phpt" role="test" />
     <file name="bug81403.phpt" role="test" />
     <file name="bug81422.phpt" role="test" />
+    <file name="extract_uue_multiple_parts.phpt" role="test" />
     <file name="gh19.phpt" role="test" />
     <file name="gh20.phpt" role="test" />
     <file name="gh21.phpt" role="test" />
