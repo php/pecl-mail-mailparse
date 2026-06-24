@@ -3,6 +3,7 @@
 - Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
 - Various code cleanups and optimizations
 - Fix out-of-bounds read in RFC822 group/route-addr address parsing
+- Reject non-mimepart resources in `mailparse_msg_*` instead of crashing
 
 # Version 3.2.0 - 2026-04-09
 
