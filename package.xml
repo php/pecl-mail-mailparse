@@ -49,6 +49,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <notes>
 - Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
 - Various code cleanups and optimizations
+- Fix out-of-bounds read in RFC822 group/route-addr address parsing
  </notes>
  <contents>
   <dir name="/">
@@ -103,6 +104,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="mime_nesting_depth.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
     <file name="rfc2231_plain_after_encoded.phpt" role="test" />
+    <file name="rfc822_group_routeaddr_oob.phpt" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
