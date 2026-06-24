@@ -51,6 +51,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
 - Various code cleanups and optimizations
 - Fix out-of-bounds read in RFC822 group/route-addr address parsing
 - Reject non-mimepart resources in mailparse_msg_* instead of crashing
+- Fix memory leaks
  </notes>
  <contents>
   <dir name="/">
@@ -105,6 +106,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="mime_nesting_depth.phpt" role="test" />
     <file name="msg_funcs_reject_wrong_resource.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
+    <file name="rfc2231_duplicate_plain_name.phpt" role="test" />
     <file name="rfc2231_plain_after_encoded.phpt" role="test" />
     <file name="rfc822_group_routeaddr_oob.phpt" role="test" />
    </dir> <!-- //tests -->
