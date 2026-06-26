@@ -120,8 +120,10 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
    <file name="mailparse.c" role="src" />
    <file name="mailparse_encoding.c" role="src" />
    <file name="mailparse_encoding.h" role="src" />
+   <file name="mailparse.stub.php" role="src" />
+   <file name="mailparse_legacy_arginfo.h" role="src" />
+   <file name="mailparse_arginfo.h" role="src" />
    <file name="Makefile.frag" role="src" />
-   <file name="arginfo.h" role="src" />
    <file name="php_mailparse.h" role="src" />
    <file name="php_mailparse_mime.c" role="src" />
    <file name="php_mailparse_mime.h" role="src" />
