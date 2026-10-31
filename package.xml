@@ -58,6 +58,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   to a parent now returns true without freeing it; the part is freed with its root.
   (Firas Fatnassi, Oz Kaiser)
 - Fix `MimeMessage::remove()` keeping the removed part alive until the end of the request.
+- `mailparse_msg_free()` no longer closes resources that are not mailparse messages.
  </notes>
  <contents>
   <dir name="/">
@@ -115,6 +116,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="mimemessage_remove_lastpart.phpt" role="test" />
     <file name="mimemessage_remove_releases_part.phpt" role="test" />
     <file name="mime_nesting_depth.phpt" role="test" />
+    <file name="msg_free_foreign_resource.phpt" role="test" />
     <file name="msg_funcs_reject_wrong_resource.phpt" role="test" />
     <file name="parse_test_messages.phpt" role="test" />
     <file name="resource_child_outlives_parent.phpt" role="test" />
