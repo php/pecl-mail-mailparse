@@ -6,6 +6,7 @@
 - Reject non-mimepart resources in `mailparse_msg_*` instead of crashing
 - Fix memory leaks
 - Fix `MimeMessage::extract_uue()` ignoring index greater than zero
+- Fix use-after-free when a MIME part outlives its parent, or when a child part is freed before its parent. `mailparse_msg_free()` on a part that still belongs to a parent now returns true without freeing it; the part is freed with its root. (Firas Fatnassi, Oz Kaiser)
 
 # Version 3.2.0 - 2026-04-09
 

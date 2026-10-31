@@ -1155,10 +1155,21 @@ PHP_FUNCTION(mailparse_msg_parse_file)
 PHP_FUNCTION(mailparse_msg_free)
 {
 	zval *arg;
+	zend_resource *res;
+	php_mimepart *part;
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &arg) == FAILURE)	{
 		RETURN_FALSE;
 	}
-	zend_list_close(Z_RES_P(arg));
+	res = Z_RES_P(arg);
+	if (res->type == le_mime_part) {
+		part = res->ptr;
+		/* A child part is owned by its parent and freed along with it */
+		if (part != NULL && part->parent != NULL) {
+			RETURN_TRUE;
+		}
+	}
+	zend_list_close(res);
 	RETURN_TRUE;
 }
 /* }}} */
