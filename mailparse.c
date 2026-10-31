@@ -483,6 +483,11 @@ PHP_METHOD(mimemessage, extract_uue)
 		return;
 	}
 
+	if (part->extracting) {
+		php_error_docref(NULL, E_WARNING, "Cannot extract a message part that is already being extracted");
+		return;
+	}
+
 	switch(mode) {
 		case MAILPARSE_EXTRACT_STREAM:
 			if (zarg == NULL) {
@@ -499,6 +504,8 @@ PHP_METHOD(mimemessage, extract_uue)
 			deststream = php_stream_open_wrapper("php://output", "wb", 0, NULL);
 			break;
 	}
+
+	part->extracting = 1;
 
 	if (part->source.kind == mpSTRING)
 #if PHP_VERSION_ID < 80100
@@ -573,6 +580,7 @@ cleanup:
 		php_stream_close(srcstream);
 	if (mode != MAILPARSE_EXTRACT_STREAM && deststream)
 		php_stream_close(deststream);
+	part->extracting = 0;
 
 
 }
@@ -594,6 +602,12 @@ PHP_METHOD(mimemessage, enum_uue)
 
 	if (part == NULL)
 		return;
+
+	if (part->extracting) {
+		php_error_docref(NULL, E_WARNING, "Cannot extract a message part that is already being extracted");
+		return;
+	}
+	part->extracting = 1;
 
 	if (part->source.kind == mpSTRING)
 #if PHP_VERSION_ID < 80100
@@ -669,6 +683,7 @@ PHP_METHOD(mimemessage, enum_uue)
 cleanup:
 	if (part->source.kind == mpSTRING && instream)
 		php_stream_close(instream);
+	part->extracting = 0;
 
 }
 
@@ -1101,6 +1116,10 @@ PHP_FUNCTION(mailparse_msg_parse)
 	if (part == NULL) {
 		RETURN_FALSE;
 	}
+	if (part->extracting) {
+		php_error_docref(NULL, E_WARNING, "Cannot parse into a message part while it is being extracted");
+		RETURN_FALSE;
+	}
 
 	if (FAILURE == php_mimepart_parse(part, ZSTR_VAL(data), ZSTR_LEN(data))) {
 		RETURN_FALSE;
@@ -1167,6 +1186,10 @@ PHP_FUNCTION(mailparse_msg_free)
 	}
 	mailparse_fetch_mimepart_resource(part, arg);
 	if (part == NULL) {
+		RETURN_FALSE;
+	}
+	if (part->extracting) {
+		php_error_docref(NULL, E_WARNING, "Cannot free a message part while it is being extracted");
 		RETURN_FALSE;
 	}
 	/* A child part is owned by its parent and freed along with it */
@@ -1284,6 +1307,12 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 	char *filebuf = NULL;
 	int ret = FAILURE;
 
+	if (part->extracting) {
+		php_error_docref(NULL, E_WARNING, "Cannot extract a message part that is already being extracted");
+		return FAILURE;
+	}
+	part->extracting = 1;
+
 	/* figure out where the message part starts/ends */
 	start_pos = decode & MAILPARSE_DECODE_NOHEADERS ? part->bodystart : part->startpos;
 
@@ -1326,6 +1355,7 @@ static int extract_part(php_mimepart *part, int decode, php_stream *src, void *c
 
 cleanup:
 	php_mimepart_decoder_finish(part);
+	part->extracting = 0;
 
 	if (filebuf)
 		efree(filebuf);
