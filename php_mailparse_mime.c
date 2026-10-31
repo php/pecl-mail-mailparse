@@ -1026,8 +1026,12 @@ PHP_MAILPARSE_API void php_mimepart_remove_from_parent(php_mimepart *part)
 			mailparse_fetch_mimepart_resource(childpart, childpart_z);
 			if (childpart == part) {
 				zend_ulong h;
+				zval child_z;
+
+				ZVAL_COPY_VALUE(&child_z, childpart_z);
 				zend_hash_get_current_key_ex(&parent->children, NULL, &h, &pos);
 				zend_hash_index_del(&parent->children, h);
+				zval_ptr_dtor(&child_z);
 				break;
 			}
 		}
