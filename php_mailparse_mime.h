@@ -64,6 +64,7 @@ struct _php_mimepart {
 	php_mimepart_extract_func_t extract_func;
 	mb_convert_filter *extract_filter;
 	void *extract_context;
+	zend_bool extracting;
 
 	/* these are used during parsing */
 	struct {

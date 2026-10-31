@@ -9,6 +9,7 @@
 - Fix use-after-free when a MIME part outlives its parent, or when a child part is freed before its parent. `mailparse_msg_free()` on a part that still belongs to a parent now returns true without freeing it; the part is freed with its root. (Firas Fatnassi, Oz Kaiser)
 - Fix `MimeMessage::remove()` keeping the removed part alive until the end of the request.
 - `mailparse_msg_free()` no longer closes resources that are not mailparse messages.
+- Refuse to free, parse into, or re-extract a message part while it is being extracted, instead of using freed memory.
 
 # Version 3.2.0 - 2026-04-09
 

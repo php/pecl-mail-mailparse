@@ -59,6 +59,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
   (Firas Fatnassi, Oz Kaiser)
 - Fix `MimeMessage::remove()` keeping the removed part alive until the end of the request.
 - `mailparse_msg_free()` no longer closes resources that are not mailparse messages.
+- Refuse to free, parse into, or re-extract a message part while it is being extracted, instead of using freed memory.
  </notes>
  <contents>
   <dir name="/">
@@ -102,6 +103,10 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
     <file name="bug81403.phpt" role="test" />
     <file name="bug81422.phpt" role="test" />
     <file name="child_outlives_parent.phpt" role="test" />
+    <file name="extract_free_in_callback.phpt" role="test" />
+    <file name="extract_nested_same_part.phpt" role="test" />
+    <file name="extract_parse_in_stream.phpt" role="test" />
+    <file name="extract_uue_free_in_stream.phpt" role="test" />
     <file name="extract_uue_multiple_parts.phpt" role="test" />
     <file name="free_child_part.phpt" role="test" />
     <file name="gh19.phpt" role="test" />
