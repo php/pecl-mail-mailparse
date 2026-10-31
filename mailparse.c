@@ -1162,12 +1162,16 @@ PHP_FUNCTION(mailparse_msg_free)
 		RETURN_FALSE;
 	}
 	res = Z_RES_P(arg);
-	if (res->type == le_mime_part) {
-		part = res->ptr;
-		/* A child part is owned by its parent and freed along with it */
-		if (part != NULL && part->parent != NULL) {
-			RETURN_TRUE;
-		}
+	if (res->type < 0) {
+		RETURN_TRUE;
+	}
+	mailparse_fetch_mimepart_resource(part, arg);
+	if (part == NULL) {
+		RETURN_FALSE;
+	}
+	/* A child part is owned by its parent and freed along with it */
+	if (part->parent != NULL) {
+		RETURN_TRUE;
 	}
 	zend_list_close(res);
 	RETURN_TRUE;
