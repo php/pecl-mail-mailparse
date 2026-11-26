@@ -1,4 +1,4 @@
-# Unreleased
+# Version 3.2.1 - 2026-11-26
 
 - Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
 - Various code cleanups and optimizations
