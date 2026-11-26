@@ -38,7 +38,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </lead>
  <date>2026-11-26</date>
  <version>
-  <release>3.2.1</release>
+  <release>3.2.2dev</release>
   <api>3.0</api>
  </version>
  <stability>
@@ -47,19 +47,7 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  </stability>
  <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
  <notes>
-- Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
-- Various code cleanups and optimizations
-- Fix out-of-bounds read in RFC822 group/route-addr address parsing
-- Reject non-mimepart resources in mailparse_msg_* instead of crashing
-- Fix memory leaks
-- Fix MimeMessage::extract_uue() ignoring index greater than zero
-- Fix use-after-free when a MIME part outlives its parent, or when a child part
-  is freed before its parent. `mailparse_msg_free()` on a part that still belongs
-  to a parent now returns true without freeing it; the part is freed with its root.
-  (Firas Fatnassi, Oz Kaiser)
-- Fix `MimeMessage::remove()` keeping the removed part alive until the end of the request.
-- `mailparse_msg_free()` no longer closes resources that are not mailparse messages.
-- Refuse to free, parse into, or re-extract a message part while it is being extracted, instead of using freed memory.
+-
  </notes>
  <contents>
   <dir name="/">
@@ -166,6 +154,33 @@ It can deal with rfc822 and rfc2045 (MIME) compliant messages.
  <providesextension>mailparse</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <date>2026-11-26</date>
+   <version>
+    <release>3.2.1</release>
+    <api>3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="https://www.php.net/license/3_01.txt" filesource="LICENSE">PHP-3.01</license>
+   <notes>
+- Enforce MAXLEVELS (20) cap in `alloc_new_child_part()`
+- Various code cleanups and optimizations
+- Fix out-of-bounds read in RFC822 group/route-addr address parsing
+- Reject non-mimepart resources in mailparse_msg_* instead of crashing
+- Fix memory leaks
+- Fix MimeMessage::extract_uue() ignoring index greater than zero
+- Fix use-after-free when a MIME part outlives its parent, or when a child part
+  is freed before its parent. `mailparse_msg_free()` on a part that still belongs
+  to a parent now returns true without freeing it; the part is freed with its root.
+  (Firas Fatnassi, Oz Kaiser)
+- Fix `MimeMessage::remove()` keeping the removed part alive until the end of the request.
+- `mailparse_msg_free()` no longer closes resources that are not mailparse messages.
+- Refuse to free, parse into, or re-extract a message part while it is being extracted, instead of using freed memory.
+   </notes>
+  </release>
   <release>
    <date>2026-04-09</date>
    <version>
